@@ -653,7 +653,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         }
     }
     if let Some((_, ident)) = &p.any {
-        writeln!(out, " if !s.any.is_empty() {{ m.{ident} = Presence::Value(StringHash::from_pairs(s.any)); }}").unwrap();
+        writeln!(out, " if !s.any.is_empty() {{ m.{ident} = Presence::Value(NeutralHash::from_string_pairs(s.any)); }}").unwrap();
     }
     if p.tokens {
         writeln!(out, " m.__lml_content = Presence::Value(rt::retype(&s.tokens, &rt::Where {{ id: {id}, attribute: \"__lml_content\", rule: \"\", loc }})?);").unwrap();

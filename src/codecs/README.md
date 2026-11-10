@@ -5,7 +5,10 @@
 module root exposes sibling `models` (08c), `contracts` (08a) and `values` (08d)
 modules. A downstream crate can re-export contracts/values from lutaml-model once
 08f wires those public modules. Generated consumers need serde (derive), pinned
-serde_json with arbitrary_precision, and the exact-value dependencies.
+serde_json with arbitrary_precision, and the exact-value dependencies. A bundle with a
+`hash` attribute also needs serde_json `preserve_order` (lutaml-rs enables it; the
+codecs refuse otherwise): its values are neutral JSON read with exact number spellings,
+while a number anywhere else still refuses as a non-portable exact boundary.
 
 Readers lower declared aliases and nested model/discriminator mappings into the
 static generated structs, preserve absent/null/value, and run model validation.

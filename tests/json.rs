@@ -109,6 +109,7 @@ fn fixture() -> Bundle {
             attribute("amount", BuiltinType::Decimal),
             reference("child", "Item@default"),
             selected,
+            attribute("meta", BuiltinType::Hash),
         ],
         vec![
             keep("title", &["label", "old_label"]),
@@ -130,6 +131,7 @@ fn fixture() -> Bundle {
             keep("amount", &["amount"]),
             keep("child", &["child"]),
             keep("selected", &["selected"]),
+            keep("meta", &["meta"]),
         ],
     );
     record.ordered_content = Some(OrderedContent {
@@ -608,7 +610,7 @@ num-traits="=0.2.19"
         String::from_utf8_lossy(&result.stderr)
     );
     let stdout = String::from_utf8_lossy(&result.stdout);
-    assert!(stdout.contains("14 passed"), "{stdout}");
+    assert!(stdout.contains("15 passed"), "{stdout}");
 }
 
 #[test]
@@ -764,8 +766,26 @@ fn every_capitalized_name_in_emitted_code_is_reserved_or_known_to_be_scoped() {
     // Enum variants, fn-local types and a few prelude constructors that the
     // compile test above proves a model may share.
     let scoped = [
-        "Absent", "Null", "Member", "Literal", "Element", "Text", "Cdata", "Unique", "Visitor",
-        "Ok", "Err", "Some", "None", "Self", "Case",
+        "Absent",
+        "Null",
+        "Member",
+        "Literal",
+        "Element",
+        "Text",
+        "Cdata",
+        "Unique",
+        "Visitor",
+        "Ok",
+        "Err",
+        "Some",
+        "None",
+        "Self",
+        "Case",
+        "Bool",
+        "Number",
+        "Array",
+        "Object",
+        "NEUTRAL_NUMBERS",
     ];
     let mut unknown = BTreeSet::new();
     for text in [&models["models.rs"], &json["json_codecs.rs"]] {

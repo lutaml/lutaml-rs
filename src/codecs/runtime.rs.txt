@@ -17,6 +17,35 @@ fn plain_integer(n:&str)->Result<Value,&'static str>{
  let ok=!digits.is_empty()&&digits.bytes().all(|c|c.is_ascii_digit())&&n!="-0"&&(n.parse::<i64>().is_ok()||n.parse::<u64>().is_ok());
  if ok{serde_json::from_str::<Value>(n).map_err(|_|numeric_json_err())}else{Err(numeric_json_err())}
 }
+// Bundles with a `hash` attribute parse numbers loosely; every other position must
+// still refuse them, so the decoded model is walked once (`strict_*`).
+#[allow(dead_code)]
+fn no_loose(v:&Value,id:&str)->ContractResult<()>{
+ match v {
+  Value::Number(n)=>plain_integer(&n.to_string()).map(|_|()).map_err(|e|failure(ErrorReason::InvalidDocument,id,"","/input",e)),
+  Value::Array(a)=>a.iter().try_for_each(|x|no_loose(x,id)),
+  Value::Object(o)=>o.values().try_for_each(|x|no_loose(x,id)),
+  _=>Ok(()),
+ }
+}
+// Inside a hash a number must be exact (the same rule the TS strict reader applies).
+#[allow(dead_code)]
+fn neutral_numbers(v:&Value,id:&str)->ContractResult<()>{
+ match v {
+  Value::Number(n)=>NeutralNumber::parse(&n.to_string()).map(|_|()).map_err(|e|failure(ErrorReason::InvalidDocument,id,"","/input",format!("{e}: {n}"))),
+  Value::Array(a)=>a.iter().try_for_each(|x|neutral_numbers(x,id)),
+  Value::Object(o)=>o.values().try_for_each(|x|neutral_numbers(x,id)),
+  _=>Ok(()),
+ }
+}
+#[allow(dead_code)]
+fn strict_each(v:&Value,f:&dyn std::ops::Fn(&Value)->ContractResult<()>)->ContractResult<()>{ match v { Value::Array(a)=>a.iter().try_for_each(f), other=>f(other) } }
+// A hash keeps its key order only when serde_json keeps insertion order.
+#[allow(dead_code)]
+fn ordered_maps(id:&str)->ContractResult<()>{
+ let mut m=Map::new(); m.insert("b".into(),Value::Null); m.insert("a".into(),Value::Null);
+ if m.keys().next().map(String::as_str)==Some("b"){Ok(())}else{Err(failure(ErrorReason::InvalidDocument,id,"","/input","hash attributes need serde_json with the preserve_order feature"))}
+}
 fn parse_json(input:&str,id:&str)->ContractResult<Value>{
  // Reject duplicate keys before mapping aliases. serde_json::Value alone would
  // silently keep only the last key, erasing an observable input ambiguity.
@@ -28,7 +57,9 @@ fn parse_json(input:&str,id:&str)->ContractResult<Value>{
     type Value=Unique;
     fn expecting(&self,f:&mut std::fmt::Formatter)->std::fmt::Result{f.write_str("JSON without duplicate keys")}
     fn visit_bool<E:serde::de::Error>(self,v:bool)->Result<Unique,E>{Ok(Unique(Value::Bool(v)))}
-    fn visit_i64<E:serde::de::Error>(self,v:i64)->Result<Unique,E>{Ok(Unique(v.into()))}
+    // serde_json reads "-0" as the integer 0, so a signed zero is -0 spelled as an integer; keep it as a float
+    // that no integer, string or hash position accepts (negative zero is not exact).
+    fn visit_i64<E:serde::de::Error>(self,v:i64)->Result<Unique,E>{if NEUTRAL_NUMBERS&&v==0{return Ok(Unique(serde_json::Number::from_f64(-0.0).map_or(Value::Null,Value::Number)));}Ok(Unique(v.into()))}
     fn visit_u64<E:serde::de::Error>(self,v:u64)->Result<Unique,E>{Ok(Unique(v.into()))}
     fn visit_f64<E:serde::de::Error>(self,_:f64)->Result<Unique,E>{Err(E::custom(numeric_json_err()))}
     fn visit_str<E:serde::de::Error>(self,v:&str)->Result<Unique,E>{Ok(Unique(Value::String(v.into())))}
@@ -41,7 +72,7 @@ fn parse_json(input:&str,id:&str)->ContractResult<Value>{
      while let Some(k)=a.next_key::<String>()?{
       // With serde_json arbitrary_precision (always on for consumers of this crate)
       // every JSON number arrives as a one-entry map, never through visit_f64.
-      if first && k=="$serde_json::private::Number"{let n:String=a.next_value()?;return plain_integer(&n).map(Unique).map_err(serde::de::Error::custom);}
+      if first && k=="$serde_json::private::Number"{let n:String=a.next_value()?;if NEUTRAL_NUMBERS{return serde_json::from_str::<Value>(&n).map(Unique).map_err(serde::de::Error::custom);}return plain_integer(&n).map(Unique).map_err(serde::de::Error::custom);}
       first=false;
       let Unique(x)=a.next_value()?;
       if v.insert(k,x).is_some(){return Err(serde::de::Error::custom("duplicate JSON key"));}

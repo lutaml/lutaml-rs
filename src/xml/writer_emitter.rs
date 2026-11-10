@@ -128,10 +128,11 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
             .unwrap();
         }
     }
-    if let Some((_, ident)) = &p.any {
+    if let Some((member, ident)) = &p.any {
         writeln!(
             out,
-            " if let Presence::Value(h) = &v.{ident} {{ values.any = h.pairs().to_vec(); }}"
+            " if let Presence::Value(h) = &v.{ident} {{ values.any = h.attribute_pairs().map_err(|d| rt::fail(ErrorReason::NotSerializable, {id}, Some({}), None, \"/output\", d))?; }}",
+            q(member)
         )
         .unwrap();
     }

@@ -380,6 +380,21 @@ impl JsonCodecEmitter for RustJsonEmitter {
 
         let names = crate::generator::model_names(bundle)?;
         let mut out = include_str!("runtime.rs.txt").to_owned();
+        // A bundle with a `hash` attribute reads numbers loosely at parse time (the
+        // hash decides which spellings it can hold) and refuses them everywhere else
+        // in a walk of the decoded model (`strict_*`); other bundles keep the strict
+        // parse-time refusal.
+        let has_hash = bundle.models.values().any(|m| {
+            m.attributes.iter().any(|a| {
+                matches!(
+                    a.value_type,
+                    TypeRef::Builtin {
+                        name: BuiltinType::Hash
+                    }
+                )
+            })
+        });
+        writeln!(out, "const NEUTRAL_NUMBERS: bool = {has_hash};").unwrap();
         // Role prefixes (read_, write_, decode_, hydrate_, unkey_, encode_, key_)
         // never prefix one another, so model names cannot alias across roles;
         // this check proves it for the emitted set instead of assuming it.
@@ -417,8 +432,19 @@ impl JsonCodecEmitter for RustJsonEmitter {
             }
 
             let keyed = keyed(model, bundle, id)?;
-            writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{let data=decode_{name}(parse_json(input,{})?)?; let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
-            writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;serde_json::to_string(&encode_{name}(data)?).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id),q(id)).unwrap();
+            let (ordered, strict) = if has_hash {
+                (
+                    format!("ordered_maps({})?;", q(id)),
+                    format!("strict_{name}(&data,{})?;", q(id)),
+                )
+            } else {
+                (String::new(), String::new())
+            };
+            writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{{ordered}let data=decode_{name}(parse_json(input,{})?)?;{strict} let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
+            writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{{ordered}model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;serde_json::to_string(&encode_{name}(data)?).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id),q(id)).unwrap();
+            if has_hash {
+                emit_strict(&mut out, id, name, model, &names)?;
+            }
             if let Some(k) = &keyed {
                 emit_keyed(&mut out, id, name, k, bundle, &names)?;
             }
@@ -443,7 +469,12 @@ impl JsonCodecEmitter for RustJsonEmitter {
             if model.ordered_content.is_some() {
                 out.push_str("if let Some(v)=wire.remove(\"__lml_content\"){data.insert(\"__lml_content\".into(),v); }\n");
             }
-            writeln!(out,"if !wire.is_empty(){{return Err(failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\", \"unknown wire key\"));}} hydrate_{name}(data) }}",q(id)).unwrap();
+            let loose = if has_hash {
+                format!("for v in wire.values(){{no_loose(v,{})?;}}", q(id))
+            } else {
+                String::new()
+            };
+            writeln!(out,"if !wire.is_empty(){{{loose}return Err(failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\", \"unknown wire key\"));}} hydrate_{name}(data) }}",q(id)).unwrap();
             writeln!(out,"#[allow(non_snake_case)]\nfn hydrate_{name}(mut data:Map<String,Value>)->ContractResult<Value>{{").unwrap();
             for a in &model.attributes {
                 writeln!(out, "if let Some(mut v)=data.remove({}){{", q(&a.name)).unwrap();
@@ -496,6 +527,51 @@ fn path_expr(path: &[String]) -> String {
         "&[{}]",
         path.iter().map(|s| q(s)).collect::<Vec<_>>().join(",")
     )
+}
+/// Walks a decoded model refusing every number that is not a plain 64-bit integer,
+/// except inside a `hash` attribute, which holds any exact neutral value itself.
+fn emit_strict(
+    out: &mut String,
+    id: &str,
+    name: &str,
+    model: &ModelDocument,
+    names: &BTreeMap<String, String>,
+) -> ContractResult<()> {
+    writeln!(out,"#[allow(non_snake_case)]\nfn strict_{name}(v:&Value,id:&str)->ContractResult<()>{{let Some(o)=v.as_object() else {{return no_loose(v,id);}}; for (k,x) in o {{ match k.as_str() {{").unwrap();
+    for a in &model.attributes {
+        if let Some(d) = &a.discriminator {
+            let base = target(a)
+                .and_then(|t| names.get(t))
+                .ok_or_else(|| fail(id, &a.name, "unknown discriminator base"))?;
+            let mut arms = String::new();
+            for (tag, case) in &d.cases {
+                let case = names
+                    .get(case)
+                    .ok_or_else(|| fail(id, &a.name, "unknown discriminator target"))?;
+                write!(arms, "Some({})=>strict_{case}(p,id),", q(tag)).unwrap();
+            }
+            writeln!(out,"{} => strict_each(x,&|p|match p.get({}).and_then(Value::as_str){{{arms}_=>strict_{base}(p,id)}})?,",q(&a.name),q(&d.attribute)).unwrap();
+        } else if let Some(t) = target(a) {
+            let child = names
+                .get(t)
+                .ok_or_else(|| fail(id, &a.name, "unknown model reference"))?;
+            writeln!(
+                out,
+                "{} => strict_each(x,&|p|strict_{child}(p,id))?,",
+                q(&a.name)
+            )
+            .unwrap();
+        } else if matches!(
+            a.value_type,
+            TypeRef::Builtin {
+                name: BuiltinType::Hash
+            }
+        ) {
+            writeln!(out, "{} => neutral_numbers(x,id)?,", q(&a.name)).unwrap();
+        }
+    }
+    out.push_str("_ => no_loose(x,id)?, } } Ok(()) }\n");
+    Ok(())
 }
 fn emit_keyed(
     out: &mut String,

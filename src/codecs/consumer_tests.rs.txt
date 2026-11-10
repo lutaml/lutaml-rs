@@ -105,6 +105,44 @@ use serde_json::json;
  assert_eq!(value["enum_value"],control_text);
  assert_eq!(value["default_value"],control_text);
 }
+#[test] fn hash_holds_neutral_json_in_wire_order_and_refuses_what_ts_refuses() {
+ // Ruby, TS and Rust agree: any exact neutral JSON value, keys in wire order, byte-equal on write.
+ let wire=r#"{"meta":{"k":[1,null],"n":2,"f":0.1,"big":"x","o":{"d":true}}}"#;
+ let model=read_Record_json(wire).unwrap();
+ assert_eq!(write_Record_json(&model).unwrap(),wire);
+ let Presence::Value(h)=&model.meta else { panic!("meta") };
+ assert_eq!(h.pairs().iter().map(|e|e.0.as_str()).collect::<Vec<_>>(),["k","n","f","big","o"]);
+ for exact in [r#"{"meta":{"a":1.5e-7,"b":1e+21,"c":9007199254740991,"d":-9007199254740991,"e":-1.5,"f":[],"g":{}}}"#] {
+  assert_eq!(write_Record_json(&read_Record_json(exact).unwrap()).unwrap(),exact.replace(r#","g":{}"#,r#","g":{}"#));
+ }
+ // Spellings a double cannot hold exactly are refused, like the TS strict reader.
+ for bad in ["9007199254740993","-9007199254740992","-0","1.0","1e20","1E+21","0.10","100000000000000000000","1e400","0.1e1"] {
+  let wire=format!(r#"{{"meta":{{"x":{bad}}}}}"#);
+  assert!(read_Record_json(&wire).is_err(),"{wire}");
+  let nested=format!(r#"{{"meta":{{"x":[{{"y":{bad}}}]}}}}"#);
+  assert!(read_Record_json(&nested).is_err(),"{nested}");
+ }
+ // Not an object, duplicate keys and lone surrogates are refused.
+ for bad in [r#"{"meta":[1]}"#,r#"{"meta":"s"}"#,r#"{"meta":{"a":1,"a":2}}"#,r#"{"meta":{"a":{"b":1,"b":1}}}"#,r#"{"meta":{"\ud800":1}}"#,r#"{"meta":{"a":"\udc00"}}"#] {
+  assert!(read_Record_json(bad).is_err(),"{bad}");
+ }
+ // Nesting past 200 is refused (serde_json stops the parser first, at its own limit).
+ let deep=|n:usize|format!(r#"{{"meta":{{"a":{}0{}}}}}"#,"[".repeat(n),"]".repeat(n));
+ assert!(read_Record_json(&deep(50)).is_ok());
+ assert!(read_Record_json(&deep(201)).is_err());
+ // A hand-built value nested past 200 is refused on write; 199 levels below the hash are written.
+ let nest=|n:usize|{let mut v=Neutral::Null;for _ in 0..n{v=Neutral::Array(vec![v]);}v};
+ let mut model=read_Record_json("{}").unwrap();
+ model.meta=Presence::Value(NeutralHash::from_pairs(vec![("a".into(),nest(199))]));
+ assert!(write_Record_json(&model).is_ok());
+ model.meta=Presence::Value(NeutralHash::from_pairs(vec![("a".into(),nest(200))]));
+ assert!(write_Record_json(&model).is_err());
+ // Numbers anywhere else still need the exact-string boundary.
+ for wire in [r#"{"label":1.5,"meta":{}}"#,r#"{"count":1.5}"#,r#"{"child":{"name":0.1}}"#,r#"{"items":[1.5]}"#,r#"{"extra":0.1}"#,r#"{"__lml_content":[{"kind":"element","attribute":"title","index":1.5}]}"#] {
+  let error=read_Record_json(wire).unwrap_err();
+  assert!(format!("{error:?}").contains("not a portable exact boundary")||format!("{error:?}").contains("exact value requires string"),"{wire}: {error:?}");
+ }
+}
 #[test] fn numeric_json_is_refused_with_the_portable_boundary_error_under_arbitrary_precision() {
  for wire in [r#"{"label":"a","extra":1.5}"#,r#"{"label":"a","extra":1e2}"#,r#"{"label":"a","extra":123456789012345678901234567890}"#] {
   let error=read_Record_json(wire).unwrap_err();

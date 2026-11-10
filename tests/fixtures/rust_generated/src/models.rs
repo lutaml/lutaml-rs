@@ -32,21 +32,112 @@ impl ExactDecimal {
  pub fn as_str(&self)->&str { &self.0 }
 }
 impl<'de> Deserialize<'de> for ExactDecimal { fn deserialize<D:serde::Deserializer<'de>>(d:D)->Result<Self,D::Error>{ Self::parse(&String::deserialize(d)?).map_err(serde::de::Error::custom) } }
+// A builtin `hash` value: any JSON value every language holds exactly (null, bool,
+// string, number, array, object), with object keys in wire order. The TS codec
+// accepts the same set. The XML any-attribute target is the same type; its
+// values are strings on read and scalars on write.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct NeutralNumber(String);
+impl NeutralNumber {
+ // The JSON spelling of a number a double holds exactly: an integer-spelled number
+ // inside +-(2^53-1) that is not -0, otherwise a spelling equal to ECMAScript
+ // Number::toString of its value ("0.1", "1e+21"; never "1.0", "1e20", "0.10").
+ pub fn parse(s: &str) -> Result<Self, &'static str> {
+  let b = s.as_bytes(); let mut i = if b.first() == Some(&b'-') { 1 } else { 0 };
+  let digits = |i: &mut usize| { let at = *i; while *i < b.len() && b[*i].is_ascii_digit() { *i += 1; } *i - at };
+  let whole = i; let n = digits(&mut i);
+  if n == 0 || (n > 1 && b[whole] == b'0') { return Err("not a JSON number"); }
+  let mut integer = true;
+  if i < b.len() && b[i] == b'.' { integer = false; i += 1; if digits(&mut i) == 0 { return Err("not a JSON number"); } }
+  if i < b.len() && (b[i] == b'e' || b[i] == b'E') { integer = false; i += 1; if i < b.len() && (b[i] == b'+' || b[i] == b'-') { i += 1; } if digits(&mut i) == 0 { return Err("not a JSON number"); } }
+  if i != b.len() { return Err("not a JSON number"); }
+  let exact = if integer { s != "-0" && n <= 16 && s.trim_start_matches('-').parse::<u64>().is_ok_and(|v| v <= 9_007_199_254_740_991) }
+   else { s.parse::<f64>().is_ok_and(|f| f.is_finite() && Self::es_string(f) == s) };
+  if exact { Ok(Self(s.into())) } else { Err("number cannot be held exactly") }
+ }
+ fn es_string(x: f64) -> String {
+  if x == 0.0 { return "0".into(); }
+  let sci = format!("{:e}", x.abs()); let (m, e) = sci.split_once('e').unwrap();
+  let d: String = m.chars().filter(|c| *c != '.').collect(); let k = d.len() as i32; let n = e.parse::<i32>().unwrap() + 1;
+  let sign = if x < 0.0 { "-" } else { "" };
+  let body = if k <= n && n <= 21 { format!("{d}{}", "0".repeat((n - k) as usize)) }
+   else if 0 < n && n <= 21 { format!("{}.{}", &d[..n as usize], &d[n as usize..]) }
+   else if -6 < n && n <= 0 { format!("0.{}{d}", "0".repeat((-n) as usize)) }
+   else { let (sg, ea) = if n - 1 < 0 { ('-', 1 - n) } else { ('+', n - 1) }; if k == 1 { format!("{d}e{sg}{ea}") } else { format!("{}.{}e{sg}{ea}", &d[..1], &d[1..]) } };
+  format!("{sign}{body}")
+ }
+ pub fn as_str(&self) -> &str { &self.0 }
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Neutral { Null, Bool(bool), Number(NeutralNumber), String(String), Array(Vec<Neutral>), Object(NeutralHash) }
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct StringHash(Vec<(String, String)>);
-impl StringHash {
- pub fn from_pairs(pairs: Vec<(String, String)>) -> Self { let mut out: Vec<(String, String)> = Vec::new(); for (k, v) in pairs { match out.iter_mut().find(|e| e.0 == k) { Some(e) => e.1 = v, None => out.push((k, v)) } } Self(out) }
- pub fn pairs(&self) -> &[(String, String)] { &self.0 }
- pub fn get(&self, key: &str) -> Option<&str> { self.0.iter().find(|e| e.0 == key).map(|e| e.1.as_str()) }
+pub struct NeutralHash(Vec<(String, Neutral)>);
+impl NeutralHash {
+ // A repeated key keeps its first position and the later value (the XML attribute rule).
+ pub fn from_pairs(pairs: Vec<(String, Neutral)>) -> Self { let mut out: Vec<(String, Neutral)> = Vec::new(); for (k, v) in pairs { match out.iter_mut().find(|e| e.0 == k) { Some(e) => e.1 = v, None => out.push((k, v)) } } Self(out) }
+ pub fn from_string_pairs(pairs: Vec<(String, String)>) -> Self { Self::from_pairs(pairs.into_iter().map(|(k, v)| (k, Neutral::String(v))).collect()) }
+ pub fn pairs(&self) -> &[(String, Neutral)] { &self.0 }
+ pub fn get(&self, key: &str) -> Option<&Neutral> { self.0.iter().find(|e| e.0 == key).map(|e| &e.1) }
  pub fn len(&self) -> usize { self.0.len() }
  pub fn is_empty(&self) -> bool { self.0.is_empty() }
+ // The XML any-attribute text of each entry (Ruby to_s of a scalar); null and nested values have none.
+ pub fn attribute_pairs(&self) -> Result<Vec<(String, String)>, String> {
+  self.0.iter().map(|(k, v)| Ok((k.clone(), match v {
+   Neutral::String(s) => s.clone(), Neutral::Bool(b) => b.to_string(),
+   Neutral::Number(n) => { let f: f64 = n.0.parse().map_err(|_| "unreadable number".to_string())?; if f.fract() == 0.0 { n.0.clone() } else { PortableFloat::new(f)?.to_wire() } }
+   _ => return Err(format!("any_attribute value for {k} must be a scalar")),
+  }))).collect()
+ }
+ fn nested_ok(v: &Neutral, depth: usize) -> bool { depth <= 200 && match v { Neutral::Array(a) => a.iter().all(|x| Self::nested_ok(x, depth + 1)), Neutral::Object(h) => h.0.iter().all(|e| Self::nested_ok(&e.1, depth + 1)), _ => true } }
+ fn within_depth(&self) -> bool { self.0.iter().all(|e| Self::nested_ok(&e.1, 1)) }
 }
-impl Serialize for StringHash { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok,S::Error> { s.collect_map(self.0.iter().map(|(k, v)| (k, v))) } }
-impl<'de> Deserialize<'de> for StringHash {
+impl Neutral {
+ fn ser<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+  match self {
+   Self::Null => s.serialize_unit(), Self::Bool(b) => s.serialize_bool(*b), Self::String(v) => s.serialize_str(v),
+   Self::Number(n) => <serde_json::Number as std::str::FromStr>::from_str(&n.0).map_err(serde::ser::Error::custom)?.serialize(s),
+   Self::Array(a) => s.collect_seq(a.iter().map(|x| NeutralWire(x))),
+   Self::Object(h) => s.collect_map(h.0.iter().map(|(k, v)| (k, NeutralWire(v)))),
+  }
+ }
+}
+struct NeutralWire<'a>(&'a Neutral);
+impl Serialize for NeutralWire<'_> { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> { self.0.ser(s) } }
+impl Serialize for Neutral { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> { if !NeutralHash::nested_ok(self, 0) { return Err(serde::ser::Error::custom("neutral value is nested too deeply")); } self.ser(s) } }
+impl Serialize for NeutralHash { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> { if !self.within_depth() { return Err(serde::ser::Error::custom("neutral value is nested too deeply")); } s.collect_map(self.0.iter().map(|(k, v)| (k, NeutralWire(v)))) } }
+impl<'de> Deserialize<'de> for Neutral {
  fn deserialize<D:serde::Deserializer<'de>>(d:D)->Result<Self,D::Error>{
   struct V;
-  impl<'de> serde::de::Visitor<'de> for V { type Value=StringHash; fn expecting(&self,f:&mut std::fmt::Formatter)->std::fmt::Result{ f.write_str("an object of string values") } fn visit_map<A:serde::de::MapAccess<'de>>(self,mut m:A)->Result<StringHash,A::Error>{ let mut v=Vec::new(); while let Some(e)=m.next_entry::<String,String>()? { v.push(e); } Ok(StringHash::from_pairs(v)) } }
-  d.deserialize_map(V)
+  impl<'de> serde::de::Visitor<'de> for V {
+   type Value=Neutral;
+   fn expecting(&self,f:&mut std::fmt::Formatter)->std::fmt::Result{ f.write_str("a neutral JSON value") }
+   fn visit_bool<E:serde::de::Error>(self,v:bool)->Result<Neutral,E>{ Ok(Neutral::Bool(v)) }
+   fn visit_unit<E:serde::de::Error>(self)->Result<Neutral,E>{ Ok(Neutral::Null) }
+   fn visit_none<E:serde::de::Error>(self)->Result<Neutral,E>{ Ok(Neutral::Null) }
+   fn visit_str<E:serde::de::Error>(self,v:&str)->Result<Neutral,E>{ Ok(Neutral::String(v.into())) }
+   fn visit_string<E:serde::de::Error>(self,v:String)->Result<Neutral,E>{ Ok(Neutral::String(v)) }
+   fn visit_i64<E:serde::de::Error>(self,v:i64)->Result<Neutral,E>{ NeutralNumber::parse(&v.to_string()).map(Neutral::Number).map_err(E::custom) }
+   fn visit_u64<E:serde::de::Error>(self,v:u64)->Result<Neutral,E>{ NeutralNumber::parse(&v.to_string()).map(Neutral::Number).map_err(E::custom) }
+   // serde_json (arbitrary_precision) hands a number over as f64 only when its own f64 spelling is the source spelling.
+   fn visit_f64<E:serde::de::Error>(self,v:f64)->Result<Neutral,E>{ let text=serde_json::to_string(&v).map_err(E::custom)?; NeutralNumber::parse(&text).map(Neutral::Number).map_err(E::custom) }
+   fn visit_seq<A:serde::de::SeqAccess<'de>>(self,mut a:A)->Result<Neutral,A::Error>{ let mut v=Vec::new(); while let Some(x)=a.next_element::<Neutral>()? { v.push(x); } Ok(Neutral::Array(v)) }
+   fn visit_map<A:serde::de::MapAccess<'de>>(self,mut m:A)->Result<Neutral,A::Error>{
+    let mut v:Vec<(String,Neutral)>=Vec::new(); let mut seen=std::collections::HashSet::new();
+    while let Some(k)=m.next_key::<String>()? {
+     // With arbitrary_precision serde_json hands a number over as a one-entry map.
+     if v.is_empty() && k=="$serde_json::private::Number" { let n:String=m.next_value()?; return NeutralNumber::parse(&n).map(Neutral::Number).map_err(serde::de::Error::custom); }
+     if !seen.insert(k.clone()) { return Err(serde::de::Error::custom("duplicate JSON key")); }
+     v.push((k,m.next_value()?));
+    }
+    Ok(Neutral::Object(NeutralHash(v)))
+   }
+  }
+  d.deserialize_any(V)
+ }
+}
+impl<'de> Deserialize<'de> for NeutralHash {
+ fn deserialize<D:serde::Deserializer<'de>>(d:D)->Result<Self,D::Error>{
+  match Neutral::deserialize(d)? { Neutral::Object(h) if h.within_depth() => Ok(h), Neutral::Object(_) => Err(serde::de::Error::custom("neutral value is nested too deeply")), _ => Err(serde::de::Error::custom("expected an object")) }
  }
 }
 #[derive(Clone, Copy, Debug, PartialEq)]

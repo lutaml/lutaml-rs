@@ -636,6 +636,19 @@ fn any_attribute_reads_and_writes_like_ruby() {
         serde_json::to_string(&ok(&dup)["other"]).unwrap(),
         r#"{"a":"3","b":"2"}"#
     );
+    // The hash is the neutral JSON hash; XML writes its scalars as text (Ruby to_s) and refuses the rest.
+    let scalars = write(
+        ID,
+        &json!({"id": "1", "other": {"n": 2, "t": true, "f": 0.5, "s": "x"}}),
+    );
+    assert_eq!(
+        ok(&scalars),
+        r#"<n xmlns="d" id="1" n="2" t="true" f="0.5" s="x"/>"#
+    );
+    for nested in [json!(null), json!([1]), json!({"k": 1})] {
+        let bad = write(ID, &json!({"id": "1", "other": {"a": nested}}));
+        assert_eq!(err(&bad)["reason"], "not_serializable", "{bad}");
+    }
     // A hash entry that is not a legal attribute name is refused, not dropped.
     let bad = write(ID, &json!({"id": "1", "other": {"a b": "x"}}));
     assert_eq!(err(&bad)["reason"], "not_serializable", "{bad}");
