@@ -9,11 +9,20 @@ use std::process::{Command, Stdio};
 
 #[test]
 fn declared_string_enums_generate_and_execute_xml_codecs() {
-    let bundle = lutaml_rs::lml::load_bundle(
+    replay_enum_corpus(
         include_bytes!("fixtures/omml_enum_bundle.json"),
-        InputFormat::Json,
-    )
-    .unwrap();
+        include_bytes!("fixtures/omml_enum_corpus.json"),
+        "Omml::Models::CTBr@omml",
+    );
+    replay_enum_corpus(
+        include_bytes!("fixtures/enum_family_bundle.json"),
+        include_bytes!("fixtures/enum_family_corpus.json"),
+        "OmmlPortableEnumFamilyProbe@omml",
+    );
+}
+
+fn replay_enum_corpus(bundle_bytes: &[u8], corpus_bytes: &[u8], model_id: &str) {
+    let bundle = lutaml_rs::lml::load_bundle(bundle_bytes, InputFormat::Json).unwrap();
     let original = bundle.clone();
     let bindings = TypeBindings::new();
     let models = RustEmitter.generate_models(&bundle, &bindings).unwrap();
@@ -25,7 +34,7 @@ fn declared_string_enums_generate_and_execute_xml_codecs() {
         "compiler realization must not mutate declaration identity"
     );
     let names = model_names(&bundle).unwrap();
-    let name = &names["Omml::Models::CTBr@omml"];
+    let name = &names[model_id];
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
     let dir = root.join("target/enum-generated-consumer");
     std::fs::create_dir_all(dir.join("src")).unwrap();
@@ -63,12 +72,7 @@ for row in corpus["refusals"].as_array().unwrap(){{assert!(xml_codecs::read_{nam
         .stderr(Stdio::piped())
         .spawn()
         .unwrap();
-    child
-        .stdin
-        .take()
-        .unwrap()
-        .write_all(include_bytes!("fixtures/omml_enum_corpus.json"))
-        .unwrap();
+    child.stdin.take().unwrap().write_all(corpus_bytes).unwrap();
     let out = child.wait_with_output().unwrap();
     assert!(
         out.status.success(),

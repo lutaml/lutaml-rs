@@ -1,0 +1,1858 @@
+{
+  "lml_bundle": 1,
+  "roots": [
+    "OmmlPortableEnumFamilyProbe@omml"
+  ],
+  "models": {
+    "OmmlPortableEnumFamilyProbe@omml": {
+      "lml": 2,
+      "model": "OmmlPortableEnumFamilyProbe",
+      "register": "omml",
+      "attributes": [
+        {
+          "name": "value_0",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STBorder@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_1",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STBrClear@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_2",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STBrType@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_3",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STBreakBin@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_4",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STBreakBinSub@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_5",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STCalendarType@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_6",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STCombineBrackets@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_7",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STDisplacedByCustomXml@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_8",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STEdGrp@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_9",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STEm@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_10",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STFFTextType@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_11",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STFType@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_12",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STFldCharType@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_13",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STHighlightColor@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_14",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STHint@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_15",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STInfoTextType@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_16",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STJc@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_17",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STLimLoc@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_18",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STLock@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_19",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STOnOff@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_20",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STPTabAlignment@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_21",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STPTabLeader@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_22",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STPTabRelativeTo@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_23",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STProofErr@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_24",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STRubyAlign@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_25",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STScript@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_26",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STSdtDateMappingType@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_27",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STShd@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_28",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STShp@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_29",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STStyle@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_30",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STTextEffect@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_31",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STTheme@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_32",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STThemeColor@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_33",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STTopBot@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_34",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STUnderline@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_35",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STVerticalAlignRun@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_36",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STXAlign@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_37",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STYAlign@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        }
+      ],
+      "mappings": {
+        "xml": {
+          "root": {
+            "element": "enumFamily"
+          },
+          "rules": [
+            {
+              "kind": "attribute",
+              "name": [
+                "value_0"
+              ],
+              "to": "value_0",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_1"
+              ],
+              "to": "value_1",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_2"
+              ],
+              "to": "value_2",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_3"
+              ],
+              "to": "value_3",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_4"
+              ],
+              "to": "value_4",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_5"
+              ],
+              "to": "value_5",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_6"
+              ],
+              "to": "value_6",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_7"
+              ],
+              "to": "value_7",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_8"
+              ],
+              "to": "value_8",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_9"
+              ],
+              "to": "value_9",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_10"
+              ],
+              "to": "value_10",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_11"
+              ],
+              "to": "value_11",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_12"
+              ],
+              "to": "value_12",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_13"
+              ],
+              "to": "value_13",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_14"
+              ],
+              "to": "value_14",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_15"
+              ],
+              "to": "value_15",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_16"
+              ],
+              "to": "value_16",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_17"
+              ],
+              "to": "value_17",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_18"
+              ],
+              "to": "value_18",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_19"
+              ],
+              "to": "value_19",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_20"
+              ],
+              "to": "value_20",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_21"
+              ],
+              "to": "value_21",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_22"
+              ],
+              "to": "value_22",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_23"
+              ],
+              "to": "value_23",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_24"
+              ],
+              "to": "value_24",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_25"
+              ],
+              "to": "value_25",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_26"
+              ],
+              "to": "value_26",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_27"
+              ],
+              "to": "value_27",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_28"
+              ],
+              "to": "value_28",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_29"
+              ],
+              "to": "value_29",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_30"
+              ],
+              "to": "value_30",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_31"
+              ],
+              "to": "value_31",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_32"
+              ],
+              "to": "value_32",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_33"
+              ],
+              "to": "value_33",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_34"
+              ],
+              "to": "value_34",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_35"
+              ],
+              "to": "value_35",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_36"
+              ],
+              "to": "value_36",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_37"
+              ],
+              "to": "value_37",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            }
+          ],
+          "namespace": {
+            "mode": "uri",
+            "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+            "prefix": "w"
+          }
+        }
+      }
+    }
+  },
+  "value_types": {
+    "Omml::Models::STBorder@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "nil",
+          "none",
+          "single",
+          "thick",
+          "double",
+          "dotted",
+          "dashed",
+          "dotDash",
+          "dotDotDash",
+          "triple",
+          "thinThickSmallGap",
+          "thickThinSmallGap",
+          "thinThickThinSmallGap",
+          "thinThickMediumGap",
+          "thickThinMediumGap",
+          "thinThickThinMediumGap",
+          "thinThickLargeGap",
+          "thickThinLargeGap",
+          "thinThickThinLargeGap",
+          "wave",
+          "doubleWave",
+          "dashSmallGap",
+          "dashDotStroked",
+          "threeDEmboss",
+          "threeDEngrave",
+          "outset",
+          "inset",
+          "apples",
+          "archedScallops",
+          "babyPacifier",
+          "babyRattle",
+          "balloons3Colors",
+          "balloonsHotAir",
+          "basicBlackDashes",
+          "basicBlackDots",
+          "basicBlackSquares",
+          "basicThinLines",
+          "basicWhiteDashes",
+          "basicWhiteDots",
+          "basicWhiteSquares",
+          "basicWideInline",
+          "basicWideMidline",
+          "basicWideOutline",
+          "bats",
+          "birds",
+          "birdsFlight",
+          "cabins",
+          "cakeSlice",
+          "candyCorn",
+          "celticKnotwork",
+          "certificateBanner",
+          "chainLink",
+          "champagneBottle",
+          "checkedBarBlack",
+          "checkedBarColor",
+          "checkered",
+          "christmasTree",
+          "circlesLines",
+          "circlesRectangles",
+          "classicalWave",
+          "clocks",
+          "compass",
+          "confetti",
+          "confettiGrays",
+          "confettiOutline",
+          "confettiStreamers",
+          "confettiWhite",
+          "cornerTriangles",
+          "couponCutoutDashes",
+          "couponCutoutDots",
+          "crazyMaze",
+          "creaturesButterfly",
+          "creaturesFish",
+          "creaturesInsects",
+          "creaturesLadyBug",
+          "crossStitch",
+          "cup",
+          "decoArch",
+          "decoArchColor",
+          "decoBlocks",
+          "diamondsGray",
+          "doubleD",
+          "doubleDiamonds",
+          "earth1",
+          "earth2",
+          "eclipsingSquares1",
+          "eclipsingSquares2",
+          "eggsBlack",
+          "fans",
+          "film",
+          "firecrackers",
+          "flowersBlockPrint",
+          "flowersDaisies",
+          "flowersModern1",
+          "flowersModern2",
+          "flowersPansy",
+          "flowersRedRose",
+          "flowersRoses",
+          "flowersTeacup",
+          "flowersTiny",
+          "gems",
+          "gingerbreadMan",
+          "gradient",
+          "handmade1",
+          "handmade2",
+          "heartBalloon",
+          "heartGray",
+          "hearts",
+          "heebieJeebies",
+          "holly",
+          "houseFunky",
+          "hypnotic",
+          "iceCreamCones",
+          "lightBulb",
+          "lightning1",
+          "lightning2",
+          "mapPins",
+          "mapleLeaf",
+          "mapleMuffins",
+          "marquee",
+          "marqueeToothed",
+          "moons",
+          "mosaic",
+          "musicNotes",
+          "northwest",
+          "ovals",
+          "packages",
+          "palmsBlack",
+          "palmsColor",
+          "paperClips",
+          "papyrus",
+          "partyFavor",
+          "partyGlass",
+          "pencils",
+          "people",
+          "peopleWaving",
+          "peopleHats",
+          "poinsettias",
+          "postageStamp",
+          "pumpkin1",
+          "pushPinNote2",
+          "pushPinNote1",
+          "pyramids",
+          "pyramidsAbove",
+          "quadrants",
+          "rings",
+          "safari",
+          "sawtooth",
+          "sawtoothGray",
+          "scaredCat",
+          "seattle",
+          "shadowedSquares",
+          "sharksTeeth",
+          "shorebirdTracks",
+          "skyrocket",
+          "snowflakeFancy",
+          "snowflakes",
+          "sombrero",
+          "southwest",
+          "stars",
+          "starsTop",
+          "stars3d",
+          "starsBlack",
+          "starsShadowed",
+          "sun",
+          "swirligig",
+          "tornPaper",
+          "tornPaperBlack",
+          "trees",
+          "triangleParty",
+          "triangles",
+          "tribal1",
+          "tribal2",
+          "tribal3",
+          "tribal4",
+          "tribal5",
+          "tribal6",
+          "twistedLines1",
+          "twistedLines2",
+          "vine",
+          "waveline",
+          "weavingAngles",
+          "weavingBraid",
+          "weavingRibbon",
+          "weavingStrips",
+          "whiteFlowers",
+          "woodwork",
+          "xIllusions",
+          "zanyTriangles",
+          "zigZag",
+          "zigZagStitch"
+        ]
+      }
+    },
+    "Omml::Models::STBrClear@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "none",
+          "left",
+          "right",
+          "all"
+        ]
+      }
+    },
+    "Omml::Models::STBrType@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "page",
+          "column",
+          "textWrapping"
+        ]
+      }
+    },
+    "Omml::Models::STBreakBin@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "before",
+          "after",
+          "repeat"
+        ]
+      }
+    },
+    "Omml::Models::STBreakBinSub@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "--",
+          "-+",
+          "+-"
+        ]
+      }
+    },
+    "Omml::Models::STCalendarType@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "gregorian",
+          "hijri",
+          "hebrew",
+          "taiwan",
+          "japan",
+          "thai",
+          "korea",
+          "saka",
+          "gregorianXlitEnglish",
+          "gregorianXlitFrench"
+        ]
+      }
+    },
+    "Omml::Models::STCombineBrackets@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "none",
+          "round",
+          "square",
+          "angle",
+          "curly"
+        ]
+      }
+    },
+    "Omml::Models::STDisplacedByCustomXml@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "next",
+          "prev"
+        ]
+      }
+    },
+    "Omml::Models::STEdGrp@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "none",
+          "everyone",
+          "administrators",
+          "contributors",
+          "editors",
+          "owners",
+          "current"
+        ]
+      }
+    },
+    "Omml::Models::STEm@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "none",
+          "dot",
+          "comma",
+          "circle",
+          "underDot"
+        ]
+      }
+    },
+    "Omml::Models::STFFTextType@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "regular",
+          "number",
+          "date",
+          "currentTime",
+          "currentDate",
+          "calculated"
+        ]
+      }
+    },
+    "Omml::Models::STFType@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "bar",
+          "skw",
+          "lin",
+          "noBar"
+        ]
+      }
+    },
+    "Omml::Models::STFldCharType@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "begin",
+          "separate",
+          "end"
+        ]
+      }
+    },
+    "Omml::Models::STHighlightColor@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "black",
+          "blue",
+          "cyan",
+          "green",
+          "magenta",
+          "red",
+          "yellow",
+          "white",
+          "darkBlue",
+          "darkCyan",
+          "darkGreen",
+          "darkMagenta",
+          "darkRed",
+          "darkYellow",
+          "darkGray",
+          "lightGray",
+          "none"
+        ]
+      }
+    },
+    "Omml::Models::STHint@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "default",
+          "eastAsia",
+          "cs"
+        ]
+      }
+    },
+    "Omml::Models::STInfoTextType@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "text",
+          "autoText"
+        ]
+      }
+    },
+    "Omml::Models::STJc@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "left",
+          "right",
+          "center",
+          "centerGroup"
+        ]
+      }
+    },
+    "Omml::Models::STLimLoc@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "undOvr",
+          "subSup"
+        ]
+      }
+    },
+    "Omml::Models::STLock@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "sdtLocked",
+          "contentLocked",
+          "unlocked",
+          "sdtContentLocked"
+        ]
+      }
+    },
+    "Omml::Models::STOnOff@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "0",
+          "1",
+          "on",
+          "off",
+          "true",
+          "false"
+        ]
+      }
+    },
+    "Omml::Models::STPTabAlignment@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "left",
+          "center",
+          "right"
+        ]
+      }
+    },
+    "Omml::Models::STPTabLeader@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "none",
+          "dot",
+          "hyphen",
+          "underscore",
+          "middleDot"
+        ]
+      }
+    },
+    "Omml::Models::STPTabRelativeTo@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "margin",
+          "indent"
+        ]
+      }
+    },
+    "Omml::Models::STProofErr@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "spellStart",
+          "spellEnd",
+          "gramStart",
+          "gramEnd"
+        ]
+      }
+    },
+    "Omml::Models::STRubyAlign@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "center",
+          "distributeLetter",
+          "distributeSpace",
+          "left",
+          "right",
+          "rightVertical"
+        ]
+      }
+    },
+    "Omml::Models::STScript@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "roman",
+          "script",
+          "fraktur",
+          "double-struck",
+          "sans-serif",
+          "monospace"
+        ]
+      }
+    },
+    "Omml::Models::STSdtDateMappingType@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "text",
+          "date",
+          "dateTime"
+        ]
+      }
+    },
+    "Omml::Models::STShd@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "nil",
+          "clear",
+          "solid",
+          "horzStripe",
+          "vertStripe",
+          "reverseDiagStripe",
+          "diagStripe",
+          "horzCross",
+          "diagCross",
+          "thinHorzStripe",
+          "thinVertStripe",
+          "thinReverseDiagStripe",
+          "thinDiagStripe",
+          "thinHorzCross",
+          "thinDiagCross",
+          "pct5",
+          "pct10",
+          "pct12",
+          "pct15",
+          "pct20",
+          "pct25",
+          "pct30",
+          "pct35",
+          "pct37",
+          "pct40",
+          "pct45",
+          "pct50",
+          "pct55",
+          "pct60",
+          "pct62",
+          "pct65",
+          "pct70",
+          "pct75",
+          "pct80",
+          "pct85",
+          "pct87",
+          "pct90",
+          "pct95"
+        ]
+      }
+    },
+    "Omml::Models::STShp@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "centered",
+          "match"
+        ]
+      }
+    },
+    "Omml::Models::STStyle@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "p",
+          "b",
+          "i",
+          "bi"
+        ]
+      }
+    },
+    "Omml::Models::STTextEffect@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "blinkBackground",
+          "lights",
+          "antsBlack",
+          "antsRed",
+          "shimmer",
+          "sparkle",
+          "none"
+        ]
+      }
+    },
+    "Omml::Models::STTheme@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "majorEastAsia",
+          "majorBidi",
+          "majorAscii",
+          "majorHAnsi",
+          "minorEastAsia",
+          "minorBidi",
+          "minorAscii",
+          "minorHAnsi"
+        ]
+      }
+    },
+    "Omml::Models::STThemeColor@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "dark1",
+          "light1",
+          "dark2",
+          "light2",
+          "accent1",
+          "accent2",
+          "accent3",
+          "accent4",
+          "accent5",
+          "accent6",
+          "hyperlink",
+          "followedHyperlink",
+          "none",
+          "background1",
+          "text1",
+          "background2",
+          "text2"
+        ]
+      }
+    },
+    "Omml::Models::STTopBot@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "top",
+          "bot"
+        ]
+      }
+    },
+    "Omml::Models::STUnderline@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "single",
+          "words",
+          "double",
+          "thick",
+          "dotted",
+          "dottedHeavy",
+          "dash",
+          "dashedHeavy",
+          "dashLong",
+          "dashLongHeavy",
+          "dotDash",
+          "dashDotHeavy",
+          "dotDotDash",
+          "dashDotDotHeavy",
+          "wave",
+          "wavyHeavy",
+          "wavyDouble",
+          "none"
+        ]
+      }
+    },
+    "Omml::Models::STVerticalAlignRun@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "baseline",
+          "superscript",
+          "subscript"
+        ]
+      }
+    },
+    "Omml::Models::STXAlign@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "left",
+          "center",
+          "right"
+        ]
+      }
+    },
+    "Omml::Models::STYAlign@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "top",
+          "center",
+          "bot"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "xml"
+  ]
+}

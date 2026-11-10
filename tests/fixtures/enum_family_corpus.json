@@ -1,0 +1,4378 @@
+{
+  "scope": "test-only wrapper over real original scalar classes; not an existing OMML document model",
+  "rows": [
+    {
+      "id": "Omml::Models::STBorder-0",
+      "field": "value_0",
+      "value": "nil",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"nil\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"nil\"/>",
+      "values": {
+        "value_0": "nil"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-1",
+      "field": "value_0",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"none\"/>",
+      "values": {
+        "value_0": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-2",
+      "field": "value_0",
+      "value": "single",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"single\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"single\"/>",
+      "values": {
+        "value_0": "single"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-3",
+      "field": "value_0",
+      "value": "thick",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thick\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thick\"/>",
+      "values": {
+        "value_0": "thick"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-4",
+      "field": "value_0",
+      "value": "double",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"double\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"double\"/>",
+      "values": {
+        "value_0": "double"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-5",
+      "field": "value_0",
+      "value": "dotted",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dotted\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dotted\"/>",
+      "values": {
+        "value_0": "dotted"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-6",
+      "field": "value_0",
+      "value": "dashed",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dashed\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dashed\"/>",
+      "values": {
+        "value_0": "dashed"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-7",
+      "field": "value_0",
+      "value": "dotDash",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dotDash\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dotDash\"/>",
+      "values": {
+        "value_0": "dotDash"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-8",
+      "field": "value_0",
+      "value": "dotDotDash",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dotDotDash\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dotDotDash\"/>",
+      "values": {
+        "value_0": "dotDotDash"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-9",
+      "field": "value_0",
+      "value": "triple",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"triple\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"triple\"/>",
+      "values": {
+        "value_0": "triple"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-10",
+      "field": "value_0",
+      "value": "thinThickSmallGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickSmallGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickSmallGap\"/>",
+      "values": {
+        "value_0": "thinThickSmallGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-11",
+      "field": "value_0",
+      "value": "thickThinSmallGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thickThinSmallGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thickThinSmallGap\"/>",
+      "values": {
+        "value_0": "thickThinSmallGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-12",
+      "field": "value_0",
+      "value": "thinThickThinSmallGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickThinSmallGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickThinSmallGap\"/>",
+      "values": {
+        "value_0": "thinThickThinSmallGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-13",
+      "field": "value_0",
+      "value": "thinThickMediumGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickMediumGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickMediumGap\"/>",
+      "values": {
+        "value_0": "thinThickMediumGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-14",
+      "field": "value_0",
+      "value": "thickThinMediumGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thickThinMediumGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thickThinMediumGap\"/>",
+      "values": {
+        "value_0": "thickThinMediumGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-15",
+      "field": "value_0",
+      "value": "thinThickThinMediumGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickThinMediumGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickThinMediumGap\"/>",
+      "values": {
+        "value_0": "thinThickThinMediumGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-16",
+      "field": "value_0",
+      "value": "thinThickLargeGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickLargeGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickLargeGap\"/>",
+      "values": {
+        "value_0": "thinThickLargeGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-17",
+      "field": "value_0",
+      "value": "thickThinLargeGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thickThinLargeGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thickThinLargeGap\"/>",
+      "values": {
+        "value_0": "thickThinLargeGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-18",
+      "field": "value_0",
+      "value": "thinThickThinLargeGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickThinLargeGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"thinThickThinLargeGap\"/>",
+      "values": {
+        "value_0": "thinThickThinLargeGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-19",
+      "field": "value_0",
+      "value": "wave",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"wave\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"wave\"/>",
+      "values": {
+        "value_0": "wave"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-20",
+      "field": "value_0",
+      "value": "doubleWave",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"doubleWave\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"doubleWave\"/>",
+      "values": {
+        "value_0": "doubleWave"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-21",
+      "field": "value_0",
+      "value": "dashSmallGap",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dashSmallGap\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dashSmallGap\"/>",
+      "values": {
+        "value_0": "dashSmallGap"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-22",
+      "field": "value_0",
+      "value": "dashDotStroked",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dashDotStroked\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"dashDotStroked\"/>",
+      "values": {
+        "value_0": "dashDotStroked"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-23",
+      "field": "value_0",
+      "value": "threeDEmboss",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"threeDEmboss\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"threeDEmboss\"/>",
+      "values": {
+        "value_0": "threeDEmboss"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-24",
+      "field": "value_0",
+      "value": "threeDEngrave",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"threeDEngrave\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"threeDEngrave\"/>",
+      "values": {
+        "value_0": "threeDEngrave"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-25",
+      "field": "value_0",
+      "value": "outset",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"outset\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"outset\"/>",
+      "values": {
+        "value_0": "outset"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-26",
+      "field": "value_0",
+      "value": "inset",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"inset\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"inset\"/>",
+      "values": {
+        "value_0": "inset"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-27",
+      "field": "value_0",
+      "value": "apples",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"apples\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"apples\"/>",
+      "values": {
+        "value_0": "apples"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-28",
+      "field": "value_0",
+      "value": "archedScallops",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"archedScallops\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"archedScallops\"/>",
+      "values": {
+        "value_0": "archedScallops"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-29",
+      "field": "value_0",
+      "value": "babyPacifier",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"babyPacifier\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"babyPacifier\"/>",
+      "values": {
+        "value_0": "babyPacifier"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-30",
+      "field": "value_0",
+      "value": "babyRattle",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"babyRattle\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"babyRattle\"/>",
+      "values": {
+        "value_0": "babyRattle"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-31",
+      "field": "value_0",
+      "value": "balloons3Colors",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"balloons3Colors\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"balloons3Colors\"/>",
+      "values": {
+        "value_0": "balloons3Colors"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-32",
+      "field": "value_0",
+      "value": "balloonsHotAir",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"balloonsHotAir\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"balloonsHotAir\"/>",
+      "values": {
+        "value_0": "balloonsHotAir"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-33",
+      "field": "value_0",
+      "value": "basicBlackDashes",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicBlackDashes\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicBlackDashes\"/>",
+      "values": {
+        "value_0": "basicBlackDashes"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-34",
+      "field": "value_0",
+      "value": "basicBlackDots",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicBlackDots\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicBlackDots\"/>",
+      "values": {
+        "value_0": "basicBlackDots"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-35",
+      "field": "value_0",
+      "value": "basicBlackSquares",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicBlackSquares\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicBlackSquares\"/>",
+      "values": {
+        "value_0": "basicBlackSquares"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-36",
+      "field": "value_0",
+      "value": "basicThinLines",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicThinLines\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicThinLines\"/>",
+      "values": {
+        "value_0": "basicThinLines"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-37",
+      "field": "value_0",
+      "value": "basicWhiteDashes",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWhiteDashes\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWhiteDashes\"/>",
+      "values": {
+        "value_0": "basicWhiteDashes"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-38",
+      "field": "value_0",
+      "value": "basicWhiteDots",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWhiteDots\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWhiteDots\"/>",
+      "values": {
+        "value_0": "basicWhiteDots"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-39",
+      "field": "value_0",
+      "value": "basicWhiteSquares",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWhiteSquares\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWhiteSquares\"/>",
+      "values": {
+        "value_0": "basicWhiteSquares"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-40",
+      "field": "value_0",
+      "value": "basicWideInline",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWideInline\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWideInline\"/>",
+      "values": {
+        "value_0": "basicWideInline"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-41",
+      "field": "value_0",
+      "value": "basicWideMidline",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWideMidline\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWideMidline\"/>",
+      "values": {
+        "value_0": "basicWideMidline"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-42",
+      "field": "value_0",
+      "value": "basicWideOutline",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWideOutline\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"basicWideOutline\"/>",
+      "values": {
+        "value_0": "basicWideOutline"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-43",
+      "field": "value_0",
+      "value": "bats",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"bats\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"bats\"/>",
+      "values": {
+        "value_0": "bats"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-44",
+      "field": "value_0",
+      "value": "birds",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"birds\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"birds\"/>",
+      "values": {
+        "value_0": "birds"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-45",
+      "field": "value_0",
+      "value": "birdsFlight",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"birdsFlight\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"birdsFlight\"/>",
+      "values": {
+        "value_0": "birdsFlight"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-46",
+      "field": "value_0",
+      "value": "cabins",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cabins\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cabins\"/>",
+      "values": {
+        "value_0": "cabins"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-47",
+      "field": "value_0",
+      "value": "cakeSlice",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cakeSlice\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cakeSlice\"/>",
+      "values": {
+        "value_0": "cakeSlice"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-48",
+      "field": "value_0",
+      "value": "candyCorn",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"candyCorn\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"candyCorn\"/>",
+      "values": {
+        "value_0": "candyCorn"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-49",
+      "field": "value_0",
+      "value": "celticKnotwork",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"celticKnotwork\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"celticKnotwork\"/>",
+      "values": {
+        "value_0": "celticKnotwork"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-50",
+      "field": "value_0",
+      "value": "certificateBanner",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"certificateBanner\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"certificateBanner\"/>",
+      "values": {
+        "value_0": "certificateBanner"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-51",
+      "field": "value_0",
+      "value": "chainLink",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"chainLink\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"chainLink\"/>",
+      "values": {
+        "value_0": "chainLink"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-52",
+      "field": "value_0",
+      "value": "champagneBottle",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"champagneBottle\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"champagneBottle\"/>",
+      "values": {
+        "value_0": "champagneBottle"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-53",
+      "field": "value_0",
+      "value": "checkedBarBlack",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"checkedBarBlack\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"checkedBarBlack\"/>",
+      "values": {
+        "value_0": "checkedBarBlack"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-54",
+      "field": "value_0",
+      "value": "checkedBarColor",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"checkedBarColor\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"checkedBarColor\"/>",
+      "values": {
+        "value_0": "checkedBarColor"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-55",
+      "field": "value_0",
+      "value": "checkered",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"checkered\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"checkered\"/>",
+      "values": {
+        "value_0": "checkered"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-56",
+      "field": "value_0",
+      "value": "christmasTree",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"christmasTree\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"christmasTree\"/>",
+      "values": {
+        "value_0": "christmasTree"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-57",
+      "field": "value_0",
+      "value": "circlesLines",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"circlesLines\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"circlesLines\"/>",
+      "values": {
+        "value_0": "circlesLines"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-58",
+      "field": "value_0",
+      "value": "circlesRectangles",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"circlesRectangles\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"circlesRectangles\"/>",
+      "values": {
+        "value_0": "circlesRectangles"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-59",
+      "field": "value_0",
+      "value": "classicalWave",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"classicalWave\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"classicalWave\"/>",
+      "values": {
+        "value_0": "classicalWave"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-60",
+      "field": "value_0",
+      "value": "clocks",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"clocks\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"clocks\"/>",
+      "values": {
+        "value_0": "clocks"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-61",
+      "field": "value_0",
+      "value": "compass",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"compass\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"compass\"/>",
+      "values": {
+        "value_0": "compass"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-62",
+      "field": "value_0",
+      "value": "confetti",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confetti\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confetti\"/>",
+      "values": {
+        "value_0": "confetti"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-63",
+      "field": "value_0",
+      "value": "confettiGrays",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiGrays\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiGrays\"/>",
+      "values": {
+        "value_0": "confettiGrays"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-64",
+      "field": "value_0",
+      "value": "confettiOutline",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiOutline\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiOutline\"/>",
+      "values": {
+        "value_0": "confettiOutline"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-65",
+      "field": "value_0",
+      "value": "confettiStreamers",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiStreamers\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiStreamers\"/>",
+      "values": {
+        "value_0": "confettiStreamers"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-66",
+      "field": "value_0",
+      "value": "confettiWhite",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiWhite\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"confettiWhite\"/>",
+      "values": {
+        "value_0": "confettiWhite"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-67",
+      "field": "value_0",
+      "value": "cornerTriangles",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cornerTriangles\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cornerTriangles\"/>",
+      "values": {
+        "value_0": "cornerTriangles"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-68",
+      "field": "value_0",
+      "value": "couponCutoutDashes",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"couponCutoutDashes\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"couponCutoutDashes\"/>",
+      "values": {
+        "value_0": "couponCutoutDashes"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-69",
+      "field": "value_0",
+      "value": "couponCutoutDots",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"couponCutoutDots\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"couponCutoutDots\"/>",
+      "values": {
+        "value_0": "couponCutoutDots"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-70",
+      "field": "value_0",
+      "value": "crazyMaze",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"crazyMaze\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"crazyMaze\"/>",
+      "values": {
+        "value_0": "crazyMaze"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-71",
+      "field": "value_0",
+      "value": "creaturesButterfly",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesButterfly\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesButterfly\"/>",
+      "values": {
+        "value_0": "creaturesButterfly"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-72",
+      "field": "value_0",
+      "value": "creaturesFish",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesFish\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesFish\"/>",
+      "values": {
+        "value_0": "creaturesFish"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-73",
+      "field": "value_0",
+      "value": "creaturesInsects",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesInsects\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesInsects\"/>",
+      "values": {
+        "value_0": "creaturesInsects"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-74",
+      "field": "value_0",
+      "value": "creaturesLadyBug",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesLadyBug\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"creaturesLadyBug\"/>",
+      "values": {
+        "value_0": "creaturesLadyBug"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-75",
+      "field": "value_0",
+      "value": "crossStitch",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"crossStitch\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"crossStitch\"/>",
+      "values": {
+        "value_0": "crossStitch"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-76",
+      "field": "value_0",
+      "value": "cup",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cup\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"cup\"/>",
+      "values": {
+        "value_0": "cup"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-77",
+      "field": "value_0",
+      "value": "decoArch",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"decoArch\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"decoArch\"/>",
+      "values": {
+        "value_0": "decoArch"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-78",
+      "field": "value_0",
+      "value": "decoArchColor",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"decoArchColor\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"decoArchColor\"/>",
+      "values": {
+        "value_0": "decoArchColor"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-79",
+      "field": "value_0",
+      "value": "decoBlocks",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"decoBlocks\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"decoBlocks\"/>",
+      "values": {
+        "value_0": "decoBlocks"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-80",
+      "field": "value_0",
+      "value": "diamondsGray",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"diamondsGray\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"diamondsGray\"/>",
+      "values": {
+        "value_0": "diamondsGray"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-81",
+      "field": "value_0",
+      "value": "doubleD",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"doubleD\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"doubleD\"/>",
+      "values": {
+        "value_0": "doubleD"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-82",
+      "field": "value_0",
+      "value": "doubleDiamonds",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"doubleDiamonds\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"doubleDiamonds\"/>",
+      "values": {
+        "value_0": "doubleDiamonds"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-83",
+      "field": "value_0",
+      "value": "earth1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"earth1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"earth1\"/>",
+      "values": {
+        "value_0": "earth1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-84",
+      "field": "value_0",
+      "value": "earth2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"earth2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"earth2\"/>",
+      "values": {
+        "value_0": "earth2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-85",
+      "field": "value_0",
+      "value": "eclipsingSquares1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"eclipsingSquares1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"eclipsingSquares1\"/>",
+      "values": {
+        "value_0": "eclipsingSquares1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-86",
+      "field": "value_0",
+      "value": "eclipsingSquares2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"eclipsingSquares2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"eclipsingSquares2\"/>",
+      "values": {
+        "value_0": "eclipsingSquares2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-87",
+      "field": "value_0",
+      "value": "eggsBlack",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"eggsBlack\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"eggsBlack\"/>",
+      "values": {
+        "value_0": "eggsBlack"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-88",
+      "field": "value_0",
+      "value": "fans",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"fans\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"fans\"/>",
+      "values": {
+        "value_0": "fans"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-89",
+      "field": "value_0",
+      "value": "film",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"film\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"film\"/>",
+      "values": {
+        "value_0": "film"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-90",
+      "field": "value_0",
+      "value": "firecrackers",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"firecrackers\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"firecrackers\"/>",
+      "values": {
+        "value_0": "firecrackers"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-91",
+      "field": "value_0",
+      "value": "flowersBlockPrint",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersBlockPrint\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersBlockPrint\"/>",
+      "values": {
+        "value_0": "flowersBlockPrint"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-92",
+      "field": "value_0",
+      "value": "flowersDaisies",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersDaisies\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersDaisies\"/>",
+      "values": {
+        "value_0": "flowersDaisies"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-93",
+      "field": "value_0",
+      "value": "flowersModern1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersModern1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersModern1\"/>",
+      "values": {
+        "value_0": "flowersModern1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-94",
+      "field": "value_0",
+      "value": "flowersModern2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersModern2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersModern2\"/>",
+      "values": {
+        "value_0": "flowersModern2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-95",
+      "field": "value_0",
+      "value": "flowersPansy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersPansy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersPansy\"/>",
+      "values": {
+        "value_0": "flowersPansy"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-96",
+      "field": "value_0",
+      "value": "flowersRedRose",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersRedRose\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersRedRose\"/>",
+      "values": {
+        "value_0": "flowersRedRose"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-97",
+      "field": "value_0",
+      "value": "flowersRoses",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersRoses\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersRoses\"/>",
+      "values": {
+        "value_0": "flowersRoses"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-98",
+      "field": "value_0",
+      "value": "flowersTeacup",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersTeacup\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersTeacup\"/>",
+      "values": {
+        "value_0": "flowersTeacup"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-99",
+      "field": "value_0",
+      "value": "flowersTiny",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersTiny\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"flowersTiny\"/>",
+      "values": {
+        "value_0": "flowersTiny"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-100",
+      "field": "value_0",
+      "value": "gems",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"gems\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"gems\"/>",
+      "values": {
+        "value_0": "gems"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-101",
+      "field": "value_0",
+      "value": "gingerbreadMan",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"gingerbreadMan\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"gingerbreadMan\"/>",
+      "values": {
+        "value_0": "gingerbreadMan"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-102",
+      "field": "value_0",
+      "value": "gradient",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"gradient\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"gradient\"/>",
+      "values": {
+        "value_0": "gradient"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-103",
+      "field": "value_0",
+      "value": "handmade1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"handmade1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"handmade1\"/>",
+      "values": {
+        "value_0": "handmade1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-104",
+      "field": "value_0",
+      "value": "handmade2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"handmade2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"handmade2\"/>",
+      "values": {
+        "value_0": "handmade2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-105",
+      "field": "value_0",
+      "value": "heartBalloon",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"heartBalloon\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"heartBalloon\"/>",
+      "values": {
+        "value_0": "heartBalloon"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-106",
+      "field": "value_0",
+      "value": "heartGray",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"heartGray\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"heartGray\"/>",
+      "values": {
+        "value_0": "heartGray"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-107",
+      "field": "value_0",
+      "value": "hearts",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"hearts\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"hearts\"/>",
+      "values": {
+        "value_0": "hearts"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-108",
+      "field": "value_0",
+      "value": "heebieJeebies",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"heebieJeebies\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"heebieJeebies\"/>",
+      "values": {
+        "value_0": "heebieJeebies"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-109",
+      "field": "value_0",
+      "value": "holly",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"holly\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"holly\"/>",
+      "values": {
+        "value_0": "holly"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-110",
+      "field": "value_0",
+      "value": "houseFunky",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"houseFunky\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"houseFunky\"/>",
+      "values": {
+        "value_0": "houseFunky"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-111",
+      "field": "value_0",
+      "value": "hypnotic",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"hypnotic\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"hypnotic\"/>",
+      "values": {
+        "value_0": "hypnotic"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-112",
+      "field": "value_0",
+      "value": "iceCreamCones",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"iceCreamCones\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"iceCreamCones\"/>",
+      "values": {
+        "value_0": "iceCreamCones"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-113",
+      "field": "value_0",
+      "value": "lightBulb",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"lightBulb\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"lightBulb\"/>",
+      "values": {
+        "value_0": "lightBulb"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-114",
+      "field": "value_0",
+      "value": "lightning1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"lightning1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"lightning1\"/>",
+      "values": {
+        "value_0": "lightning1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-115",
+      "field": "value_0",
+      "value": "lightning2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"lightning2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"lightning2\"/>",
+      "values": {
+        "value_0": "lightning2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-116",
+      "field": "value_0",
+      "value": "mapPins",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mapPins\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mapPins\"/>",
+      "values": {
+        "value_0": "mapPins"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-117",
+      "field": "value_0",
+      "value": "mapleLeaf",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mapleLeaf\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mapleLeaf\"/>",
+      "values": {
+        "value_0": "mapleLeaf"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-118",
+      "field": "value_0",
+      "value": "mapleMuffins",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mapleMuffins\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mapleMuffins\"/>",
+      "values": {
+        "value_0": "mapleMuffins"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-119",
+      "field": "value_0",
+      "value": "marquee",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"marquee\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"marquee\"/>",
+      "values": {
+        "value_0": "marquee"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-120",
+      "field": "value_0",
+      "value": "marqueeToothed",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"marqueeToothed\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"marqueeToothed\"/>",
+      "values": {
+        "value_0": "marqueeToothed"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-121",
+      "field": "value_0",
+      "value": "moons",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"moons\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"moons\"/>",
+      "values": {
+        "value_0": "moons"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-122",
+      "field": "value_0",
+      "value": "mosaic",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mosaic\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"mosaic\"/>",
+      "values": {
+        "value_0": "mosaic"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-123",
+      "field": "value_0",
+      "value": "musicNotes",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"musicNotes\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"musicNotes\"/>",
+      "values": {
+        "value_0": "musicNotes"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-124",
+      "field": "value_0",
+      "value": "northwest",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"northwest\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"northwest\"/>",
+      "values": {
+        "value_0": "northwest"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-125",
+      "field": "value_0",
+      "value": "ovals",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"ovals\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"ovals\"/>",
+      "values": {
+        "value_0": "ovals"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-126",
+      "field": "value_0",
+      "value": "packages",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"packages\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"packages\"/>",
+      "values": {
+        "value_0": "packages"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-127",
+      "field": "value_0",
+      "value": "palmsBlack",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"palmsBlack\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"palmsBlack\"/>",
+      "values": {
+        "value_0": "palmsBlack"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-128",
+      "field": "value_0",
+      "value": "palmsColor",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"palmsColor\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"palmsColor\"/>",
+      "values": {
+        "value_0": "palmsColor"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-129",
+      "field": "value_0",
+      "value": "paperClips",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"paperClips\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"paperClips\"/>",
+      "values": {
+        "value_0": "paperClips"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-130",
+      "field": "value_0",
+      "value": "papyrus",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"papyrus\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"papyrus\"/>",
+      "values": {
+        "value_0": "papyrus"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-131",
+      "field": "value_0",
+      "value": "partyFavor",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"partyFavor\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"partyFavor\"/>",
+      "values": {
+        "value_0": "partyFavor"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-132",
+      "field": "value_0",
+      "value": "partyGlass",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"partyGlass\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"partyGlass\"/>",
+      "values": {
+        "value_0": "partyGlass"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-133",
+      "field": "value_0",
+      "value": "pencils",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pencils\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pencils\"/>",
+      "values": {
+        "value_0": "pencils"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-134",
+      "field": "value_0",
+      "value": "people",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"people\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"people\"/>",
+      "values": {
+        "value_0": "people"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-135",
+      "field": "value_0",
+      "value": "peopleWaving",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"peopleWaving\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"peopleWaving\"/>",
+      "values": {
+        "value_0": "peopleWaving"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-136",
+      "field": "value_0",
+      "value": "peopleHats",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"peopleHats\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"peopleHats\"/>",
+      "values": {
+        "value_0": "peopleHats"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-137",
+      "field": "value_0",
+      "value": "poinsettias",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"poinsettias\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"poinsettias\"/>",
+      "values": {
+        "value_0": "poinsettias"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-138",
+      "field": "value_0",
+      "value": "postageStamp",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"postageStamp\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"postageStamp\"/>",
+      "values": {
+        "value_0": "postageStamp"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-139",
+      "field": "value_0",
+      "value": "pumpkin1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pumpkin1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pumpkin1\"/>",
+      "values": {
+        "value_0": "pumpkin1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-140",
+      "field": "value_0",
+      "value": "pushPinNote2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pushPinNote2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pushPinNote2\"/>",
+      "values": {
+        "value_0": "pushPinNote2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-141",
+      "field": "value_0",
+      "value": "pushPinNote1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pushPinNote1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pushPinNote1\"/>",
+      "values": {
+        "value_0": "pushPinNote1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-142",
+      "field": "value_0",
+      "value": "pyramids",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pyramids\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pyramids\"/>",
+      "values": {
+        "value_0": "pyramids"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-143",
+      "field": "value_0",
+      "value": "pyramidsAbove",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pyramidsAbove\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"pyramidsAbove\"/>",
+      "values": {
+        "value_0": "pyramidsAbove"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-144",
+      "field": "value_0",
+      "value": "quadrants",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"quadrants\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"quadrants\"/>",
+      "values": {
+        "value_0": "quadrants"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-145",
+      "field": "value_0",
+      "value": "rings",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"rings\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"rings\"/>",
+      "values": {
+        "value_0": "rings"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-146",
+      "field": "value_0",
+      "value": "safari",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"safari\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"safari\"/>",
+      "values": {
+        "value_0": "safari"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-147",
+      "field": "value_0",
+      "value": "sawtooth",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sawtooth\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sawtooth\"/>",
+      "values": {
+        "value_0": "sawtooth"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-148",
+      "field": "value_0",
+      "value": "sawtoothGray",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sawtoothGray\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sawtoothGray\"/>",
+      "values": {
+        "value_0": "sawtoothGray"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-149",
+      "field": "value_0",
+      "value": "scaredCat",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"scaredCat\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"scaredCat\"/>",
+      "values": {
+        "value_0": "scaredCat"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-150",
+      "field": "value_0",
+      "value": "seattle",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"seattle\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"seattle\"/>",
+      "values": {
+        "value_0": "seattle"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-151",
+      "field": "value_0",
+      "value": "shadowedSquares",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"shadowedSquares\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"shadowedSquares\"/>",
+      "values": {
+        "value_0": "shadowedSquares"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-152",
+      "field": "value_0",
+      "value": "sharksTeeth",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sharksTeeth\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sharksTeeth\"/>",
+      "values": {
+        "value_0": "sharksTeeth"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-153",
+      "field": "value_0",
+      "value": "shorebirdTracks",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"shorebirdTracks\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"shorebirdTracks\"/>",
+      "values": {
+        "value_0": "shorebirdTracks"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-154",
+      "field": "value_0",
+      "value": "skyrocket",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"skyrocket\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"skyrocket\"/>",
+      "values": {
+        "value_0": "skyrocket"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-155",
+      "field": "value_0",
+      "value": "snowflakeFancy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"snowflakeFancy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"snowflakeFancy\"/>",
+      "values": {
+        "value_0": "snowflakeFancy"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-156",
+      "field": "value_0",
+      "value": "snowflakes",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"snowflakes\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"snowflakes\"/>",
+      "values": {
+        "value_0": "snowflakes"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-157",
+      "field": "value_0",
+      "value": "sombrero",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sombrero\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sombrero\"/>",
+      "values": {
+        "value_0": "sombrero"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-158",
+      "field": "value_0",
+      "value": "southwest",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"southwest\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"southwest\"/>",
+      "values": {
+        "value_0": "southwest"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-159",
+      "field": "value_0",
+      "value": "stars",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"stars\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"stars\"/>",
+      "values": {
+        "value_0": "stars"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-160",
+      "field": "value_0",
+      "value": "starsTop",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"starsTop\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"starsTop\"/>",
+      "values": {
+        "value_0": "starsTop"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-161",
+      "field": "value_0",
+      "value": "stars3d",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"stars3d\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"stars3d\"/>",
+      "values": {
+        "value_0": "stars3d"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-162",
+      "field": "value_0",
+      "value": "starsBlack",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"starsBlack\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"starsBlack\"/>",
+      "values": {
+        "value_0": "starsBlack"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-163",
+      "field": "value_0",
+      "value": "starsShadowed",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"starsShadowed\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"starsShadowed\"/>",
+      "values": {
+        "value_0": "starsShadowed"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-164",
+      "field": "value_0",
+      "value": "sun",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sun\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"sun\"/>",
+      "values": {
+        "value_0": "sun"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-165",
+      "field": "value_0",
+      "value": "swirligig",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"swirligig\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"swirligig\"/>",
+      "values": {
+        "value_0": "swirligig"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-166",
+      "field": "value_0",
+      "value": "tornPaper",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tornPaper\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tornPaper\"/>",
+      "values": {
+        "value_0": "tornPaper"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-167",
+      "field": "value_0",
+      "value": "tornPaperBlack",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tornPaperBlack\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tornPaperBlack\"/>",
+      "values": {
+        "value_0": "tornPaperBlack"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-168",
+      "field": "value_0",
+      "value": "trees",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"trees\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"trees\"/>",
+      "values": {
+        "value_0": "trees"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-169",
+      "field": "value_0",
+      "value": "triangleParty",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"triangleParty\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"triangleParty\"/>",
+      "values": {
+        "value_0": "triangleParty"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-170",
+      "field": "value_0",
+      "value": "triangles",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"triangles\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"triangles\"/>",
+      "values": {
+        "value_0": "triangles"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-171",
+      "field": "value_0",
+      "value": "tribal1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal1\"/>",
+      "values": {
+        "value_0": "tribal1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-172",
+      "field": "value_0",
+      "value": "tribal2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal2\"/>",
+      "values": {
+        "value_0": "tribal2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-173",
+      "field": "value_0",
+      "value": "tribal3",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal3\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal3\"/>",
+      "values": {
+        "value_0": "tribal3"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-174",
+      "field": "value_0",
+      "value": "tribal4",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal4\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal4\"/>",
+      "values": {
+        "value_0": "tribal4"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-175",
+      "field": "value_0",
+      "value": "tribal5",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal5\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal5\"/>",
+      "values": {
+        "value_0": "tribal5"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-176",
+      "field": "value_0",
+      "value": "tribal6",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal6\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"tribal6\"/>",
+      "values": {
+        "value_0": "tribal6"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-177",
+      "field": "value_0",
+      "value": "twistedLines1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"twistedLines1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"twistedLines1\"/>",
+      "values": {
+        "value_0": "twistedLines1"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-178",
+      "field": "value_0",
+      "value": "twistedLines2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"twistedLines2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"twistedLines2\"/>",
+      "values": {
+        "value_0": "twistedLines2"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-179",
+      "field": "value_0",
+      "value": "vine",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"vine\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"vine\"/>",
+      "values": {
+        "value_0": "vine"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-180",
+      "field": "value_0",
+      "value": "waveline",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"waveline\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"waveline\"/>",
+      "values": {
+        "value_0": "waveline"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-181",
+      "field": "value_0",
+      "value": "weavingAngles",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingAngles\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingAngles\"/>",
+      "values": {
+        "value_0": "weavingAngles"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-182",
+      "field": "value_0",
+      "value": "weavingBraid",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingBraid\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingBraid\"/>",
+      "values": {
+        "value_0": "weavingBraid"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-183",
+      "field": "value_0",
+      "value": "weavingRibbon",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingRibbon\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingRibbon\"/>",
+      "values": {
+        "value_0": "weavingRibbon"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-184",
+      "field": "value_0",
+      "value": "weavingStrips",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingStrips\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"weavingStrips\"/>",
+      "values": {
+        "value_0": "weavingStrips"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-185",
+      "field": "value_0",
+      "value": "whiteFlowers",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"whiteFlowers\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"whiteFlowers\"/>",
+      "values": {
+        "value_0": "whiteFlowers"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-186",
+      "field": "value_0",
+      "value": "woodwork",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"woodwork\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"woodwork\"/>",
+      "values": {
+        "value_0": "woodwork"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-187",
+      "field": "value_0",
+      "value": "xIllusions",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"xIllusions\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"xIllusions\"/>",
+      "values": {
+        "value_0": "xIllusions"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-188",
+      "field": "value_0",
+      "value": "zanyTriangles",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"zanyTriangles\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"zanyTriangles\"/>",
+      "values": {
+        "value_0": "zanyTriangles"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-189",
+      "field": "value_0",
+      "value": "zigZag",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"zigZag\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"zigZag\"/>",
+      "values": {
+        "value_0": "zigZag"
+      }
+    },
+    {
+      "id": "Omml::Models::STBorder-190",
+      "field": "value_0",
+      "value": "zigZagStitch",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"zigZagStitch\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"zigZagStitch\"/>",
+      "values": {
+        "value_0": "zigZagStitch"
+      }
+    },
+    {
+      "id": "Omml::Models::STBrClear-0",
+      "field": "value_1",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"none\"/>",
+      "values": {
+        "value_1": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STBrClear-1",
+      "field": "value_1",
+      "value": "left",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"left\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"left\"/>",
+      "values": {
+        "value_1": "left"
+      }
+    },
+    {
+      "id": "Omml::Models::STBrClear-2",
+      "field": "value_1",
+      "value": "right",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"right\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"right\"/>",
+      "values": {
+        "value_1": "right"
+      }
+    },
+    {
+      "id": "Omml::Models::STBrClear-3",
+      "field": "value_1",
+      "value": "all",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"all\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"all\"/>",
+      "values": {
+        "value_1": "all"
+      }
+    },
+    {
+      "id": "Omml::Models::STBrType-0",
+      "field": "value_2",
+      "value": "page",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_2=\"page\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_2=\"page\"/>",
+      "values": {
+        "value_2": "page"
+      }
+    },
+    {
+      "id": "Omml::Models::STBrType-1",
+      "field": "value_2",
+      "value": "column",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_2=\"column\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_2=\"column\"/>",
+      "values": {
+        "value_2": "column"
+      }
+    },
+    {
+      "id": "Omml::Models::STBrType-2",
+      "field": "value_2",
+      "value": "textWrapping",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_2=\"textWrapping\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_2=\"textWrapping\"/>",
+      "values": {
+        "value_2": "textWrapping"
+      }
+    },
+    {
+      "id": "Omml::Models::STBreakBin-0",
+      "field": "value_3",
+      "value": "before",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_3=\"before\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_3=\"before\"/>",
+      "values": {
+        "value_3": "before"
+      }
+    },
+    {
+      "id": "Omml::Models::STBreakBin-1",
+      "field": "value_3",
+      "value": "after",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_3=\"after\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_3=\"after\"/>",
+      "values": {
+        "value_3": "after"
+      }
+    },
+    {
+      "id": "Omml::Models::STBreakBin-2",
+      "field": "value_3",
+      "value": "repeat",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_3=\"repeat\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_3=\"repeat\"/>",
+      "values": {
+        "value_3": "repeat"
+      }
+    },
+    {
+      "id": "Omml::Models::STBreakBinSub-0",
+      "field": "value_4",
+      "value": "--",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_4=\"--\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_4=\"--\"/>",
+      "values": {
+        "value_4": "--"
+      }
+    },
+    {
+      "id": "Omml::Models::STBreakBinSub-1",
+      "field": "value_4",
+      "value": "-+",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_4=\"-+\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_4=\"-+\"/>",
+      "values": {
+        "value_4": "-+"
+      }
+    },
+    {
+      "id": "Omml::Models::STBreakBinSub-2",
+      "field": "value_4",
+      "value": "+-",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_4=\"+-\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_4=\"+-\"/>",
+      "values": {
+        "value_4": "+-"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-0",
+      "field": "value_5",
+      "value": "gregorian",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"gregorian\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"gregorian\"/>",
+      "values": {
+        "value_5": "gregorian"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-1",
+      "field": "value_5",
+      "value": "hijri",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"hijri\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"hijri\"/>",
+      "values": {
+        "value_5": "hijri"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-2",
+      "field": "value_5",
+      "value": "hebrew",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"hebrew\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"hebrew\"/>",
+      "values": {
+        "value_5": "hebrew"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-3",
+      "field": "value_5",
+      "value": "taiwan",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"taiwan\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"taiwan\"/>",
+      "values": {
+        "value_5": "taiwan"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-4",
+      "field": "value_5",
+      "value": "japan",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"japan\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"japan\"/>",
+      "values": {
+        "value_5": "japan"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-5",
+      "field": "value_5",
+      "value": "thai",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"thai\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"thai\"/>",
+      "values": {
+        "value_5": "thai"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-6",
+      "field": "value_5",
+      "value": "korea",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"korea\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"korea\"/>",
+      "values": {
+        "value_5": "korea"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-7",
+      "field": "value_5",
+      "value": "saka",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"saka\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"saka\"/>",
+      "values": {
+        "value_5": "saka"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-8",
+      "field": "value_5",
+      "value": "gregorianXlitEnglish",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"gregorianXlitEnglish\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"gregorianXlitEnglish\"/>",
+      "values": {
+        "value_5": "gregorianXlitEnglish"
+      }
+    },
+    {
+      "id": "Omml::Models::STCalendarType-9",
+      "field": "value_5",
+      "value": "gregorianXlitFrench",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"gregorianXlitFrench\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"gregorianXlitFrench\"/>",
+      "values": {
+        "value_5": "gregorianXlitFrench"
+      }
+    },
+    {
+      "id": "Omml::Models::STCombineBrackets-0",
+      "field": "value_6",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"none\"/>",
+      "values": {
+        "value_6": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STCombineBrackets-1",
+      "field": "value_6",
+      "value": "round",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"round\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"round\"/>",
+      "values": {
+        "value_6": "round"
+      }
+    },
+    {
+      "id": "Omml::Models::STCombineBrackets-2",
+      "field": "value_6",
+      "value": "square",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"square\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"square\"/>",
+      "values": {
+        "value_6": "square"
+      }
+    },
+    {
+      "id": "Omml::Models::STCombineBrackets-3",
+      "field": "value_6",
+      "value": "angle",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"angle\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"angle\"/>",
+      "values": {
+        "value_6": "angle"
+      }
+    },
+    {
+      "id": "Omml::Models::STCombineBrackets-4",
+      "field": "value_6",
+      "value": "curly",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"curly\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"curly\"/>",
+      "values": {
+        "value_6": "curly"
+      }
+    },
+    {
+      "id": "Omml::Models::STDisplacedByCustomXml-0",
+      "field": "value_7",
+      "value": "next",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_7=\"next\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_7=\"next\"/>",
+      "values": {
+        "value_7": "next"
+      }
+    },
+    {
+      "id": "Omml::Models::STDisplacedByCustomXml-1",
+      "field": "value_7",
+      "value": "prev",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_7=\"prev\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_7=\"prev\"/>",
+      "values": {
+        "value_7": "prev"
+      }
+    },
+    {
+      "id": "Omml::Models::STEdGrp-0",
+      "field": "value_8",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"none\"/>",
+      "values": {
+        "value_8": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STEdGrp-1",
+      "field": "value_8",
+      "value": "everyone",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"everyone\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"everyone\"/>",
+      "values": {
+        "value_8": "everyone"
+      }
+    },
+    {
+      "id": "Omml::Models::STEdGrp-2",
+      "field": "value_8",
+      "value": "administrators",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"administrators\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"administrators\"/>",
+      "values": {
+        "value_8": "administrators"
+      }
+    },
+    {
+      "id": "Omml::Models::STEdGrp-3",
+      "field": "value_8",
+      "value": "contributors",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"contributors\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"contributors\"/>",
+      "values": {
+        "value_8": "contributors"
+      }
+    },
+    {
+      "id": "Omml::Models::STEdGrp-4",
+      "field": "value_8",
+      "value": "editors",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"editors\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"editors\"/>",
+      "values": {
+        "value_8": "editors"
+      }
+    },
+    {
+      "id": "Omml::Models::STEdGrp-5",
+      "field": "value_8",
+      "value": "owners",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"owners\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"owners\"/>",
+      "values": {
+        "value_8": "owners"
+      }
+    },
+    {
+      "id": "Omml::Models::STEdGrp-6",
+      "field": "value_8",
+      "value": "current",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"current\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"current\"/>",
+      "values": {
+        "value_8": "current"
+      }
+    },
+    {
+      "id": "Omml::Models::STEm-0",
+      "field": "value_9",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"none\"/>",
+      "values": {
+        "value_9": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STEm-1",
+      "field": "value_9",
+      "value": "dot",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"dot\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"dot\"/>",
+      "values": {
+        "value_9": "dot"
+      }
+    },
+    {
+      "id": "Omml::Models::STEm-2",
+      "field": "value_9",
+      "value": "comma",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"comma\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"comma\"/>",
+      "values": {
+        "value_9": "comma"
+      }
+    },
+    {
+      "id": "Omml::Models::STEm-3",
+      "field": "value_9",
+      "value": "circle",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"circle\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"circle\"/>",
+      "values": {
+        "value_9": "circle"
+      }
+    },
+    {
+      "id": "Omml::Models::STEm-4",
+      "field": "value_9",
+      "value": "underDot",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"underDot\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"underDot\"/>",
+      "values": {
+        "value_9": "underDot"
+      }
+    },
+    {
+      "id": "Omml::Models::STFFTextType-0",
+      "field": "value_10",
+      "value": "regular",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"regular\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"regular\"/>",
+      "values": {
+        "value_10": "regular"
+      }
+    },
+    {
+      "id": "Omml::Models::STFFTextType-1",
+      "field": "value_10",
+      "value": "number",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"number\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"number\"/>",
+      "values": {
+        "value_10": "number"
+      }
+    },
+    {
+      "id": "Omml::Models::STFFTextType-2",
+      "field": "value_10",
+      "value": "date",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"date\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"date\"/>",
+      "values": {
+        "value_10": "date"
+      }
+    },
+    {
+      "id": "Omml::Models::STFFTextType-3",
+      "field": "value_10",
+      "value": "currentTime",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"currentTime\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"currentTime\"/>",
+      "values": {
+        "value_10": "currentTime"
+      }
+    },
+    {
+      "id": "Omml::Models::STFFTextType-4",
+      "field": "value_10",
+      "value": "currentDate",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"currentDate\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"currentDate\"/>",
+      "values": {
+        "value_10": "currentDate"
+      }
+    },
+    {
+      "id": "Omml::Models::STFFTextType-5",
+      "field": "value_10",
+      "value": "calculated",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"calculated\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"calculated\"/>",
+      "values": {
+        "value_10": "calculated"
+      }
+    },
+    {
+      "id": "Omml::Models::STFType-0",
+      "field": "value_11",
+      "value": "bar",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"bar\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"bar\"/>",
+      "values": {
+        "value_11": "bar"
+      }
+    },
+    {
+      "id": "Omml::Models::STFType-1",
+      "field": "value_11",
+      "value": "skw",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"skw\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"skw\"/>",
+      "values": {
+        "value_11": "skw"
+      }
+    },
+    {
+      "id": "Omml::Models::STFType-2",
+      "field": "value_11",
+      "value": "lin",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"lin\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"lin\"/>",
+      "values": {
+        "value_11": "lin"
+      }
+    },
+    {
+      "id": "Omml::Models::STFType-3",
+      "field": "value_11",
+      "value": "noBar",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"noBar\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"noBar\"/>",
+      "values": {
+        "value_11": "noBar"
+      }
+    },
+    {
+      "id": "Omml::Models::STFldCharType-0",
+      "field": "value_12",
+      "value": "begin",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_12=\"begin\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_12=\"begin\"/>",
+      "values": {
+        "value_12": "begin"
+      }
+    },
+    {
+      "id": "Omml::Models::STFldCharType-1",
+      "field": "value_12",
+      "value": "separate",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_12=\"separate\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_12=\"separate\"/>",
+      "values": {
+        "value_12": "separate"
+      }
+    },
+    {
+      "id": "Omml::Models::STFldCharType-2",
+      "field": "value_12",
+      "value": "end",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_12=\"end\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_12=\"end\"/>",
+      "values": {
+        "value_12": "end"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-0",
+      "field": "value_13",
+      "value": "black",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"black\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"black\"/>",
+      "values": {
+        "value_13": "black"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-1",
+      "field": "value_13",
+      "value": "blue",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"blue\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"blue\"/>",
+      "values": {
+        "value_13": "blue"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-2",
+      "field": "value_13",
+      "value": "cyan",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"cyan\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"cyan\"/>",
+      "values": {
+        "value_13": "cyan"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-3",
+      "field": "value_13",
+      "value": "green",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"green\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"green\"/>",
+      "values": {
+        "value_13": "green"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-4",
+      "field": "value_13",
+      "value": "magenta",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"magenta\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"magenta\"/>",
+      "values": {
+        "value_13": "magenta"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-5",
+      "field": "value_13",
+      "value": "red",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"red\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"red\"/>",
+      "values": {
+        "value_13": "red"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-6",
+      "field": "value_13",
+      "value": "yellow",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"yellow\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"yellow\"/>",
+      "values": {
+        "value_13": "yellow"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-7",
+      "field": "value_13",
+      "value": "white",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"white\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"white\"/>",
+      "values": {
+        "value_13": "white"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-8",
+      "field": "value_13",
+      "value": "darkBlue",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkBlue\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkBlue\"/>",
+      "values": {
+        "value_13": "darkBlue"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-9",
+      "field": "value_13",
+      "value": "darkCyan",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkCyan\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkCyan\"/>",
+      "values": {
+        "value_13": "darkCyan"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-10",
+      "field": "value_13",
+      "value": "darkGreen",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkGreen\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkGreen\"/>",
+      "values": {
+        "value_13": "darkGreen"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-11",
+      "field": "value_13",
+      "value": "darkMagenta",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkMagenta\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkMagenta\"/>",
+      "values": {
+        "value_13": "darkMagenta"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-12",
+      "field": "value_13",
+      "value": "darkRed",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkRed\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkRed\"/>",
+      "values": {
+        "value_13": "darkRed"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-13",
+      "field": "value_13",
+      "value": "darkYellow",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkYellow\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkYellow\"/>",
+      "values": {
+        "value_13": "darkYellow"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-14",
+      "field": "value_13",
+      "value": "darkGray",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkGray\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"darkGray\"/>",
+      "values": {
+        "value_13": "darkGray"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-15",
+      "field": "value_13",
+      "value": "lightGray",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"lightGray\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"lightGray\"/>",
+      "values": {
+        "value_13": "lightGray"
+      }
+    },
+    {
+      "id": "Omml::Models::STHighlightColor-16",
+      "field": "value_13",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"none\"/>",
+      "values": {
+        "value_13": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STHint-0",
+      "field": "value_14",
+      "value": "default",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_14=\"default\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_14=\"default\"/>",
+      "values": {
+        "value_14": "default"
+      }
+    },
+    {
+      "id": "Omml::Models::STHint-1",
+      "field": "value_14",
+      "value": "eastAsia",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_14=\"eastAsia\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_14=\"eastAsia\"/>",
+      "values": {
+        "value_14": "eastAsia"
+      }
+    },
+    {
+      "id": "Omml::Models::STHint-2",
+      "field": "value_14",
+      "value": "cs",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_14=\"cs\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_14=\"cs\"/>",
+      "values": {
+        "value_14": "cs"
+      }
+    },
+    {
+      "id": "Omml::Models::STInfoTextType-0",
+      "field": "value_15",
+      "value": "text",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_15=\"text\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_15=\"text\"/>",
+      "values": {
+        "value_15": "text"
+      }
+    },
+    {
+      "id": "Omml::Models::STInfoTextType-1",
+      "field": "value_15",
+      "value": "autoText",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_15=\"autoText\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_15=\"autoText\"/>",
+      "values": {
+        "value_15": "autoText"
+      }
+    },
+    {
+      "id": "Omml::Models::STJc-0",
+      "field": "value_16",
+      "value": "left",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"left\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"left\"/>",
+      "values": {
+        "value_16": "left"
+      }
+    },
+    {
+      "id": "Omml::Models::STJc-1",
+      "field": "value_16",
+      "value": "right",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"right\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"right\"/>",
+      "values": {
+        "value_16": "right"
+      }
+    },
+    {
+      "id": "Omml::Models::STJc-2",
+      "field": "value_16",
+      "value": "center",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"center\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"center\"/>",
+      "values": {
+        "value_16": "center"
+      }
+    },
+    {
+      "id": "Omml::Models::STJc-3",
+      "field": "value_16",
+      "value": "centerGroup",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"centerGroup\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"centerGroup\"/>",
+      "values": {
+        "value_16": "centerGroup"
+      }
+    },
+    {
+      "id": "Omml::Models::STLimLoc-0",
+      "field": "value_17",
+      "value": "undOvr",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_17=\"undOvr\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_17=\"undOvr\"/>",
+      "values": {
+        "value_17": "undOvr"
+      }
+    },
+    {
+      "id": "Omml::Models::STLimLoc-1",
+      "field": "value_17",
+      "value": "subSup",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_17=\"subSup\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_17=\"subSup\"/>",
+      "values": {
+        "value_17": "subSup"
+      }
+    },
+    {
+      "id": "Omml::Models::STLock-0",
+      "field": "value_18",
+      "value": "sdtLocked",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"sdtLocked\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"sdtLocked\"/>",
+      "values": {
+        "value_18": "sdtLocked"
+      }
+    },
+    {
+      "id": "Omml::Models::STLock-1",
+      "field": "value_18",
+      "value": "contentLocked",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"contentLocked\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"contentLocked\"/>",
+      "values": {
+        "value_18": "contentLocked"
+      }
+    },
+    {
+      "id": "Omml::Models::STLock-2",
+      "field": "value_18",
+      "value": "unlocked",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"unlocked\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"unlocked\"/>",
+      "values": {
+        "value_18": "unlocked"
+      }
+    },
+    {
+      "id": "Omml::Models::STLock-3",
+      "field": "value_18",
+      "value": "sdtContentLocked",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"sdtContentLocked\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"sdtContentLocked\"/>",
+      "values": {
+        "value_18": "sdtContentLocked"
+      }
+    },
+    {
+      "id": "Omml::Models::STOnOff-0",
+      "field": "value_19",
+      "value": "0",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"0\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"0\"/>",
+      "values": {
+        "value_19": "0"
+      }
+    },
+    {
+      "id": "Omml::Models::STOnOff-1",
+      "field": "value_19",
+      "value": "1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"1\"/>",
+      "values": {
+        "value_19": "1"
+      }
+    },
+    {
+      "id": "Omml::Models::STOnOff-2",
+      "field": "value_19",
+      "value": "on",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"on\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"on\"/>",
+      "values": {
+        "value_19": "on"
+      }
+    },
+    {
+      "id": "Omml::Models::STOnOff-3",
+      "field": "value_19",
+      "value": "off",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"off\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"off\"/>",
+      "values": {
+        "value_19": "off"
+      }
+    },
+    {
+      "id": "Omml::Models::STOnOff-4",
+      "field": "value_19",
+      "value": "true",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"true\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"true\"/>",
+      "values": {
+        "value_19": "true"
+      }
+    },
+    {
+      "id": "Omml::Models::STOnOff-5",
+      "field": "value_19",
+      "value": "false",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"false\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"false\"/>",
+      "values": {
+        "value_19": "false"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabAlignment-0",
+      "field": "value_20",
+      "value": "left",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_20=\"left\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_20=\"left\"/>",
+      "values": {
+        "value_20": "left"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabAlignment-1",
+      "field": "value_20",
+      "value": "center",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_20=\"center\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_20=\"center\"/>",
+      "values": {
+        "value_20": "center"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabAlignment-2",
+      "field": "value_20",
+      "value": "right",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_20=\"right\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_20=\"right\"/>",
+      "values": {
+        "value_20": "right"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabLeader-0",
+      "field": "value_21",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"none\"/>",
+      "values": {
+        "value_21": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabLeader-1",
+      "field": "value_21",
+      "value": "dot",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"dot\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"dot\"/>",
+      "values": {
+        "value_21": "dot"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabLeader-2",
+      "field": "value_21",
+      "value": "hyphen",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"hyphen\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"hyphen\"/>",
+      "values": {
+        "value_21": "hyphen"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabLeader-3",
+      "field": "value_21",
+      "value": "underscore",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"underscore\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"underscore\"/>",
+      "values": {
+        "value_21": "underscore"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabLeader-4",
+      "field": "value_21",
+      "value": "middleDot",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"middleDot\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"middleDot\"/>",
+      "values": {
+        "value_21": "middleDot"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabRelativeTo-0",
+      "field": "value_22",
+      "value": "margin",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_22=\"margin\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_22=\"margin\"/>",
+      "values": {
+        "value_22": "margin"
+      }
+    },
+    {
+      "id": "Omml::Models::STPTabRelativeTo-1",
+      "field": "value_22",
+      "value": "indent",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_22=\"indent\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_22=\"indent\"/>",
+      "values": {
+        "value_22": "indent"
+      }
+    },
+    {
+      "id": "Omml::Models::STProofErr-0",
+      "field": "value_23",
+      "value": "spellStart",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"spellStart\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"spellStart\"/>",
+      "values": {
+        "value_23": "spellStart"
+      }
+    },
+    {
+      "id": "Omml::Models::STProofErr-1",
+      "field": "value_23",
+      "value": "spellEnd",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"spellEnd\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"spellEnd\"/>",
+      "values": {
+        "value_23": "spellEnd"
+      }
+    },
+    {
+      "id": "Omml::Models::STProofErr-2",
+      "field": "value_23",
+      "value": "gramStart",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"gramStart\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"gramStart\"/>",
+      "values": {
+        "value_23": "gramStart"
+      }
+    },
+    {
+      "id": "Omml::Models::STProofErr-3",
+      "field": "value_23",
+      "value": "gramEnd",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"gramEnd\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"gramEnd\"/>",
+      "values": {
+        "value_23": "gramEnd"
+      }
+    },
+    {
+      "id": "Omml::Models::STRubyAlign-0",
+      "field": "value_24",
+      "value": "center",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"center\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"center\"/>",
+      "values": {
+        "value_24": "center"
+      }
+    },
+    {
+      "id": "Omml::Models::STRubyAlign-1",
+      "field": "value_24",
+      "value": "distributeLetter",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"distributeLetter\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"distributeLetter\"/>",
+      "values": {
+        "value_24": "distributeLetter"
+      }
+    },
+    {
+      "id": "Omml::Models::STRubyAlign-2",
+      "field": "value_24",
+      "value": "distributeSpace",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"distributeSpace\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"distributeSpace\"/>",
+      "values": {
+        "value_24": "distributeSpace"
+      }
+    },
+    {
+      "id": "Omml::Models::STRubyAlign-3",
+      "field": "value_24",
+      "value": "left",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"left\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"left\"/>",
+      "values": {
+        "value_24": "left"
+      }
+    },
+    {
+      "id": "Omml::Models::STRubyAlign-4",
+      "field": "value_24",
+      "value": "right",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"right\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"right\"/>",
+      "values": {
+        "value_24": "right"
+      }
+    },
+    {
+      "id": "Omml::Models::STRubyAlign-5",
+      "field": "value_24",
+      "value": "rightVertical",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"rightVertical\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"rightVertical\"/>",
+      "values": {
+        "value_24": "rightVertical"
+      }
+    },
+    {
+      "id": "Omml::Models::STScript-0",
+      "field": "value_25",
+      "value": "roman",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"roman\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"roman\"/>",
+      "values": {
+        "value_25": "roman"
+      }
+    },
+    {
+      "id": "Omml::Models::STScript-1",
+      "field": "value_25",
+      "value": "script",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"script\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"script\"/>",
+      "values": {
+        "value_25": "script"
+      }
+    },
+    {
+      "id": "Omml::Models::STScript-2",
+      "field": "value_25",
+      "value": "fraktur",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"fraktur\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"fraktur\"/>",
+      "values": {
+        "value_25": "fraktur"
+      }
+    },
+    {
+      "id": "Omml::Models::STScript-3",
+      "field": "value_25",
+      "value": "double-struck",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"double-struck\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"double-struck\"/>",
+      "values": {
+        "value_25": "double-struck"
+      }
+    },
+    {
+      "id": "Omml::Models::STScript-4",
+      "field": "value_25",
+      "value": "sans-serif",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"sans-serif\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"sans-serif\"/>",
+      "values": {
+        "value_25": "sans-serif"
+      }
+    },
+    {
+      "id": "Omml::Models::STScript-5",
+      "field": "value_25",
+      "value": "monospace",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"monospace\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"monospace\"/>",
+      "values": {
+        "value_25": "monospace"
+      }
+    },
+    {
+      "id": "Omml::Models::STSdtDateMappingType-0",
+      "field": "value_26",
+      "value": "text",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_26=\"text\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_26=\"text\"/>",
+      "values": {
+        "value_26": "text"
+      }
+    },
+    {
+      "id": "Omml::Models::STSdtDateMappingType-1",
+      "field": "value_26",
+      "value": "date",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_26=\"date\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_26=\"date\"/>",
+      "values": {
+        "value_26": "date"
+      }
+    },
+    {
+      "id": "Omml::Models::STSdtDateMappingType-2",
+      "field": "value_26",
+      "value": "dateTime",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_26=\"dateTime\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_26=\"dateTime\"/>",
+      "values": {
+        "value_26": "dateTime"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-0",
+      "field": "value_27",
+      "value": "nil",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"nil\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"nil\"/>",
+      "values": {
+        "value_27": "nil"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-1",
+      "field": "value_27",
+      "value": "clear",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"clear\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"clear\"/>",
+      "values": {
+        "value_27": "clear"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-2",
+      "field": "value_27",
+      "value": "solid",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"solid\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"solid\"/>",
+      "values": {
+        "value_27": "solid"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-3",
+      "field": "value_27",
+      "value": "horzStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"horzStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"horzStripe\"/>",
+      "values": {
+        "value_27": "horzStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-4",
+      "field": "value_27",
+      "value": "vertStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"vertStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"vertStripe\"/>",
+      "values": {
+        "value_27": "vertStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-5",
+      "field": "value_27",
+      "value": "reverseDiagStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"reverseDiagStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"reverseDiagStripe\"/>",
+      "values": {
+        "value_27": "reverseDiagStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-6",
+      "field": "value_27",
+      "value": "diagStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"diagStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"diagStripe\"/>",
+      "values": {
+        "value_27": "diagStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-7",
+      "field": "value_27",
+      "value": "horzCross",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"horzCross\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"horzCross\"/>",
+      "values": {
+        "value_27": "horzCross"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-8",
+      "field": "value_27",
+      "value": "diagCross",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"diagCross\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"diagCross\"/>",
+      "values": {
+        "value_27": "diagCross"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-9",
+      "field": "value_27",
+      "value": "thinHorzStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinHorzStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinHorzStripe\"/>",
+      "values": {
+        "value_27": "thinHorzStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-10",
+      "field": "value_27",
+      "value": "thinVertStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinVertStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinVertStripe\"/>",
+      "values": {
+        "value_27": "thinVertStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-11",
+      "field": "value_27",
+      "value": "thinReverseDiagStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinReverseDiagStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinReverseDiagStripe\"/>",
+      "values": {
+        "value_27": "thinReverseDiagStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-12",
+      "field": "value_27",
+      "value": "thinDiagStripe",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinDiagStripe\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinDiagStripe\"/>",
+      "values": {
+        "value_27": "thinDiagStripe"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-13",
+      "field": "value_27",
+      "value": "thinHorzCross",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinHorzCross\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinHorzCross\"/>",
+      "values": {
+        "value_27": "thinHorzCross"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-14",
+      "field": "value_27",
+      "value": "thinDiagCross",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinDiagCross\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"thinDiagCross\"/>",
+      "values": {
+        "value_27": "thinDiagCross"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-15",
+      "field": "value_27",
+      "value": "pct5",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct5\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct5\"/>",
+      "values": {
+        "value_27": "pct5"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-16",
+      "field": "value_27",
+      "value": "pct10",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct10\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct10\"/>",
+      "values": {
+        "value_27": "pct10"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-17",
+      "field": "value_27",
+      "value": "pct12",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct12\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct12\"/>",
+      "values": {
+        "value_27": "pct12"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-18",
+      "field": "value_27",
+      "value": "pct15",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct15\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct15\"/>",
+      "values": {
+        "value_27": "pct15"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-19",
+      "field": "value_27",
+      "value": "pct20",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct20\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct20\"/>",
+      "values": {
+        "value_27": "pct20"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-20",
+      "field": "value_27",
+      "value": "pct25",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct25\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct25\"/>",
+      "values": {
+        "value_27": "pct25"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-21",
+      "field": "value_27",
+      "value": "pct30",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct30\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct30\"/>",
+      "values": {
+        "value_27": "pct30"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-22",
+      "field": "value_27",
+      "value": "pct35",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct35\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct35\"/>",
+      "values": {
+        "value_27": "pct35"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-23",
+      "field": "value_27",
+      "value": "pct37",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct37\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct37\"/>",
+      "values": {
+        "value_27": "pct37"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-24",
+      "field": "value_27",
+      "value": "pct40",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct40\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct40\"/>",
+      "values": {
+        "value_27": "pct40"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-25",
+      "field": "value_27",
+      "value": "pct45",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct45\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct45\"/>",
+      "values": {
+        "value_27": "pct45"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-26",
+      "field": "value_27",
+      "value": "pct50",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct50\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct50\"/>",
+      "values": {
+        "value_27": "pct50"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-27",
+      "field": "value_27",
+      "value": "pct55",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct55\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct55\"/>",
+      "values": {
+        "value_27": "pct55"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-28",
+      "field": "value_27",
+      "value": "pct60",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct60\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct60\"/>",
+      "values": {
+        "value_27": "pct60"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-29",
+      "field": "value_27",
+      "value": "pct62",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct62\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct62\"/>",
+      "values": {
+        "value_27": "pct62"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-30",
+      "field": "value_27",
+      "value": "pct65",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct65\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct65\"/>",
+      "values": {
+        "value_27": "pct65"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-31",
+      "field": "value_27",
+      "value": "pct70",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct70\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct70\"/>",
+      "values": {
+        "value_27": "pct70"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-32",
+      "field": "value_27",
+      "value": "pct75",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct75\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct75\"/>",
+      "values": {
+        "value_27": "pct75"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-33",
+      "field": "value_27",
+      "value": "pct80",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct80\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct80\"/>",
+      "values": {
+        "value_27": "pct80"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-34",
+      "field": "value_27",
+      "value": "pct85",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct85\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct85\"/>",
+      "values": {
+        "value_27": "pct85"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-35",
+      "field": "value_27",
+      "value": "pct87",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct87\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct87\"/>",
+      "values": {
+        "value_27": "pct87"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-36",
+      "field": "value_27",
+      "value": "pct90",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct90\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct90\"/>",
+      "values": {
+        "value_27": "pct90"
+      }
+    },
+    {
+      "id": "Omml::Models::STShd-37",
+      "field": "value_27",
+      "value": "pct95",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct95\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"pct95\"/>",
+      "values": {
+        "value_27": "pct95"
+      }
+    },
+    {
+      "id": "Omml::Models::STShp-0",
+      "field": "value_28",
+      "value": "centered",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_28=\"centered\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_28=\"centered\"/>",
+      "values": {
+        "value_28": "centered"
+      }
+    },
+    {
+      "id": "Omml::Models::STShp-1",
+      "field": "value_28",
+      "value": "match",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_28=\"match\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_28=\"match\"/>",
+      "values": {
+        "value_28": "match"
+      }
+    },
+    {
+      "id": "Omml::Models::STStyle-0",
+      "field": "value_29",
+      "value": "p",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"p\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"p\"/>",
+      "values": {
+        "value_29": "p"
+      }
+    },
+    {
+      "id": "Omml::Models::STStyle-1",
+      "field": "value_29",
+      "value": "b",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"b\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"b\"/>",
+      "values": {
+        "value_29": "b"
+      }
+    },
+    {
+      "id": "Omml::Models::STStyle-2",
+      "field": "value_29",
+      "value": "i",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"i\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"i\"/>",
+      "values": {
+        "value_29": "i"
+      }
+    },
+    {
+      "id": "Omml::Models::STStyle-3",
+      "field": "value_29",
+      "value": "bi",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"bi\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"bi\"/>",
+      "values": {
+        "value_29": "bi"
+      }
+    },
+    {
+      "id": "Omml::Models::STTextEffect-0",
+      "field": "value_30",
+      "value": "blinkBackground",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"blinkBackground\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"blinkBackground\"/>",
+      "values": {
+        "value_30": "blinkBackground"
+      }
+    },
+    {
+      "id": "Omml::Models::STTextEffect-1",
+      "field": "value_30",
+      "value": "lights",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"lights\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"lights\"/>",
+      "values": {
+        "value_30": "lights"
+      }
+    },
+    {
+      "id": "Omml::Models::STTextEffect-2",
+      "field": "value_30",
+      "value": "antsBlack",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"antsBlack\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"antsBlack\"/>",
+      "values": {
+        "value_30": "antsBlack"
+      }
+    },
+    {
+      "id": "Omml::Models::STTextEffect-3",
+      "field": "value_30",
+      "value": "antsRed",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"antsRed\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"antsRed\"/>",
+      "values": {
+        "value_30": "antsRed"
+      }
+    },
+    {
+      "id": "Omml::Models::STTextEffect-4",
+      "field": "value_30",
+      "value": "shimmer",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"shimmer\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"shimmer\"/>",
+      "values": {
+        "value_30": "shimmer"
+      }
+    },
+    {
+      "id": "Omml::Models::STTextEffect-5",
+      "field": "value_30",
+      "value": "sparkle",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"sparkle\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"sparkle\"/>",
+      "values": {
+        "value_30": "sparkle"
+      }
+    },
+    {
+      "id": "Omml::Models::STTextEffect-6",
+      "field": "value_30",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"none\"/>",
+      "values": {
+        "value_30": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-0",
+      "field": "value_31",
+      "value": "majorEastAsia",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorEastAsia\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorEastAsia\"/>",
+      "values": {
+        "value_31": "majorEastAsia"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-1",
+      "field": "value_31",
+      "value": "majorBidi",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorBidi\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorBidi\"/>",
+      "values": {
+        "value_31": "majorBidi"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-2",
+      "field": "value_31",
+      "value": "majorAscii",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorAscii\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorAscii\"/>",
+      "values": {
+        "value_31": "majorAscii"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-3",
+      "field": "value_31",
+      "value": "majorHAnsi",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorHAnsi\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"majorHAnsi\"/>",
+      "values": {
+        "value_31": "majorHAnsi"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-4",
+      "field": "value_31",
+      "value": "minorEastAsia",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorEastAsia\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorEastAsia\"/>",
+      "values": {
+        "value_31": "minorEastAsia"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-5",
+      "field": "value_31",
+      "value": "minorBidi",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorBidi\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorBidi\"/>",
+      "values": {
+        "value_31": "minorBidi"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-6",
+      "field": "value_31",
+      "value": "minorAscii",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorAscii\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorAscii\"/>",
+      "values": {
+        "value_31": "minorAscii"
+      }
+    },
+    {
+      "id": "Omml::Models::STTheme-7",
+      "field": "value_31",
+      "value": "minorHAnsi",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorHAnsi\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"minorHAnsi\"/>",
+      "values": {
+        "value_31": "minorHAnsi"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-0",
+      "field": "value_32",
+      "value": "dark1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"dark1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"dark1\"/>",
+      "values": {
+        "value_32": "dark1"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-1",
+      "field": "value_32",
+      "value": "light1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"light1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"light1\"/>",
+      "values": {
+        "value_32": "light1"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-2",
+      "field": "value_32",
+      "value": "dark2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"dark2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"dark2\"/>",
+      "values": {
+        "value_32": "dark2"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-3",
+      "field": "value_32",
+      "value": "light2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"light2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"light2\"/>",
+      "values": {
+        "value_32": "light2"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-4",
+      "field": "value_32",
+      "value": "accent1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent1\"/>",
+      "values": {
+        "value_32": "accent1"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-5",
+      "field": "value_32",
+      "value": "accent2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent2\"/>",
+      "values": {
+        "value_32": "accent2"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-6",
+      "field": "value_32",
+      "value": "accent3",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent3\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent3\"/>",
+      "values": {
+        "value_32": "accent3"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-7",
+      "field": "value_32",
+      "value": "accent4",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent4\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent4\"/>",
+      "values": {
+        "value_32": "accent4"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-8",
+      "field": "value_32",
+      "value": "accent5",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent5\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent5\"/>",
+      "values": {
+        "value_32": "accent5"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-9",
+      "field": "value_32",
+      "value": "accent6",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent6\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"accent6\"/>",
+      "values": {
+        "value_32": "accent6"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-10",
+      "field": "value_32",
+      "value": "hyperlink",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"hyperlink\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"hyperlink\"/>",
+      "values": {
+        "value_32": "hyperlink"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-11",
+      "field": "value_32",
+      "value": "followedHyperlink",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"followedHyperlink\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"followedHyperlink\"/>",
+      "values": {
+        "value_32": "followedHyperlink"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-12",
+      "field": "value_32",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"none\"/>",
+      "values": {
+        "value_32": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-13",
+      "field": "value_32",
+      "value": "background1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"background1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"background1\"/>",
+      "values": {
+        "value_32": "background1"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-14",
+      "field": "value_32",
+      "value": "text1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"text1\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"text1\"/>",
+      "values": {
+        "value_32": "text1"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-15",
+      "field": "value_32",
+      "value": "background2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"background2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"background2\"/>",
+      "values": {
+        "value_32": "background2"
+      }
+    },
+    {
+      "id": "Omml::Models::STThemeColor-16",
+      "field": "value_32",
+      "value": "text2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"text2\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"text2\"/>",
+      "values": {
+        "value_32": "text2"
+      }
+    },
+    {
+      "id": "Omml::Models::STTopBot-0",
+      "field": "value_33",
+      "value": "top",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_33=\"top\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_33=\"top\"/>",
+      "values": {
+        "value_33": "top"
+      }
+    },
+    {
+      "id": "Omml::Models::STTopBot-1",
+      "field": "value_33",
+      "value": "bot",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_33=\"bot\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_33=\"bot\"/>",
+      "values": {
+        "value_33": "bot"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-0",
+      "field": "value_34",
+      "value": "single",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"single\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"single\"/>",
+      "values": {
+        "value_34": "single"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-1",
+      "field": "value_34",
+      "value": "words",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"words\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"words\"/>",
+      "values": {
+        "value_34": "words"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-2",
+      "field": "value_34",
+      "value": "double",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"double\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"double\"/>",
+      "values": {
+        "value_34": "double"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-3",
+      "field": "value_34",
+      "value": "thick",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"thick\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"thick\"/>",
+      "values": {
+        "value_34": "thick"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-4",
+      "field": "value_34",
+      "value": "dotted",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dotted\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dotted\"/>",
+      "values": {
+        "value_34": "dotted"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-5",
+      "field": "value_34",
+      "value": "dottedHeavy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dottedHeavy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dottedHeavy\"/>",
+      "values": {
+        "value_34": "dottedHeavy"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-6",
+      "field": "value_34",
+      "value": "dash",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dash\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dash\"/>",
+      "values": {
+        "value_34": "dash"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-7",
+      "field": "value_34",
+      "value": "dashedHeavy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashedHeavy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashedHeavy\"/>",
+      "values": {
+        "value_34": "dashedHeavy"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-8",
+      "field": "value_34",
+      "value": "dashLong",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashLong\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashLong\"/>",
+      "values": {
+        "value_34": "dashLong"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-9",
+      "field": "value_34",
+      "value": "dashLongHeavy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashLongHeavy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashLongHeavy\"/>",
+      "values": {
+        "value_34": "dashLongHeavy"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-10",
+      "field": "value_34",
+      "value": "dotDash",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dotDash\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dotDash\"/>",
+      "values": {
+        "value_34": "dotDash"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-11",
+      "field": "value_34",
+      "value": "dashDotHeavy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashDotHeavy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashDotHeavy\"/>",
+      "values": {
+        "value_34": "dashDotHeavy"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-12",
+      "field": "value_34",
+      "value": "dotDotDash",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dotDotDash\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dotDotDash\"/>",
+      "values": {
+        "value_34": "dotDotDash"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-13",
+      "field": "value_34",
+      "value": "dashDotDotHeavy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashDotDotHeavy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"dashDotDotHeavy\"/>",
+      "values": {
+        "value_34": "dashDotDotHeavy"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-14",
+      "field": "value_34",
+      "value": "wave",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"wave\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"wave\"/>",
+      "values": {
+        "value_34": "wave"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-15",
+      "field": "value_34",
+      "value": "wavyHeavy",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"wavyHeavy\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"wavyHeavy\"/>",
+      "values": {
+        "value_34": "wavyHeavy"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-16",
+      "field": "value_34",
+      "value": "wavyDouble",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"wavyDouble\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"wavyDouble\"/>",
+      "values": {
+        "value_34": "wavyDouble"
+      }
+    },
+    {
+      "id": "Omml::Models::STUnderline-17",
+      "field": "value_34",
+      "value": "none",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"none\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"none\"/>",
+      "values": {
+        "value_34": "none"
+      }
+    },
+    {
+      "id": "Omml::Models::STVerticalAlignRun-0",
+      "field": "value_35",
+      "value": "baseline",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_35=\"baseline\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_35=\"baseline\"/>",
+      "values": {
+        "value_35": "baseline"
+      }
+    },
+    {
+      "id": "Omml::Models::STVerticalAlignRun-1",
+      "field": "value_35",
+      "value": "superscript",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_35=\"superscript\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_35=\"superscript\"/>",
+      "values": {
+        "value_35": "superscript"
+      }
+    },
+    {
+      "id": "Omml::Models::STVerticalAlignRun-2",
+      "field": "value_35",
+      "value": "subscript",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_35=\"subscript\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_35=\"subscript\"/>",
+      "values": {
+        "value_35": "subscript"
+      }
+    },
+    {
+      "id": "Omml::Models::STXAlign-0",
+      "field": "value_36",
+      "value": "left",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_36=\"left\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_36=\"left\"/>",
+      "values": {
+        "value_36": "left"
+      }
+    },
+    {
+      "id": "Omml::Models::STXAlign-1",
+      "field": "value_36",
+      "value": "center",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_36=\"center\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_36=\"center\"/>",
+      "values": {
+        "value_36": "center"
+      }
+    },
+    {
+      "id": "Omml::Models::STXAlign-2",
+      "field": "value_36",
+      "value": "right",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_36=\"right\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_36=\"right\"/>",
+      "values": {
+        "value_36": "right"
+      }
+    },
+    {
+      "id": "Omml::Models::STYAlign-0",
+      "field": "value_37",
+      "value": "top",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_37=\"top\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_37=\"top\"/>",
+      "values": {
+        "value_37": "top"
+      }
+    },
+    {
+      "id": "Omml::Models::STYAlign-1",
+      "field": "value_37",
+      "value": "center",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_37=\"center\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_37=\"center\"/>",
+      "values": {
+        "value_37": "center"
+      }
+    },
+    {
+      "id": "Omml::Models::STYAlign-2",
+      "field": "value_37",
+      "value": "bot",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_37=\"bot\"/>",
+      "expected": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_37=\"bot\"/>",
+      "values": {
+        "value_37": "bot"
+      }
+    }
+  ],
+  "refusals": [
+    {
+      "field": "value_0",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_0=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STBorder"
+    },
+    {
+      "field": "value_1",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_1=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STBrClear"
+    },
+    {
+      "field": "value_2",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_2=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STBrType"
+    },
+    {
+      "field": "value_3",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_3=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STBreakBin"
+    },
+    {
+      "field": "value_4",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_4=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STBreakBinSub"
+    },
+    {
+      "field": "value_5",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_5=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STCalendarType"
+    },
+    {
+      "field": "value_6",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_6=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STCombineBrackets"
+    },
+    {
+      "field": "value_7",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_7=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STDisplacedByCustomXml"
+    },
+    {
+      "field": "value_8",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_8=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STEdGrp"
+    },
+    {
+      "field": "value_9",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_9=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STEm"
+    },
+    {
+      "field": "value_10",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_10=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STFFTextType"
+    },
+    {
+      "field": "value_11",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_11=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STFType"
+    },
+    {
+      "field": "value_12",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_12=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STFldCharType"
+    },
+    {
+      "field": "value_13",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_13=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STHighlightColor"
+    },
+    {
+      "field": "value_14",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_14=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STHint"
+    },
+    {
+      "field": "value_15",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_15=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STInfoTextType"
+    },
+    {
+      "field": "value_16",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_16=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STJc"
+    },
+    {
+      "field": "value_17",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_17=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STLimLoc"
+    },
+    {
+      "field": "value_18",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_18=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STLock"
+    },
+    {
+      "field": "value_19",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_19=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STOnOff"
+    },
+    {
+      "field": "value_20",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_20=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STPTabAlignment"
+    },
+    {
+      "field": "value_21",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_21=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STPTabLeader"
+    },
+    {
+      "field": "value_22",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_22=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STPTabRelativeTo"
+    },
+    {
+      "field": "value_23",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_23=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STProofErr"
+    },
+    {
+      "field": "value_24",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_24=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STRubyAlign"
+    },
+    {
+      "field": "value_25",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_25=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STScript"
+    },
+    {
+      "field": "value_26",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_26=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STSdtDateMappingType"
+    },
+    {
+      "field": "value_27",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_27=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STShd"
+    },
+    {
+      "field": "value_28",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_28=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STShp"
+    },
+    {
+      "field": "value_29",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_29=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STStyle"
+    },
+    {
+      "field": "value_30",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_30=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STTextEffect"
+    },
+    {
+      "field": "value_31",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_31=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STTheme"
+    },
+    {
+      "field": "value_32",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_32=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STThemeColor"
+    },
+    {
+      "field": "value_33",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_33=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STTopBot"
+    },
+    {
+      "field": "value_34",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_34=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STUnderline"
+    },
+    {
+      "field": "value_35",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_35=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STVerticalAlignRun"
+    },
+    {
+      "field": "value_36",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_36=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STXAlign"
+    },
+    {
+      "field": "value_37",
+      "input": "<w:enumFamily xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:value_37=\"__not_a_portable_enum_value__\"/>",
+      "source_class": "Omml::Models::STYAlign"
+    }
+  ],
+  "derived_schema": "values is the exact field/value input already recorded by the native producer; original source corpus retained separately"
+}
