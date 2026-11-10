@@ -1,6 +1,7 @@
 //! Static Rust source emission. Schemas are data; only caller-supplied bindings
 //! may name external Rust types. No grammar is interpreted at runtime.
 pub(crate) mod model_choices;
+pub(crate) mod named_values;
 use crate::contracts::*;
 use model_choices::{choice_attribute, compile_model_choices};
 use std::collections::{BTreeMap, BTreeSet};
@@ -396,7 +397,8 @@ impl ModelEmitter for RustEmitter {
 }
 /// Make every decision and validation for the bundle; emission is then pure.
 fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan> {
-    let hoisted = effective_discriminators(bundle)?;
+    let mut hoisted = effective_discriminators(bundle)?;
+    named_values::realize_named_enums(&mut hoisted, bindings)?;
     let bundle = &hoisted;
     let names = model_names(bundle)?;
     let needs_same_integer = bundle.models.values().flat_map(|m| &m.attributes).any(|a| {

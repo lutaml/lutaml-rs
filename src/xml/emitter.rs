@@ -24,6 +24,9 @@ impl XmlCodecEmitter for RustXmlEmitter {
         bindings: &TypeBindings,
     ) -> ContractResult<SourceMap> {
         RustEmitter.generate_models(bundle, bindings)?;
+        let mut normalized = bundle.clone();
+        crate::generator::named_values::realize_named_enums(&mut normalized, bindings)?;
+        let bundle = &normalized;
         if bindings.values().any(|b| b.codec.is_some()) {
             return Err(refuse(
                 "",

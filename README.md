@@ -25,3 +25,11 @@ the Ruby source algorithm. Unsupported metadata is refused.
 The source-produced fixture records each construction, JSON read/write and
 XML read/write phase separately. Passing this fixture establishes those
 cases, not full OMML or arbitrary custom-value-type compatibility.
+
+
+Unbound named string values with one nonempty string `enumeration` facet
+reuse the static enum realization in model, JSON and XML emitters. Input
+bundle identity is unchanged. Explicit bindings take precedence; other
+facet sets and cast semantics retain the trusted-binding requirement.
+The OMML fixture checks actual scalar values, qualified XML names and
+native refusals; it does not claim a complete OMML graph migration.

@@ -368,7 +368,8 @@ impl JsonCodecEmitter for RustJsonEmitter {
         // Sharing the actual model emitter validation prevents a codec artifact that
         // claims successful support for a type the static model cannot represent.
         crate::generator::RustEmitter.generate_models(bundle, bindings)?;
-        let hoisted = crate::generator::effective_discriminators(bundle)?;
+        let mut hoisted = crate::generator::effective_discriminators(bundle)?;
+        crate::generator::named_values::realize_named_enums(&mut hoisted, bindings)?;
         let bundle = &hoisted;
         if bindings.values().any(|b| b.codec.is_some()) {
             return Err(fail(
