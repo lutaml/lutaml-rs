@@ -1,4 +1,4 @@
-# lutaml-model-rust
+# lutaml-rs
 ## JSON profile
 
 This crate consumes the `portable-exact-json-v1` profile of the LutaML

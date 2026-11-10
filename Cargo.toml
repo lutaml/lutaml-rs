@@ -1,17 +1,17 @@
 [package]
-name = "lutaml-model"
+name = "lutaml-rs"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.85"
 description = "Portable LML contracts and Rust generation interfaces"
 license = "BSD-2-Clause"
-repository = "https://github.com/lutaml/lutaml-model-rust"
+repository = "https://github.com/lutaml/lutaml-rs"
 
 [lib]
 crate-type = ["rlib", "cdylib"]
 
 [[bin]]
-name = "lutaml-model"
+name = "lutaml-rs"
 path = "src/main.rs"
 required-features = ["generator"]
 

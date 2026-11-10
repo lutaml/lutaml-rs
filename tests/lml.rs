@@ -1,11 +1,11 @@
 mod values {
-    pub use lutaml_model::values::*;
+    pub use lutaml_rs::values::*;
 }
 #[path = "../src/lml/mod.rs"]
 mod lml;
 use lml::*;
-use lutaml_model::contracts;
-use lutaml_model::*;
+use lutaml_rs::contracts;
+use lutaml_rs::*;
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 

@@ -17,7 +17,7 @@ path = "src/native_replay.rs"
 required-features = ["native"]
 
 [dependencies]
-lutaml-model = { path = "../..", default-features = false, features = ["runtime", "xml"] }
+lutaml-rs = { path = "../..", default-features = false, features = ["runtime", "xml"] }
 serde = { version = "=1.0.219", features = ["derive"] }
 serde_json = { version = "=1.0.140", features = ["arbitrary_precision"] }
 wasm-bindgen = "=0.2.100"

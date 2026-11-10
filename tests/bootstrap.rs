@@ -1,4 +1,4 @@
-use lutaml_model::*;
+use lutaml_rs::*;
 use serde_json::json;
 use std::collections::BTreeMap;
 

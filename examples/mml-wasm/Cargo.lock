@@ -128,7 +128,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d15f86d12da44cd8d4ec3c73984537eb7f4cadcb9776a575a0a8a05ca11005c"
 
 [[package]]
-name = "lutaml-model"
+name = "lutaml-rs"
 version = "0.1.0"
 dependencies = [
  "moxml",
@@ -149,7 +149,7 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 name = "mml-wasm"
 version = "0.1.0"
 dependencies = [
- "lutaml-model",
+ "lutaml-rs",
  "num-bigint",
  "num-rational",
  "num-traits",

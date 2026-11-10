@@ -1,7 +1,7 @@
 #[path = "../src/values/mod.rs"]
 mod values;
-use lutaml_model::contracts;
-use lutaml_model::contracts::{ErrorReason, NeutralValue, TypeBinding, TypeBindings};
+use lutaml_rs::contracts;
+use lutaml_rs::contracts::{ErrorReason, NeutralValue, TypeBinding, TypeBindings};
 use num_bigint::BigInt;
 use num_rational::BigRational;
 use std::collections::BTreeMap;

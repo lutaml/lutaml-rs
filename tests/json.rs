@@ -1,8 +1,8 @@
 mod contracts {
-    pub use lutaml_model::contracts::*;
+    pub use lutaml_rs::contracts::*;
 }
 mod values {
-    pub use lutaml_model::values::*;
+    pub use lutaml_rs::values::*;
 }
 #[path = "../src/codecs/mod.rs"]
 mod codecs;
@@ -569,14 +569,14 @@ fn emitted_consumer_compiles_and_executes_json_behavior() {
         include_str!("../src/values/mod.rs"),
     )
     .unwrap();
-    std::fs::write(dir.join("src/lib.rs"),format!("pub mod contracts {{ pub use lutaml_model::contracts::*; }}\npub mod values;\npub mod models;\npub mod json_codecs;\n{}",include_str!("../src/codecs/consumer_tests.rs.txt"))).unwrap();
+    std::fs::write(dir.join("src/lib.rs"),format!("pub mod contracts {{ pub use lutaml_rs::contracts::*; }}\npub mod values;\npub mod models;\npub mod json_codecs;\n{}",include_str!("../src/codecs/consumer_tests.rs.txt"))).unwrap();
     let manifest = format!(
         r#"[package]
 name="generated-json-consumer"
 version="0.0.0"
 edition="2021"
 [dependencies]
-lutaml-model={{path={}}}
+lutaml-rs={{path={}}}
 serde={{version="=1.0.219",features=["derive"]}}
 serde_json={{version="=1.0.140",features=["arbitrary_precision"]}}
 num-bigint="=0.4.6"
@@ -661,11 +661,11 @@ fn run_consumer(
         include_str!("../src/values/mod.rs"),
     )
     .unwrap();
-    std::fs::write(dir.join("src/lib.rs"),format!("pub mod contracts {{ pub use lutaml_model::contracts::*; }}\npub mod values;\npub mod models;\npub mod json_codecs;\n{lib_tail}")).unwrap();
+    std::fs::write(dir.join("src/lib.rs"),format!("pub mod contracts {{ pub use lutaml_rs::contracts::*; }}\npub mod values;\npub mod models;\npub mod json_codecs;\n{lib_tail}")).unwrap();
     std::fs::write(
         dir.join("Cargo.toml"),
         format!(
-            "[package]\nname=\"{name}\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-model={{path={}}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\nnum-bigint=\"=0.4.6\"\nnum-rational=\"=0.4.2\"\nnum-traits=\"=0.2.19\"\n",
+            "[package]\nname=\"{name}\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-rs={{path={}}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\nnum-bigint=\"=0.4.6\"\nnum-rational=\"=0.4.2\"\nnum-traits=\"=0.2.19\"\n",
             serde_json::to_string(root.to_str().unwrap()).unwrap()
         ),
     )

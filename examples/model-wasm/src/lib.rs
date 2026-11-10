@@ -1,6 +1,6 @@
 //! Example wrapper over real compile-time generated model and JSON codecs.
 mod contracts {
-    pub use lutaml_model::contracts::*;
+    pub use lutaml_rs::contracts::*;
 }
 #[path = "../../../src/wasm/mod.rs"]
 mod bridge;

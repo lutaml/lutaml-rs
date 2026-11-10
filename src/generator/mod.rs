@@ -106,7 +106,7 @@ pub const RESERVED_NAMES: &[&str] = &[
     "std",
     "core",
     "alloc",
-    "lutaml_model",
+    "lutaml_rs",
     // Primitive types.
     "bool",
     "str",

@@ -8,7 +8,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-lutaml-model = { path = "../..", default-features = false, features = ["runtime", "wasm"] }
+lutaml-rs = { path = "../..", default-features = false, features = ["runtime", "wasm"] }
 serde = { version = "=1.0.219", features = ["derive"] }
 serde_json = { version = "=1.0.140", features = ["arbitrary_precision"] }
 wasm-bindgen = "=0.2.100"

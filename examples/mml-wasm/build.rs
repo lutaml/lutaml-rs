@@ -65,7 +65,7 @@ fn main() {
             fs::write(out.join(format!("{set}_{name}")), source).unwrap();
         }
         writeln!(wiring,
-            "#[allow(dead_code, unused, clippy::all)]\npub mod {set} {{\n    pub mod contracts {{ pub use lutaml_model::contracts::*; }}\n    pub mod values {{ pub use lutaml_model::values::*; }}\n    pub mod xml_rt {{ pub use lutaml_model::xml::*; }}\n    #[path = {:?}] pub mod models;\n    #[path = {:?}] pub mod xml_codecs;\n}}",
+            "#[allow(dead_code, unused, clippy::all)]\npub mod {set} {{\n    pub mod contracts {{ pub use lutaml_rs::contracts::*; }}\n    pub mod values {{ pub use lutaml_rs::values::*; }}\n    pub mod xml_rt {{ pub use lutaml_rs::xml::*; }}\n    #[path = {:?}] pub mod models;\n    #[path = {:?}] pub mod xml_codecs;\n}}",
             out.join(format!("{set}_models.rs")), out.join(format!("{set}_xml_codecs.rs"))).unwrap();
         let names = model_names(&bundle).unwrap();
         for (id, model) in &bundle.models {

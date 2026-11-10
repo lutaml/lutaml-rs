@@ -2,10 +2,10 @@
 //! consumer crate and replayed against the Ruby oracle (shared with the TS
 //! runtime), plus writer, namespace, safety and generation-refusal behavior.
 #![cfg(feature = "xml")]
-use lutaml_model::contracts::*;
-use lutaml_model::generator::{model_names, RustEmitter};
-use lutaml_model::xml::moxml_binding as rt;
-use lutaml_model::xml::RustXmlEmitter;
+use lutaml_rs::contracts::*;
+use lutaml_rs::generator::{model_names, RustEmitter};
+use lutaml_rs::xml::moxml_binding as rt;
+use lutaml_rs::xml::RustXmlEmitter;
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -127,13 +127,13 @@ fn main() {{\n let mut input = String::new();\n std::io::stdin().read_to_string(
     std::fs::write(dir.join("src/xml_codecs.rs"), &codecs["xml_codecs.rs"]).unwrap();
     std::fs::write(
         dir.join("src/lib.rs"),
-        "pub mod contracts { pub use lutaml_model::contracts::*; }\npub mod values { pub use lutaml_model::values::*; }\npub mod xml_rt { pub use lutaml_model::xml::*; }\npub mod models;\npub mod xml_codecs;\n",
+        "pub mod contracts { pub use lutaml_rs::contracts::*; }\npub mod values { pub use lutaml_rs::values::*; }\npub mod xml_rt { pub use lutaml_rs::xml::*; }\npub mod models;\npub mod xml_codecs;\n",
     )
     .unwrap();
     std::fs::write(
         dir.join("Cargo.toml"),
         format!(
-            "[package]\nname=\"generated-xml-consumer\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[workspace]\n[dependencies]\nlutaml-model={{path={}, features=[\"xml\"]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\nnum-bigint=\"=0.4.6\"\nnum-rational=\"=0.4.2\"\nnum-traits=\"=0.2.19\"\n",
+            "[package]\nname=\"generated-xml-consumer\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[workspace]\n[dependencies]\nlutaml-rs={{path={}, features=[\"xml\"]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\nnum-bigint=\"=0.4.6\"\nnum-rational=\"=0.4.2\"\nnum-traits=\"=0.2.19\"\n",
             serde_json::to_string(root.to_str().unwrap()).unwrap()
         ),
     )
@@ -276,7 +276,7 @@ fn oracle_fixture_is_a_valid_bundle_and_projects() {
     let bundle = full_bundle();
     assert_eq!(oracle()["cases"].as_array().unwrap().len(), 32);
     for id in bundle.models.keys() {
-        lutaml_model::xml::projection::compile_projection(&bundle, id).unwrap();
+        lutaml_rs::xml::projection::compile_projection(&bundle, id).unwrap();
     }
 }
 
@@ -647,7 +647,7 @@ fn any_attribute_projection_refuses_what_ruby_refuses() {
         let mut raw = serde_json::to_value(full_bundle()).unwrap();
         edit(&mut raw["models"]["Any@default"]);
         let b: Bundle = serde_json::from_value(raw).unwrap();
-        lutaml_model::xml::projection::compile_projection(&b, "Any@default").unwrap_err()
+        lutaml_rs::xml::projection::compile_projection(&b, "Any@default").unwrap_err()
     };
     let e = refused(&|m| {
         let rule = m["mappings"]["xml"]["rules"][1].clone();

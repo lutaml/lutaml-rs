@@ -1,5 +1,5 @@
 #![cfg(feature = "generator")]
-use lutaml_model::{
+use lutaml_rs::{
     artifacts::{digest, Artifacts},
     lml, InputFormat,
 };
@@ -32,7 +32,7 @@ fn source() -> Vec<u8> {
     serde_json::to_vec(&json!({"lml_bundle":1,"roots":["Book@default"],"models":{"Book@default":{"lml":2,"model":"Book","register":"default","attributes":[{"name":"title","type":{"kind":"builtin","name":"string"},"required":true,"collection":false,"default":{"present":false},"initialize_empty":false,"values":["hello","goodbye"]}],"mappings":{"json":{"rules":[{"key":["label"],"to":"title"}]}}}},"value_types":{},"capabilities":["json"]})).unwrap()
 }
 fn invoke(command: &str, input: &Path, output: &Path, pin: Option<&str>) -> Output {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_lutaml-model"));
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_lutaml-rs"));
     cmd.arg(command)
         .arg("--input")
         .arg(input)
@@ -145,7 +145,7 @@ fn snapshot_wire_checksum_is_authoritative_and_generated_consumer_executes() {
     fs::create_dir(&src).unwrap();
     artifacts.write(&src.join("generated")).unwrap();
     let path = serde_json::to_string(env!("CARGO_MANIFEST_DIR")).unwrap();
-    fs::write(temp.0.join("Cargo.toml"),format!("[package]\nname=\"cli-generated-consumer\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-model={{path={path},default-features=false,features=[\"runtime\"]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\n")).unwrap();
+    fs::write(temp.0.join("Cargo.toml"),format!("[package]\nname=\"cli-generated-consumer\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-rs={{path={path},default-features=false,features=[\"runtime\"]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\n")).unwrap();
     fs::write(
         src.join("main.rs"),
         r##"mod generated;
@@ -233,7 +233,7 @@ fn invoke_corpus(
     index: Option<&Path>,
     corpus_pin: Option<&str>,
 ) -> Output {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_lutaml-model"));
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_lutaml-rs"));
     cmd.arg(command)
         .arg("--input")
         .arg(input)
@@ -476,7 +476,7 @@ const CONSUMER_FEATURES: &str = if cfg!(feature = "xml") {
 fn cargo_consumer(temp: &Temp, name: &str, main: &str) -> Output {
     let src = temp.0.join("src");
     let path = serde_json::to_string(env!("CARGO_MANIFEST_DIR")).unwrap();
-    fs::write(temp.0.join("Cargo.toml"),format!("[package]\nname=\"{name}\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-model={{path={path},default-features=false,features=[{CONSUMER_FEATURES}]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\n")).unwrap();
+    fs::write(temp.0.join("Cargo.toml"),format!("[package]\nname=\"{name}\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-rs={{path={path},default-features=false,features=[{CONSUMER_FEATURES}]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\n")).unwrap();
     fs::write(src.join("main.rs"), main).unwrap();
     Command::new(env!("CARGO"))
         .args(["run", "--offline", "--quiet"])
@@ -526,7 +526,7 @@ fn main() {
  assert_eq!(serde_json::from_str::<serde_json::Value>(&write_LmlImportFixtures_Kennel_json(&bare).unwrap()).unwrap(),serde_json::json!({"animals":[{"name":"n"}]}));
  for bad in [r#"{"animals":[{"kind":"cat"}]}"#,r#"{"animals":[{"kind":7}]}"#] {
   let error=read_LmlImportFixtures_Kennel_json(bad).unwrap_err();
-  assert_eq!(error.reason,lutaml_model::contracts::ErrorReason::UnknownDiscriminator,"{bad}");
+  assert_eq!(error.reason,lutaml_rs::contracts::ErrorReason::UnknownDiscriminator,"{bad}");
  }
 }
 "##,
@@ -551,7 +551,7 @@ fn bindings_file_supplies_trusted_value_type_bindings() {
     let input = temp.0.join("book.json");
     fs::write(&input, serde_json::to_vec(&wire).unwrap()).unwrap();
     let run = |out: &Path, bindings: Option<&str>| {
-        let mut cmd = Command::new(env!("CARGO_BIN_EXE_lutaml-model"));
+        let mut cmd = Command::new(env!("CARGO_BIN_EXE_lutaml-rs"));
         cmd.arg("generate")
             .arg("--input")
             .arg(&input)

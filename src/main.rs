@@ -1,10 +1,10 @@
-use lutaml_model::{
+use lutaml_rs::{
     artifacts::Artifacts,
     contracts::{TypeBinding, TypeBindings},
     lml, InputFormat,
 };
 use std::{error::Error, path::PathBuf};
-const HELP: &str = "lutaml-model <generate|check> --input BUNDLE --output DIR [--format json|yaml] [--manifest-sha256 sha256:HEX] [--bindings FILE] [--corpus-index FILE --corpus-sha256 sha256:HEX]\n--bindings supplies trusted value-type bindings: {\"types\":{\"<ValueTypeId>\":{\"rust_type\":\"...\",\"codec\":null}}}.\ncheck requires a caller-pinned --manifest-sha256. generate prints this digest.\nCorpus options must be paired and pin index identity, without claiming replay.\nGenerated mod.rs uses lutaml-model runtime plus pinned serde and serde_json dependencies.";
+const HELP: &str = "lutaml-rs <generate|check> --input BUNDLE --output DIR [--format json|yaml] [--manifest-sha256 sha256:HEX] [--bindings FILE] [--corpus-index FILE --corpus-sha256 sha256:HEX]\n--bindings supplies trusted value-type bindings: {\"types\":{\"<ValueTypeId>\":{\"rust_type\":\"...\",\"codec\":null}}}.\ncheck requires a caller-pinned --manifest-sha256. generate prints this digest.\nCorpus options must be paired and pin index identity, without claiming replay.\nGenerated mod.rs uses lutaml-model runtime plus pinned serde and serde_json dependencies.";
 fn load_bindings(path: &str) -> Result<TypeBindings, Box<dyn Error>> {
     let wire: serde_json::Value = serde_json::from_slice(&std::fs::read(path)?)?;
     let types = wire

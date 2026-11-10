@@ -1,7 +1,7 @@
 //! Generated mml/oracle XML codecs (over moxml-rs) behind a string/JSON boundary.
 //! XML text and JSON text cross JS as strings only, so exact values never pass
 //! through a JavaScript number.
-use lutaml_model::contracts::*;
+use lutaml_rs::contracts::*;
 use std::cell::Cell;
 use wasm_bindgen::prelude::*;
 

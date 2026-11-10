@@ -1,7 +1,7 @@
 //! Hostile bundle strings in every string slot must reach the generated crate as
 //! data: they compile, and read/write/default values round-trip unchanged.
 #![cfg(feature = "generator")]
-use lutaml_model::{artifacts::Artifacts, lml, InputFormat};
+use lutaml_rs::{artifacts::Artifacts, lml, InputFormat};
 use serde_json::{json, Value};
 use std::{fs, path::Path, process::Command};
 
@@ -66,7 +66,7 @@ fn hostile_strings_in_keys_enum_values_and_defaults_round_trip_as_data() {
     )
     .unwrap();
     let path = serde_json::to_string(env!("CARGO_MANIFEST_DIR")).unwrap();
-    fs::write(temp.join("Cargo.toml"), format!("[package]\nname=\"hostile-consumer\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-model={{path={path},default-features=false,features=[\"runtime\"]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\n")).unwrap();
+    fs::write(temp.join("Cargo.toml"), format!("[package]\nname=\"hostile-consumer\"\nversion=\"0.0.0\"\nedition=\"2021\"\n[dependencies]\nlutaml-rs={{path={path},default-features=false,features=[\"runtime\"]}}\nserde={{version=\"=1.0.219\",features=[\"derive\"]}}\nserde_json={{version=\"=1.0.140\",features=[\"arbitrary_precision\"]}}\n")).unwrap();
     fs::write(
         temp.join("src/main.rs"),
         r##"mod generated;

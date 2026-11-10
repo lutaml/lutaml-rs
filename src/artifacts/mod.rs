@@ -11,7 +11,7 @@ use std::{
 
 pub type ArtifactResult<T> = Result<T, Box<dyn Error>>;
 pub const MANIFEST_FILE: &str = "manifest.json";
-pub const GENERATOR_VERSION: &str = concat!("lutaml-model/", env!("CARGO_PKG_VERSION"));
+pub const GENERATOR_VERSION: &str = concat!("lutaml-rs/", env!("CARGO_PKG_VERSION"));
 
 pub fn digest(bytes: &[u8]) -> String {
     format!("sha256:{:x}", Sha256::digest(bytes))
@@ -54,7 +54,7 @@ impl Artifacts {
             }
         }
         #[allow(unused_mut)]
-        let mut module = String::from("pub use lutaml_model::{contracts, values};\npub mod models;\npub mod parg_bindings;\npub mod json_codecs;\n");
+        let mut module = String::from("pub use lutaml_rs::{contracts, values};\npub mod models;\npub mod parg_bindings;\npub mod json_codecs;\n");
         // Source XML declarations alone do not imply an XML implementation in the
         // generated consumer: the codecs are emitted only where this build has them.
         #[allow(unused_mut)]
@@ -63,7 +63,7 @@ impl Artifacts {
         if bundle.models.values().any(|m| m.mappings.xml.is_some()) {
             use crate::contracts::XmlCodecEmitter;
             files.extend(crate::xml::RustXmlEmitter.generate_xml_codecs(&bundle, bindings)?);
-            module.push_str("pub use lutaml_model::xml as xml_rt;\npub mod xml_codecs;\n");
+            module.push_str("pub use lutaml_rs::xml as xml_rt;\npub mod xml_codecs;\n");
             capabilities.push("xml".into());
         }
         files.insert("mod.rs".into(), module);
@@ -102,7 +102,7 @@ impl Artifacts {
                 })
                 .collect(),
             dependencies: vec![DependencyPin {
-                name: "lutaml-model".into(),
+                name: "lutaml-rs".into(),
                 revision: env!("CARGO_PKG_VERSION").into(),
                 sha256: digest(
                     &[

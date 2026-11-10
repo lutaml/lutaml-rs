@@ -1,8 +1,8 @@
 mod contracts {
-    pub use lutaml_model::contracts::*;
+    pub use lutaml_rs::contracts::*;
 }
 mod values {
-    pub use lutaml_model::values::*;
+    pub use lutaml_rs::values::*;
 }
 #[path = "../src/generator/mod.rs"]
 mod generator;
