@@ -165,7 +165,7 @@ dependencies = [
 [[package]]
 name = "moxml"
 version = "0.1.0"
-source = "git+https://github.com/lutaml/moxml-rs?rev=93689831f44aa5860d0921541841c734560e1c27#93689831f44aa5860d0921541841c734560e1c27"
+source = "git+https://github.com/lutaml/moxml-rs?rev=c55a7ecf60764d75a7a0ef54f0e483ec40df4b73#c55a7ecf60764d75a7a0ef54f0e483ec40df4b73"
 dependencies = [
  "regex",
  "wasm-bindgen",
