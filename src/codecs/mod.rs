@@ -440,7 +440,18 @@ impl JsonCodecEmitter for RustJsonEmitter {
             } else {
                 (String::new(), String::new())
             };
-            writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{{ordered}let data=decode_{name}(parse_json(input,{})?)?;{strict} let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; model.validate_shape().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
+            // The Ruby key-value fast path defers nonempty choice batches,
+            // while missing/empty required collections retain eager ingestion checks.
+            let mut eager_choices = String::new();
+            for attr in &model.attributes {
+                if crate::generator::model_choices::choice_attribute(model, &attr.name)
+                    && matches!(attr.collection, Collection::Bounded { min: 1.., .. })
+                {
+                    let field = crate::generator::member_identifier(&attr.name);
+                    writeln!(eager_choices,"if !matches!(&model.{field},Presence::Value(v) if !v.is_empty()) {{return Err(failure(ErrorReason::InvalidDocument,{}, {}, \"/input\",\"required choice collection is empty\"));}}",q(id),q(&attr.name)).unwrap();
+                }
+            }
+            writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{{ordered}let data=decode_{name}(parse_json(input,{})?)?;{strict} let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; {eager_choices}model.validate_shape().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
             writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{{ordered}model.validate_shape().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;serde_json::to_string(&encode_{name}(data)?).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id),q(id)).unwrap();
             if has_hash {
                 emit_strict(&mut out, id, name, model, &names)?;

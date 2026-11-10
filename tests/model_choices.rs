@@ -45,12 +45,14 @@ fn generated_choices_preserve_source_validation_boundaries() {
             let mut m:models::{name}=serde_json::from_value(row["input"].clone()).unwrap();m.apply_defaults().unwrap();
             let codes=|m:&models::{name}|match m.validate(){{Ok(())=>vec![],Err(e)=>vec![e.reason]}};
             assert_eq!(serde_json::to_value(codes(&m)).unwrap(),row["expected"]["construct"],"construct {{}}",row["id"]);
-            let raw=json_codecs::read_{name}_json(&row["input"].to_string()).unwrap();
-            assert_eq!(serde_json::to_value(codes(&raw)).unwrap(),row["expected"]["json_input"],"JSON read {{}}",row["id"]);
+            let raw=json_codecs::read_{name}_json(&row["input"].to_string());
+            let observed=match raw {{Ok(value)=>serde_json::to_value(codes(&value)).unwrap(),Err(error)=>{{assert_eq!(error.reason,choice_consumer::contracts::ErrorReason::InvalidDocument);serde_json::json!(["eager_collection_count_out_of_range"])}}}};
+            assert_eq!(observed,row["expected"]["json_input"],"JSON read {{}}",row["id"]);
             let wire=json_codecs::write_{name}_json(&m).unwrap();
             assert_eq!(serde_json::from_str::<Value>(&wire).unwrap(),row["expected"]["json_wire"],"JSON wire {{}}",row["id"]);
-            let reread=json_codecs::read_{name}_json(&wire).unwrap();
-            assert_eq!(serde_json::to_value(codes(&reread)).unwrap(),row["expected"]["json_roundtrip"],"JSON reread {{}}",row["id"]);
+            let reread=json_codecs::read_{name}_json(&wire);
+            let observed=match reread {{Ok(value)=>serde_json::to_value(codes(&value)).unwrap(),Err(error)=>{{assert_eq!(error.reason,choice_consumer::contracts::ErrorReason::InvalidDocument);serde_json::json!(["eager_collection_count_out_of_range"])}}}};
+            assert_eq!(observed,row["expected"]["json_roundtrip"],"JSON reread {{}}",row["id"]);
             let xml=xml_codecs::write_{name}_xml(&m).unwrap();
             let reread=xml_codecs::read_{name}_xml(row["expected"]["xml_wire"].as_str().unwrap().as_bytes()).unwrap();
             assert_eq!(serde_json::to_value(codes(&reread)).unwrap(),row["expected"]["xml_roundtrip"],"XML reread {{}}",row["id"]);

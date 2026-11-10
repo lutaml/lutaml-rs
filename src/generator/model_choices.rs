@@ -6,7 +6,7 @@ fn contains(group: &ModelChoiceGroup, name: &str) -> bool {
         ModelChoiceMember::Choice { choice } => contains(choice, name),
     })
 }
-pub(super) fn choice_attribute(doc: &ModelDocument, name: &str) -> bool {
+pub(crate) fn choice_attribute(doc: &ModelDocument, name: &str) -> bool {
     doc.choices
         .as_ref()
         .is_some_and(|c| c.groups.iter().any(|g| contains(g, name)))

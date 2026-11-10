@@ -1,14 +1,22 @@
 {
-  "source_semantics": "lutaml-model fd2989fd8478b1ecb2508d98fa2d66792c09c72b Choice/Validation/XML-default methods; unchanged in feature worktree",
+  "source_semantics": "native Choice/Validation and format-specific I/O; group validation unchanged",
   "ruby": "4.0.1",
+  "producer": {
+    "lib/lutaml/model/choice.rb": "a0adf3eb6700944c2a429339c30bb4266bdf22adee91a5d25c917acdce10be5d",
+    "lib/lutaml/model/validation.rb": "e1d15c0313501b12fc2c756482b792ef8475d0fe1f2174dd08c3e7bd89f887db",
+    "spec/support/lml_model_choices_fixtures.rb": "16d41d48b42ec8717e6d9c6b960419d6611da86f688b39813ae007e64fd056c5"
+  },
   "bundle": {
     "lml_bundle": 1,
     "roots": [
       "LmlModelChoicesFixtures::BooleanMember@default",
       "LmlModelChoicesFixtures::Nested@default",
+      "LmlModelChoicesFixtures::NestedOptional@default",
       "LmlModelChoicesFixtures::OptionalCollection@default",
+      "LmlModelChoicesFixtures::Parent@default",
       "LmlModelChoicesFixtures::Plain@default",
-      "LmlModelChoicesFixtures::Renderable@default"
+      "LmlModelChoicesFixtures::Renderable@default",
+      "LmlModelChoicesFixtures::Unbounded@default"
     ],
     "models": {
       "LmlModelChoicesFixtures::BooleanMember@default": {
@@ -302,6 +310,177 @@
           ]
         }
       },
+      "LmlModelChoicesFixtures::NestedOptional@default": {
+        "lml": 2,
+        "model": "LmlModelChoicesFixtures::NestedOptional",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "a",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "b",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "c",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "json": {
+            "rules": [
+              {
+                "key": [
+                  "a"
+                ],
+                "to": "a",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                }
+              },
+              {
+                "key": [
+                  "b"
+                ],
+                "to": "b",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                }
+              },
+              {
+                "key": [
+                  "c"
+                ],
+                "to": "c",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                }
+              }
+            ]
+          },
+          "xml": {
+            "root": {
+              "element": "choice"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "a"
+                ],
+                "to": "a",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "b"
+                ],
+                "to": "b",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "c"
+                ],
+                "to": "c",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        },
+        "choices": {
+          "version": 1,
+          "validation": "explicit",
+          "groups": [
+            {
+              "min": 1,
+              "max": 1,
+              "format": "xml",
+              "members": [
+                {
+                  "choice": {
+                    "min": 0,
+                    "max": 1,
+                    "format": "xml",
+                    "members": [
+                      {
+                        "attribute": "a"
+                      },
+                      {
+                        "attribute": "b"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "attribute": "c"
+                }
+              ]
+            }
+          ]
+        }
+      },
       "LmlModelChoicesFixtures::OptionalCollection@default": {
         "lml": 2,
         "model": "LmlModelChoicesFixtures::OptionalCollection",
@@ -423,6 +602,68 @@
               ]
             }
           ]
+        }
+      },
+      "LmlModelChoicesFixtures::Parent@default": {
+        "lml": 2,
+        "model": "LmlModelChoicesFixtures::Parent",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "child",
+            "type": {
+              "kind": "model",
+              "id": "LmlModelChoicesFixtures::Plain@default"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "json": {
+            "rules": [
+              {
+                "key": [
+                  "child"
+                ],
+                "to": "child",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                }
+              }
+            ]
+          },
+          "xml": {
+            "root": {
+              "element": "parent"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "child"
+                ],
+                "to": "child",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
         }
       },
       "LmlModelChoicesFixtures::Plain@default": {
@@ -652,6 +893,129 @@
             {
               "min": 1,
               "max": 1,
+              "format": "xml",
+              "members": [
+                {
+                  "attribute": "a"
+                },
+                {
+                  "attribute": "b"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "LmlModelChoicesFixtures::Unbounded@default": {
+        "lml": 2,
+        "model": "LmlModelChoicesFixtures::Unbounded",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "a",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": {
+              "min": 1,
+              "max": 2
+            },
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "b",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "json": {
+            "rules": [
+              {
+                "key": [
+                  "a"
+                ],
+                "to": "a",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                }
+              },
+              {
+                "key": [
+                  "b"
+                ],
+                "to": "b",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                }
+              }
+            ]
+          },
+          "xml": {
+            "root": {
+              "element": "choice"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "a"
+                ],
+                "to": "a",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "b"
+                ],
+                "to": "b",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        },
+        "choices": {
+          "version": 1,
+          "validation": "explicit",
+          "groups": [
+            {
+              "min": 1,
+              "max": null,
               "format": "xml",
               "members": [
                 {
@@ -1225,6 +1589,314 @@
         "json_wire": {},
         "json_roundtrip": [],
         "xml_wire": "<choice>\n  <a/>\n  <b/>\n</choice>",
+        "xml_roundtrip": [
+          "choice_upper_bound"
+        ]
+      }
+    },
+    {
+      "id": "Unbounded-0",
+      "model_id": "LmlModelChoicesFixtures::Unbounded@default",
+      "input": {},
+      "expected": {
+        "construct": [
+          "choice_lower_bound"
+        ],
+        "json_input": [
+          "eager_collection_count_out_of_range"
+        ],
+        "json_wire": {},
+        "json_roundtrip": [
+          "eager_collection_count_out_of_range"
+        ],
+        "xml_wire": "<choice/>",
+        "xml_roundtrip": [
+          "choice_lower_bound"
+        ]
+      }
+    },
+    {
+      "id": "Unbounded-1",
+      "model_id": "LmlModelChoicesFixtures::Unbounded@default",
+      "input": {
+        "a": []
+      },
+      "expected": {
+        "construct": [
+          "choice_lower_bound"
+        ],
+        "json_input": [
+          "eager_collection_count_out_of_range"
+        ],
+        "json_wire": {},
+        "json_roundtrip": [
+          "eager_collection_count_out_of_range"
+        ],
+        "xml_wire": "<choice/>",
+        "xml_roundtrip": [
+          "choice_lower_bound"
+        ]
+      }
+    },
+    {
+      "id": "Unbounded-2",
+      "model_id": "LmlModelChoicesFixtures::Unbounded@default",
+      "input": {
+        "a": [
+          "x"
+        ]
+      },
+      "expected": {
+        "construct": [],
+        "json_input": [],
+        "json_wire": {
+          "a": [
+            "x"
+          ]
+        },
+        "json_roundtrip": [],
+        "xml_wire": "<choice>\n  <a>x</a>\n</choice>",
+        "xml_roundtrip": []
+      }
+    },
+    {
+      "id": "Unbounded-3",
+      "model_id": "LmlModelChoicesFixtures::Unbounded@default",
+      "input": {
+        "a": [
+          "x",
+          "y",
+          "z"
+        ]
+      },
+      "expected": {
+        "construct": [],
+        "json_input": [],
+        "json_wire": {
+          "a": [
+            "x",
+            "y",
+            "z"
+          ]
+        },
+        "json_roundtrip": [],
+        "xml_wire": "<choice>\n  <a>x</a>\n  <a>y</a>\n  <a>z</a>\n</choice>",
+        "xml_roundtrip": []
+      }
+    },
+    {
+      "id": "Unbounded-4",
+      "model_id": "LmlModelChoicesFixtures::Unbounded@default",
+      "input": {
+        "a": [
+          "x"
+        ],
+        "b": "y"
+      },
+      "expected": {
+        "construct": [],
+        "json_input": [],
+        "json_wire": {
+          "a": [
+            "x"
+          ],
+          "b": "y"
+        },
+        "json_roundtrip": [],
+        "xml_wire": "<choice>\n  <a>x</a>\n  <b>y</b>\n</choice>",
+        "xml_roundtrip": []
+      }
+    },
+    {
+      "id": "NestedOptional-0",
+      "model_id": "LmlModelChoicesFixtures::NestedOptional@default",
+      "input": {},
+      "expected": {
+        "construct": [],
+        "json_input": [],
+        "json_wire": {},
+        "json_roundtrip": [],
+        "xml_wire": "<choice/>",
+        "xml_roundtrip": []
+      }
+    },
+    {
+      "id": "NestedOptional-1",
+      "model_id": "LmlModelChoicesFixtures::NestedOptional@default",
+      "input": {
+        "a": "x"
+      },
+      "expected": {
+        "construct": [],
+        "json_input": [],
+        "json_wire": {
+          "a": "x"
+        },
+        "json_roundtrip": [],
+        "xml_wire": "<choice>\n  <a>x</a>\n</choice>",
+        "xml_roundtrip": []
+      }
+    },
+    {
+      "id": "NestedOptional-2",
+      "model_id": "LmlModelChoicesFixtures::NestedOptional@default",
+      "input": {
+        "c": "z"
+      },
+      "expected": {
+        "construct": [
+          "choice_upper_bound"
+        ],
+        "json_input": [
+          "choice_upper_bound"
+        ],
+        "json_wire": {
+          "c": "z"
+        },
+        "json_roundtrip": [
+          "choice_upper_bound"
+        ],
+        "xml_wire": "<choice>\n  <c>z</c>\n</choice>",
+        "xml_roundtrip": [
+          "choice_upper_bound"
+        ]
+      }
+    },
+    {
+      "id": "NestedOptional-3",
+      "model_id": "LmlModelChoicesFixtures::NestedOptional@default",
+      "input": {
+        "a": "x",
+        "b": "y"
+      },
+      "expected": {
+        "construct": [
+          "choice_upper_bound"
+        ],
+        "json_input": [
+          "choice_upper_bound"
+        ],
+        "json_wire": {
+          "a": "x",
+          "b": "y"
+        },
+        "json_roundtrip": [
+          "choice_upper_bound"
+        ],
+        "xml_wire": "<choice>\n  <a>x</a>\n  <b>y</b>\n</choice>",
+        "xml_roundtrip": [
+          "choice_upper_bound"
+        ]
+      }
+    },
+    {
+      "id": "NestedOptional-4",
+      "model_id": "LmlModelChoicesFixtures::NestedOptional@default",
+      "input": {
+        "a": "x",
+        "c": "z"
+      },
+      "expected": {
+        "construct": [
+          "choice_upper_bound"
+        ],
+        "json_input": [
+          "choice_upper_bound"
+        ],
+        "json_wire": {
+          "a": "x",
+          "c": "z"
+        },
+        "json_roundtrip": [
+          "choice_upper_bound"
+        ],
+        "xml_wire": "<choice>\n  <a>x</a>\n  <c>z</c>\n</choice>",
+        "xml_roundtrip": [
+          "choice_upper_bound"
+        ]
+      }
+    },
+    {
+      "id": "Parent-0",
+      "model_id": "LmlModelChoicesFixtures::Parent@default",
+      "input": {},
+      "expected": {
+        "construct": [],
+        "json_input": [],
+        "json_wire": {},
+        "json_roundtrip": [],
+        "xml_wire": "<parent/>",
+        "xml_roundtrip": []
+      }
+    },
+    {
+      "id": "Parent-1",
+      "model_id": "LmlModelChoicesFixtures::Parent@default",
+      "input": {
+        "child": {}
+      },
+      "expected": {
+        "construct": [
+          "choice_lower_bound"
+        ],
+        "json_input": [
+          "choice_lower_bound"
+        ],
+        "json_wire": {},
+        "json_roundtrip": [],
+        "xml_wire": "<parent>\n  <child/>\n</parent>",
+        "xml_roundtrip": [
+          "choice_lower_bound"
+        ]
+      }
+    },
+    {
+      "id": "Parent-2",
+      "model_id": "LmlModelChoicesFixtures::Parent@default",
+      "input": {
+        "child": {
+          "a": "x"
+        }
+      },
+      "expected": {
+        "construct": [],
+        "json_input": [],
+        "json_wire": {
+          "child": {
+            "a": "x"
+          }
+        },
+        "json_roundtrip": [],
+        "xml_wire": "<parent>\n  <child>\n    <a>x</a>\n  </child>\n</parent>",
+        "xml_roundtrip": []
+      }
+    },
+    {
+      "id": "Parent-3",
+      "model_id": "LmlModelChoicesFixtures::Parent@default",
+      "input": {
+        "child": {
+          "a": "x",
+          "b": "y"
+        }
+      },
+      "expected": {
+        "construct": [
+          "choice_upper_bound"
+        ],
+        "json_input": [
+          "choice_upper_bound"
+        ],
+        "json_wire": {
+          "child": {
+            "a": "x",
+            "b": "y"
+          }
+        },
+        "json_roundtrip": [
+          "choice_upper_bound"
+        ],
+        "xml_wire": "<parent>\n  <child>\n    <a>x</a>\n    <b>y</b>\n  </child>\n</parent>",
         "xml_roundtrip": [
           "choice_upper_bound"
         ]

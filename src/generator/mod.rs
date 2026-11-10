@@ -1,6 +1,6 @@
 //! Static Rust source emission. Schemas are data; only caller-supplied bindings
 //! may name external Rust types. No grammar is interpreted at runtime.
-mod model_choices;
+pub(crate) mod model_choices;
 use crate::contracts::*;
 use model_choices::{choice_attribute, compile_model_choices};
 use std::collections::{BTreeMap, BTreeSet};
