@@ -49,7 +49,8 @@ impl NeutralNumber {
   if n == 0 || (n > 1 && b[whole] == b'0') { return Err("not a JSON number"); }
   let mut integer = true;
   if i < b.len() && b[i] == b'.' { integer = false; i += 1; if digits(&mut i) == 0 { return Err("not a JSON number"); } }
-  if i < b.len() && (b[i] == b'e' || b[i] == b'E') { integer = false; i += 1; if i < b.len() && (b[i] == b'+' || b[i] == b'-') { i += 1; } if digits(&mut i) == 0 { return Err("not a JSON number"); } }
+  if i < b.len() && (b[i] == b'e' || b[i] == b'E') { integer = false; i += 1; if i < b.len() && (b[i] == b'+' || b[i] == b'-') { i += 1; }
+   if digits(&mut i) == 0 { return Err("not a JSON number"); } }
   if i != b.len() { return Err("not a JSON number"); }
   let exact = if integer { s != "-0" && n <= 16 && s.trim_start_matches('-').parse::<u64>().is_ok_and(|v| v <= 9_007_199_254_740_991) }
    else { s.parse::<f64>().is_ok_and(|f| f.is_finite() && Self::es_string(f) == s) };
@@ -96,7 +97,7 @@ impl Neutral {
   match self {
    Self::Null => s.serialize_unit(), Self::Bool(b) => s.serialize_bool(*b), Self::String(v) => s.serialize_str(v),
    Self::Number(n) => <serde_json::Number as std::str::FromStr>::from_str(&n.0).map_err(serde::ser::Error::custom)?.serialize(s),
-   Self::Array(a) => s.collect_seq(a.iter().map(|x| NeutralWire(x))),
+   Self::Array(a) => s.collect_seq(a.iter().map(NeutralWire)),
    Self::Object(h) => s.collect_map(h.0.iter().map(|(k, v)| (k, NeutralWire(v)))),
   }
  }
