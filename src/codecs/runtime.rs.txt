@@ -17,6 +17,27 @@ fn plain_integer(n:&str)->Result<Value,&'static str>{
  let ok=!digits.is_empty()&&digits.bytes().all(|c|c.is_ascii_digit())&&n!="-0"&&(n.parse::<i64>().is_ok()||n.parse::<u64>().is_ok());
  if ok{serde_json::from_str::<Value>(n).map_err(|_|numeric_json_err())}else{Err(numeric_json_err())}
 }
+// RFC 8259 number grammar, nothing else (no sign prefix, spaces, quotes or leading zeros).
+#[allow(dead_code)]
+fn json_number(s:&str)->bool{
+ let b=s.as_bytes();let mut i=usize::from(b.first()==Some(&b'-'));
+ let digits=|i:&mut usize|{let at=*i;while *i<b.len()&&b[*i].is_ascii_digit(){*i+=1;}*i-at};
+ let whole=i;let n=digits(&mut i);
+ if n==0||(n>1&&b[whole]==b'0'){return false;}
+ if i<b.len()&&b[i]==b'.'{i+=1;if digits(&mut i)==0{return false;}}
+ if i<b.len()&&(b[i]==b'e'||b[i]==b'E'){i+=1;if i<b.len()&&(b[i]==b'+'||b[i]==b'-'){i+=1;}if digits(&mut i)==0{return false;}}
+ i==b.len()
+}
+// Numbers in a keyed-collection body that no member mapping extracts would be dropped
+// unseen; refuse them like every other loose number (`keep` lists the extracted paths).
+#[allow(dead_code)]
+fn no_loose_except(v:&Value,keep:&[&[&str]],id:&str)->ContractResult<()>{
+ if keep.iter().any(|p|p.is_empty()){return Ok(());}
+ match v {
+  Value::Object(o)=>o.iter().try_for_each(|(k,x)|{let sub:Vec<&[&str]>=keep.iter().filter(|p|p[0]==k.as_str()).map(|p|&p[1..]).collect();no_loose_except(x,&sub,id)}),
+  other=>no_loose(other,id),
+ }
+}
 // Bundles with a `hash` attribute parse numbers loosely; every other position must
 // still refuse them, so the decoded model is walked once (`strict_*`).
 #[allow(dead_code)]
@@ -72,7 +93,9 @@ fn parse_json(input:&str,id:&str)->ContractResult<Value>{
      while let Some(k)=a.next_key::<String>()?{
       // With serde_json arbitrary_precision (always on for consumers of this crate)
       // every JSON number arrives as a one-entry map, never through visit_f64.
-      if first && k=="$serde_json::private::Number"{let n:String=a.next_value()?;if NEUTRAL_NUMBERS{return serde_json::from_str::<Value>(&n).map(Unique).map_err(serde::de::Error::custom);}return plain_integer(&n).map(Unique).map_err(serde::de::Error::custom);}
+      // The marker's value must be a lone string in the strict JSON number grammar: nothing
+      // else may travel through it (no quoted text, objects, spaces or sibling keys).
+      if first && k=="$serde_json::private::Number"{let n:String=a.next_value()?;if a.next_key::<String>()?.is_some(){return Err(serde::de::Error::custom("not a JSON number"));}if NEUTRAL_NUMBERS{if !json_number(&n){return Err(serde::de::Error::custom("not a JSON number"));}return serde_json::from_str::<Value>(&n).map(Unique).map_err(serde::de::Error::custom);}return plain_integer(&n).map(Unique).map_err(serde::de::Error::custom);}
       first=false;
       let Unique(x)=a.next_value()?;
       if v.insert(k,x).is_some(){return Err(serde::de::Error::custom("duplicate JSON key"));}

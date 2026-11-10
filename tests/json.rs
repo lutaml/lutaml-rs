@@ -610,7 +610,7 @@ num-traits="=0.2.19"
         String::from_utf8_lossy(&result.stderr)
     );
     let stdout = String::from_utf8_lossy(&result.stdout);
-    assert!(stdout.contains("15 passed"), "{stdout}");
+    assert!(stdout.contains("18 passed"), "{stdout}");
 }
 
 #[test]

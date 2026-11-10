@@ -157,4 +157,31 @@ use serde_json::json;
   assert_eq!(error.reason,super::contracts::ErrorReason::InvalidDocument,"{token}");
  }
 }
+#[test] fn the_number_marker_key_carries_only_a_strict_json_number() {
+ let marker=r#""$serde_json::private::Number""#;
+ for smuggled in [r#""\"abc\"""#,r#""{\"id\":\"zz\"}""#,r#"" 1""#,r#""1 ""#,r#""+1""#,r#""01""#,r#""1.""#,r#""""#,r#""true""#] {
+  let wire=format!(r#"{{"label":"a","meta":{{"a":{{{marker}:{smuggled}}}}}}}"#);
+  assert!(read_Record_json(&wire).is_err(),"{wire}");
+ }
+ for wire in [format!(r#"{{"label":{{{marker}:"\"abc\""}}}}"#),format!(r#"{{"label":"a","meta":{{"a":{{{marker}:"1","b":2}}}}}}"#),format!(r#"{{"label":"a","meta":{{"a":{{{marker}:1}}}}}}"#)] { assert!(read_Record_json(&wire).is_err(),"{wire}"); }
+ assert!(read_Record_json(r#"{"label":"a","meta":{"a":1.5}}"#).is_ok());
+}
+#[test] fn hash_numbers_in_the_one_e_minus_six_range_keep_their_es_spelling() {
+ for ok in ["0.000001","0.0000012","0.000005","0.000009999","1.5e-7","-0.000001"] {
+  let wire=format!(r#"{{"label":"a","meta":{{"a":{ok}}}}}"#);
+  let model=read_Record_json(&wire).unwrap_or_else(|e|panic!("{wire}: {e:?}"));
+  assert_eq!(write_Record_json(&model).unwrap(),wire,"{wire}");
+ }
+ for bad in ["1e-6","1E-6","1.2e-6","0.0000010","1e-05","0.00001e0"] {
+  let wire=format!(r#"{{"label":"a","meta":{{"a":{bad}}}}}"#);
+  assert!(read_Record_json(&wire).is_err(),"{wire}");
+ }
+}
+#[test] fn hash_bundles_refuse_numbers_in_unmapped_keyed_collection_bodies() {
+ for wire in [r#"{"records":{"k":1.5}}"#,r#"{"records":{"k":{"path":{"name":"x"},"price":"1","extra":1.5}}}"#,r#"{"records":{"k":{"path":{"name":"x","extra":1.5},"price":"1"}}}"#,r#"{"records":{"k":{"path":1.5}}}"#] {
+  let error=read_Children_json(wire).unwrap_err();
+  assert!(format!("{error:?}").contains("not a portable exact boundary"),"{wire}: {error:?}");
+ }
+ read_Children_json(r#"{"records":{"k":{"path":{"name":"x"},"price":"1"}}}"#).unwrap();
+}
 }

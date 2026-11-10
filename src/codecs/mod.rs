@@ -446,7 +446,7 @@ impl JsonCodecEmitter for RustJsonEmitter {
                 emit_strict(&mut out, id, name, model, &names)?;
             }
             if let Some(k) = &keyed {
-                emit_keyed(&mut out, id, name, k, bundle, &names)?;
+                emit_keyed(&mut out, id, name, k, bundle, &names, has_hash)?;
             }
             writeln!(out,"#[allow(non_snake_case)]\nfn decode_{name}(input:Value)->ContractResult<Value>{{let mut wire=object(input,{})?; let mut data=Map::new();",q(id)).unwrap();
             if keyed.as_ref().is_some_and(|k| k.root) {
@@ -580,6 +580,7 @@ fn emit_keyed(
     k: &Keyed<'_>,
     bundle: &Bundle,
     names: &BTreeMap<String, String>,
+    has_hash: bool,
 ) -> ContractResult<()> {
     let child = names.get(target(k.attribute).unwrap()).unwrap();
     let key = k
@@ -599,6 +600,23 @@ fn emit_keyed(
         .unwrap();
     } else {
         out.push_str("let mut item=Map::new();\n");
+        if has_hash {
+            let mut keep = Vec::new();
+            for path in k.paths.values() {
+                match path {
+                    Path::Key => {}
+                    Path::Value => keep.push("&[][..]".to_owned()),
+                    Path::Members(path) => keep.push(format!("&{}[..]", path_expr(path))),
+                }
+            }
+            writeln!(
+                out,
+                "no_loose_except(&body,&[{}],{})?;",
+                keep.join(","),
+                q(id)
+            )
+            .unwrap();
+        }
         for (member, path) in &k.paths {
             match path {
                 Path::Key => {}

@@ -119,8 +119,11 @@ impl<'de> Deserialize<'de> for Neutral {
    fn visit_string<E:serde::de::Error>(self,v:String)->Result<Neutral,E>{ Ok(Neutral::String(v)) }
    fn visit_i64<E:serde::de::Error>(self,v:i64)->Result<Neutral,E>{ NeutralNumber::parse(&v.to_string()).map(Neutral::Number).map_err(E::custom) }
    fn visit_u64<E:serde::de::Error>(self,v:u64)->Result<Neutral,E>{ NeutralNumber::parse(&v.to_string()).map(Neutral::Number).map_err(E::custom) }
-   // serde_json (arbitrary_precision) hands a number over as f64 only when its own f64 spelling is the source spelling.
-   fn visit_f64<E:serde::de::Error>(self,v:f64)->Result<Neutral,E>{ let text=serde_json::to_string(&v).map_err(E::custom)?; NeutralNumber::parse(&text).map(Neutral::Number).map_err(E::custom) }
+   // serde_json (arbitrary_precision) hands a number over as f64 when the source spelling is either of its two
+   // f64 spellings (shortest round-trip with exponent, or plain decimal), so the source is not recoverable here;
+   // the ECMAScript spelling is the only one a neutral number may have. A wire spelling is checked at parse
+   // time, where it is still the source text.
+   fn visit_f64<E:serde::de::Error>(self,v:f64)->Result<Neutral,E>{ if !v.is_finite(){return Err(E::custom("number cannot be held exactly"));} NeutralNumber::parse(&NeutralNumber::es_string(v)).map(Neutral::Number).map_err(E::custom) }
    fn visit_seq<A:serde::de::SeqAccess<'de>>(self,mut a:A)->Result<Neutral,A::Error>{ let mut v=Vec::new(); while let Some(x)=a.next_element::<Neutral>()? { v.push(x); } Ok(Neutral::Array(v)) }
    fn visit_map<A:serde::de::MapAccess<'de>>(self,mut m:A)->Result<Neutral,A::Error>{
     let mut v:Vec<(String,Neutral)>=Vec::new(); let mut seen=std::collections::HashSet::new();
