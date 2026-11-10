@@ -1325,7 +1325,8 @@
           "right",
           "center",
           "inside",
-          "outside"
+          "outside",
+          ""
         ]
       }
     },
@@ -1337,7 +1338,8 @@
           "bottom",
           "center",
           "inside",
-          "outside"
+          "outside",
+          ""
         ]
       }
     },
@@ -1535,7 +1537,8 @@
           "xIllusions",
           "zanyTriangles",
           "zigZag",
-          "zigZagStitch"
+          "zigZagStitch",
+          ""
         ]
       }
     },
@@ -1546,7 +1549,8 @@
           "none",
           "left",
           "right",
-          "all"
+          "all",
+          ""
         ]
       }
     },
@@ -1556,7 +1560,8 @@
         "enumeration": [
           "page",
           "column",
-          "textWrapping"
+          "textWrapping",
+          ""
         ]
       }
     },
@@ -1566,7 +1571,8 @@
         "enumeration": [
           "before",
           "after",
-          "repeat"
+          "repeat",
+          ""
         ]
       }
     },
@@ -1576,7 +1582,8 @@
         "enumeration": [
           "--",
           "-+",
-          "+-"
+          "+-",
+          ""
         ]
       }
     },
@@ -1593,7 +1600,8 @@
           "korea",
           "saka",
           "gregorianXlitEnglish",
-          "gregorianXlitFrench"
+          "gregorianXlitFrench",
+          ""
         ]
       }
     },
@@ -1605,7 +1613,8 @@
           "round",
           "square",
           "angle",
-          "curly"
+          "curly",
+          ""
         ]
       }
     },
@@ -1614,7 +1623,8 @@
       "facets": {
         "enumeration": [
           "next",
-          "prev"
+          "prev",
+          ""
         ]
       }
     },
@@ -1628,7 +1638,8 @@
           "contributors",
           "editors",
           "owners",
-          "current"
+          "current",
+          ""
         ]
       }
     },
@@ -1640,7 +1651,8 @@
           "dot",
           "comma",
           "circle",
-          "underDot"
+          "underDot",
+          ""
         ]
       }
     },
@@ -1653,7 +1665,8 @@
           "date",
           "currentTime",
           "currentDate",
-          "calculated"
+          "calculated",
+          ""
         ]
       }
     },
@@ -1664,7 +1677,8 @@
           "bar",
           "skw",
           "lin",
-          "noBar"
+          "noBar",
+          ""
         ]
       }
     },
@@ -1674,7 +1688,8 @@
         "enumeration": [
           "begin",
           "separate",
-          "end"
+          "end",
+          ""
         ]
       }
     },
@@ -1698,7 +1713,8 @@
           "darkYellow",
           "darkGray",
           "lightGray",
-          "none"
+          "none",
+          ""
         ]
       }
     },
@@ -1708,7 +1724,8 @@
         "enumeration": [
           "default",
           "eastAsia",
-          "cs"
+          "cs",
+          ""
         ]
       }
     },
@@ -1717,7 +1734,8 @@
       "facets": {
         "enumeration": [
           "text",
-          "autoText"
+          "autoText",
+          ""
         ]
       }
     },
@@ -1728,7 +1746,8 @@
           "left",
           "right",
           "center",
-          "centerGroup"
+          "centerGroup",
+          ""
         ]
       }
     },
@@ -1737,7 +1756,8 @@
       "facets": {
         "enumeration": [
           "undOvr",
-          "subSup"
+          "subSup",
+          ""
         ]
       }
     },
@@ -1748,7 +1768,8 @@
           "sdtLocked",
           "contentLocked",
           "unlocked",
-          "sdtContentLocked"
+          "sdtContentLocked",
+          ""
         ]
       }
     },
@@ -1761,7 +1782,8 @@
           "on",
           "off",
           "true",
-          "false"
+          "false",
+          ""
         ]
       }
     },
@@ -1771,7 +1793,8 @@
         "enumeration": [
           "left",
           "center",
-          "right"
+          "right",
+          ""
         ]
       }
     },
@@ -1783,7 +1806,8 @@
           "dot",
           "hyphen",
           "underscore",
-          "middleDot"
+          "middleDot",
+          ""
         ]
       }
     },
@@ -1792,7 +1816,8 @@
       "facets": {
         "enumeration": [
           "margin",
-          "indent"
+          "indent",
+          ""
         ]
       }
     },
@@ -1803,7 +1828,8 @@
           "spellStart",
           "spellEnd",
           "gramStart",
-          "gramEnd"
+          "gramEnd",
+          ""
         ]
       }
     },
@@ -1818,7 +1844,8 @@
           "leftMargin",
           "rightMargin",
           "insideMargin",
-          "outsideMargin"
+          "outsideMargin",
+          ""
         ]
       }
     },
@@ -1833,7 +1860,8 @@
           "topMargin",
           "bottomMargin",
           "insideMargin",
-          "outsideMargin"
+          "outsideMargin",
+          ""
         ]
       }
     },
@@ -1846,7 +1874,8 @@
           "distributeSpace",
           "left",
           "right",
-          "rightVertical"
+          "rightVertical",
+          ""
         ]
       }
     },
@@ -1859,7 +1888,8 @@
           "fraktur",
           "double-struck",
           "sans-serif",
-          "monospace"
+          "monospace",
+          ""
         ]
       }
     },
@@ -1869,7 +1899,8 @@
         "enumeration": [
           "text",
           "date",
-          "dateTime"
+          "dateTime",
+          ""
         ]
       }
     },
@@ -1914,7 +1945,8 @@
           "pct85",
           "pct87",
           "pct90",
-          "pct95"
+          "pct95",
+          ""
         ]
       }
     },
@@ -1923,7 +1955,8 @@
       "facets": {
         "enumeration": [
           "centered",
-          "match"
+          "match",
+          ""
         ]
       }
     },
@@ -1934,7 +1967,8 @@
           "p",
           "b",
           "i",
-          "bi"
+          "bi",
+          ""
         ]
       }
     },
@@ -1948,7 +1982,8 @@
           "antsRed",
           "shimmer",
           "sparkle",
-          "none"
+          "none",
+          ""
         ]
       }
     },
@@ -1963,7 +1998,8 @@
           "minorEastAsia",
           "minorBidi",
           "minorAscii",
-          "minorHAnsi"
+          "minorHAnsi",
+          ""
         ]
       }
     },
@@ -1987,7 +2023,8 @@
           "background1",
           "text1",
           "background2",
-          "text2"
+          "text2",
+          ""
         ]
       }
     },
@@ -1996,7 +2033,8 @@
       "facets": {
         "enumeration": [
           "top",
-          "bot"
+          "bot",
+          ""
         ]
       }
     },
@@ -2021,7 +2059,8 @@
           "wave",
           "wavyHeavy",
           "wavyDouble",
-          "none"
+          "none",
+          ""
         ]
       }
     },
@@ -2031,7 +2070,8 @@
         "enumeration": [
           "baseline",
           "superscript",
-          "subscript"
+          "subscript",
+          ""
         ]
       }
     },
@@ -2042,7 +2082,8 @@
           "bothSides",
           "left",
           "right",
-          "largest"
+          "largest",
+          ""
         ]
       }
     },
@@ -2052,7 +2093,8 @@
         "enumeration": [
           "left",
           "center",
-          "right"
+          "right",
+          ""
         ]
       }
     },
@@ -2062,7 +2104,8 @@
         "enumeration": [
           "top",
           "center",
-          "bot"
+          "bot",
+          ""
         ]
       }
     }

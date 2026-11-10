@@ -94,7 +94,8 @@
           "none",
           "left",
           "right",
-          "all"
+          "all",
+          ""
         ]
       }
     },
@@ -104,7 +105,8 @@
         "enumeration": [
           "page",
           "column",
-          "textWrapping"
+          "textWrapping",
+          ""
         ]
       }
     }

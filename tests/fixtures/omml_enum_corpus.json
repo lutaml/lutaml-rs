@@ -386,6 +386,24 @@
         "type": "page",
         "clear": "all"
       }
+    },
+    {
+      "id": "type-empty",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"/>",
+      "values": {
+        "type": ""
+      },
+      "reread_values": {}
+    },
+    {
+      "id": "clear-empty",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"/>",
+      "values": {
+        "clear": ""
+      },
+      "reread_values": {}
     }
   ],
   "refusals": [
