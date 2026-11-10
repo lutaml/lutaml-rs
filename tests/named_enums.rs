@@ -23,6 +23,13 @@ fn declared_string_enums_generate_and_execute_xml_codecs() {
         &TypeBindings::new(),
     );
 
+    replay_enum_corpus(
+        include_bytes!("fixtures/pos_h_bundle.json"),
+        include_bytes!("fixtures/pos_h_corpus.json"),
+        "Omml::Models::CTPosH@omml",
+        &TypeBindings::new(),
+    );
+
     // A caller can override XML lexical handling without replacing the
     // declaration or the binding's serde representation.
     let bytes = include_bytes!("fixtures/omml_enum_bundle.json");
@@ -116,11 +123,17 @@ pub fn format(value: &BreakType) -> Result<String, std::convert::Infallible> {
     let main = format!(
         r#"use enum_consumer::xml_codecs;use serde_json::Value;use std::io::Read;
 fn tree(xml:&str)->Value{{
- let doc=enum_consumer::xml_rt::moxml_binding::moxml::document::Document::parse(xml.as_bytes()).unwrap();let rows=doc.element_rows();assert_eq!(rows.len(),1,"empty-element schema");let root=&rows[0];assert!(root.content.is_empty(),"unexpected XML content");
- let mut attrs=root.attributes.iter().map(|a|(a.name.namespace.as_deref().unwrap_or("").to_string(),a.name.local.clone(),a.value.clone())).collect::<Vec<_>>();attrs.sort();serde_json::json!([[root.name.namespace.as_deref().unwrap_or(""),&root.name.local],attrs])
+ use enum_consumer::xml_rt::moxml_binding::moxml::document::{{ContentRow, Document}};
+ let doc=Document::parse(xml.as_bytes()).unwrap();
+ Value::Array(doc.element_rows().iter().map(|root| {{
+  let mut attrs=root.attributes.iter().map(|a|(a.name.namespace.as_deref().unwrap_or("").to_string(),a.name.local.clone(),a.value.clone())).collect::<Vec<_>>();attrs.sort();
+  let has_elements=root.content.iter().any(|item| matches!(item,ContentRow::Element(_)));
+  let content=root.content.iter().filter(|item| !(has_elements && matches!(item,ContentRow::Text(text) if text.trim().is_empty()))).map(|item|format!("{{item:?}}")).collect::<Vec<_>>();
+  serde_json::json!([[root.name.namespace.as_deref().unwrap_or(""),&root.name.local],attrs,content])
+ }}).collect())
 }}
 fn main(){{let mut input=String::new();std::io::stdin().read_to_string(&mut input).unwrap();let corpus:Value=serde_json::from_str(&input).unwrap();let mut count=0;
-for row in corpus["rows"].as_array().unwrap(){{let model=xml_codecs::read_{name}_xml(row["input"].as_str().unwrap().as_bytes()).unwrap();assert_eq!(serde_json::to_value(&model).unwrap(),row["values"],"{{}} model",row["id"]);let wire=xml_codecs::write_{name}_xml(&model).unwrap();assert_eq!(tree(&wire),tree(row["expected"].as_str().unwrap()),"{{}} XML QName tree",row["id"]);let again=xml_codecs::read_{name}_xml(wire.as_bytes()).unwrap();if let Some(expected) = row.get("reread_values") {{ assert_eq!(&serde_json::to_value(again).unwrap(),expected,"{{}} reread",row["id"]); }} else {{ assert_eq!(model,again,"{{}} reread",row["id"]); }}count+=1;}}
+for row in corpus["rows"].as_array().unwrap(){{let model=xml_codecs::read_{name}_xml(row["input"].as_str().unwrap().as_bytes()).unwrap();assert_eq!(serde_json::to_value(&model).unwrap(),row["values"],"{{}} model",row["id"]);if let Some(valid) = row["valid"].as_bool() {{ assert_eq!(model.validate().is_ok(),valid,"{{}} deferred validation",row["id"]); }}let wire=xml_codecs::write_{name}_xml(&model).unwrap();assert_eq!(tree(&wire),tree(row["expected"].as_str().unwrap()),"{{}} XML QName tree",row["id"]);let again=xml_codecs::read_{name}_xml(wire.as_bytes()).unwrap();if let Some(expected) = row.get("reread_values") {{ assert_eq!(&serde_json::to_value(again).unwrap(),expected,"{{}} reread",row["id"]); }} else {{ assert_eq!(model,again,"{{}} reread",row["id"]); }}count+=1;}}
 for row in corpus["refusals"].as_array().unwrap(){{assert!(xml_codecs::read_{name}_xml(row["input"].as_str().unwrap().as_bytes()).is_err());count+=1;}}println!("{{count}} OMML enum cases passed");}}"#
     );
     std::fs::write(dir.join("src/main.rs"), main).unwrap();

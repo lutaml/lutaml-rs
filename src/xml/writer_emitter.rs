@@ -98,7 +98,12 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
             }
         };
         let arm = if e.collection {
-            format!("Presence::Value(l) => {{ let mut items = Vec::new(); for x in l {{ items.push({one}); }} Some(items) }}")
+            let guard = if e.skip_empty_collection {
+                " if !l.is_empty()"
+            } else {
+                ""
+            };
+            format!("Presence::Value(l){guard} => {{ let mut items = Vec::new(); for x in l {{ items.push({one}); }} Some(items) }}")
         } else {
             format!("Presence::Value(x) => Some(vec![{one}])")
         };

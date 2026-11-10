@@ -168,6 +168,8 @@ pub(super) struct ElemPlan {
     pub accept: Vec<String>,
     pub out: Ns,
     pub collection: bool,
+    pub absent_list: bool,
+    pub skip_empty_collection: bool,
     pub child: Child,
     pub cdata: bool,
     pub nil: Pol,
@@ -190,6 +192,7 @@ pub(super) struct Plan {
     pub ordered: bool,
     pub mixed: bool,
     pub tokens: bool,
+    pub simple_sequence: bool,
     pub attrs: Vec<AttrPlan>,
     pub elems: Vec<ElemPlan>,
     pub content: Option<ContentPlan>,
@@ -322,6 +325,31 @@ fn model_ns(bundle: &Bundle, id: &str, target: &str, member: &str) -> ContractRe
         })
 }
 
+fn flat_sequence(mapping: &XmlMapping) -> bool {
+    let Some([group]) = mapping.sequence.as_deref() else {
+        return false;
+    };
+    if group.kind != XmlRuleKind::Sequence
+        || group.min.is_some()
+        || group.max.is_some()
+        || mapping
+            .rules
+            .iter()
+            .any(|r| matches!(r.kind, XmlRuleKind::Sequence | XmlRuleKind::Choice))
+    {
+        return false;
+    }
+    let Some(members) = &group.members else {
+        return false;
+    };
+    !members.is_empty()
+        && mapping
+            .rules
+            .iter()
+            .filter(|rule| rule.kind == XmlRuleKind::Element)
+            .eq(members)
+}
+
 pub(super) fn plan(
     bundle: &Bundle,
     names: &BTreeMap<String, String>,
@@ -345,6 +373,14 @@ pub(super) fn plan(
         mixed: mapping.mixed_content == Some(true)
             || mapping.root.as_ref().is_some_and(|r| r.mixed == Some(true)),
         tokens: model.ordered_content.is_some(),
+        simple_sequence: model.ordered_content.is_none()
+            && mapping.ordered != Some(true)
+            && mapping.mixed_content != Some(true)
+            && !mapping
+                .root
+                .as_ref()
+                .is_some_and(|root| root.mixed == Some(true))
+            && flat_sequence(mapping),
         attrs: Vec::new(),
         elems: Vec::new(),
         content: None,
@@ -353,6 +389,7 @@ pub(super) fn plan(
     };
     for op in &projection.operations {
         match op {
+            Operation::Sequence(_) if out.simple_sequence => {}
             Operation::Sequence(_) | Operation::Choice(_) => out
                 .writer_refusals
                 .push("the sequence compositor is not written by this emitter".into()),
@@ -511,6 +548,9 @@ fn field_plan(
                     Some((uri, _)) => (accept_list(&[Some(uri), None]), target_ns.clone()),
                 },
             };
+            // Match native flat-sequence occurrence semantics for repeatable members.
+            let repeated_sequence =
+                out.simple_sequence && collection && nil == Pol::Omit && empty == Pol::AsEmpty;
             out.elems.push(ElemPlan {
                 member: field.member.clone(),
                 ident,
@@ -518,10 +558,13 @@ fn field_plan(
                 accept,
                 out: outns,
                 collection,
+                absent_list: repeated_sequence
+                    && matches!(field.attribute.default, DefaultValue::Absent),
                 child,
                 cdata: field.cdata,
                 nil,
                 empty,
+                skip_empty_collection: repeated_sequence,
             });
         }
         _ => {}
@@ -662,6 +705,10 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             writeln!(out, "   {i} => {{ {prelude} {body} }}").unwrap();
         }
         out.push_str("   _ => {}\n  }\n }\n");
+    }
+    for e in p.elems.iter().filter(|e| e.absent_list) {
+        let field = &e.ident;
+        writeln!(out, " if matches!(m.{field}, Presence::Absent) {{ m.{field} = Presence::Value(Vec::new()); }}").unwrap();
     }
     if let Some(c) = &p.content {
         let at = format!(
