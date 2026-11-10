@@ -13,7 +13,7 @@
           "name": "value_0",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STBorder@omml"
+            "id": "Omml::Models::STAlignH@omml"
           },
           "required": false,
           "collection": false,
@@ -26,7 +26,7 @@
           "name": "value_1",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STBrClear@omml"
+            "id": "Omml::Models::STAlignV@omml"
           },
           "required": false,
           "collection": false,
@@ -39,7 +39,7 @@
           "name": "value_2",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STBrType@omml"
+            "id": "Omml::Models::STBorder@omml"
           },
           "required": false,
           "collection": false,
@@ -52,7 +52,7 @@
           "name": "value_3",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STBreakBin@omml"
+            "id": "Omml::Models::STBrClear@omml"
           },
           "required": false,
           "collection": false,
@@ -65,7 +65,7 @@
           "name": "value_4",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STBreakBinSub@omml"
+            "id": "Omml::Models::STBrType@omml"
           },
           "required": false,
           "collection": false,
@@ -78,7 +78,7 @@
           "name": "value_5",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STCalendarType@omml"
+            "id": "Omml::Models::STBreakBin@omml"
           },
           "required": false,
           "collection": false,
@@ -91,7 +91,7 @@
           "name": "value_6",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STCombineBrackets@omml"
+            "id": "Omml::Models::STBreakBinSub@omml"
           },
           "required": false,
           "collection": false,
@@ -104,7 +104,7 @@
           "name": "value_7",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STDisplacedByCustomXml@omml"
+            "id": "Omml::Models::STCalendarType@omml"
           },
           "required": false,
           "collection": false,
@@ -117,7 +117,7 @@
           "name": "value_8",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STEdGrp@omml"
+            "id": "Omml::Models::STCombineBrackets@omml"
           },
           "required": false,
           "collection": false,
@@ -130,7 +130,7 @@
           "name": "value_9",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STEm@omml"
+            "id": "Omml::Models::STDisplacedByCustomXml@omml"
           },
           "required": false,
           "collection": false,
@@ -143,7 +143,7 @@
           "name": "value_10",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STFFTextType@omml"
+            "id": "Omml::Models::STEdGrp@omml"
           },
           "required": false,
           "collection": false,
@@ -156,7 +156,7 @@
           "name": "value_11",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STFType@omml"
+            "id": "Omml::Models::STEm@omml"
           },
           "required": false,
           "collection": false,
@@ -169,7 +169,7 @@
           "name": "value_12",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STFldCharType@omml"
+            "id": "Omml::Models::STFFTextType@omml"
           },
           "required": false,
           "collection": false,
@@ -182,7 +182,7 @@
           "name": "value_13",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STHighlightColor@omml"
+            "id": "Omml::Models::STFType@omml"
           },
           "required": false,
           "collection": false,
@@ -195,7 +195,7 @@
           "name": "value_14",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STHint@omml"
+            "id": "Omml::Models::STFldCharType@omml"
           },
           "required": false,
           "collection": false,
@@ -208,7 +208,7 @@
           "name": "value_15",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STInfoTextType@omml"
+            "id": "Omml::Models::STHighlightColor@omml"
           },
           "required": false,
           "collection": false,
@@ -221,7 +221,7 @@
           "name": "value_16",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STJc@omml"
+            "id": "Omml::Models::STHint@omml"
           },
           "required": false,
           "collection": false,
@@ -234,7 +234,7 @@
           "name": "value_17",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STLimLoc@omml"
+            "id": "Omml::Models::STInfoTextType@omml"
           },
           "required": false,
           "collection": false,
@@ -247,7 +247,7 @@
           "name": "value_18",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STLock@omml"
+            "id": "Omml::Models::STJc@omml"
           },
           "required": false,
           "collection": false,
@@ -260,7 +260,7 @@
           "name": "value_19",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STOnOff@omml"
+            "id": "Omml::Models::STLimLoc@omml"
           },
           "required": false,
           "collection": false,
@@ -273,7 +273,7 @@
           "name": "value_20",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STPTabAlignment@omml"
+            "id": "Omml::Models::STLock@omml"
           },
           "required": false,
           "collection": false,
@@ -286,7 +286,7 @@
           "name": "value_21",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STPTabLeader@omml"
+            "id": "Omml::Models::STOnOff@omml"
           },
           "required": false,
           "collection": false,
@@ -299,7 +299,7 @@
           "name": "value_22",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STPTabRelativeTo@omml"
+            "id": "Omml::Models::STPTabAlignment@omml"
           },
           "required": false,
           "collection": false,
@@ -312,7 +312,7 @@
           "name": "value_23",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STProofErr@omml"
+            "id": "Omml::Models::STPTabLeader@omml"
           },
           "required": false,
           "collection": false,
@@ -325,7 +325,7 @@
           "name": "value_24",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STRubyAlign@omml"
+            "id": "Omml::Models::STPTabRelativeTo@omml"
           },
           "required": false,
           "collection": false,
@@ -338,7 +338,7 @@
           "name": "value_25",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STScript@omml"
+            "id": "Omml::Models::STProofErr@omml"
           },
           "required": false,
           "collection": false,
@@ -351,7 +351,7 @@
           "name": "value_26",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STSdtDateMappingType@omml"
+            "id": "Omml::Models::STRelFromH@omml"
           },
           "required": false,
           "collection": false,
@@ -364,7 +364,7 @@
           "name": "value_27",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STShd@omml"
+            "id": "Omml::Models::STRelFromV@omml"
           },
           "required": false,
           "collection": false,
@@ -377,7 +377,7 @@
           "name": "value_28",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STShp@omml"
+            "id": "Omml::Models::STRubyAlign@omml"
           },
           "required": false,
           "collection": false,
@@ -390,7 +390,7 @@
           "name": "value_29",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STStyle@omml"
+            "id": "Omml::Models::STScript@omml"
           },
           "required": false,
           "collection": false,
@@ -403,7 +403,7 @@
           "name": "value_30",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STTextEffect@omml"
+            "id": "Omml::Models::STSdtDateMappingType@omml"
           },
           "required": false,
           "collection": false,
@@ -416,7 +416,7 @@
           "name": "value_31",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STTheme@omml"
+            "id": "Omml::Models::STShd@omml"
           },
           "required": false,
           "collection": false,
@@ -429,7 +429,7 @@
           "name": "value_32",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STThemeColor@omml"
+            "id": "Omml::Models::STShp@omml"
           },
           "required": false,
           "collection": false,
@@ -442,7 +442,7 @@
           "name": "value_33",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STTopBot@omml"
+            "id": "Omml::Models::STStyle@omml"
           },
           "required": false,
           "collection": false,
@@ -455,7 +455,7 @@
           "name": "value_34",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STUnderline@omml"
+            "id": "Omml::Models::STTextEffect@omml"
           },
           "required": false,
           "collection": false,
@@ -468,7 +468,7 @@
           "name": "value_35",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STVerticalAlignRun@omml"
+            "id": "Omml::Models::STTheme@omml"
           },
           "required": false,
           "collection": false,
@@ -481,7 +481,7 @@
           "name": "value_36",
           "type": {
             "kind": "value",
-            "id": "Omml::Models::STXAlign@omml"
+            "id": "Omml::Models::STThemeColor@omml"
           },
           "required": false,
           "collection": false,
@@ -492,6 +492,71 @@
         },
         {
           "name": "value_37",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STTopBot@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_38",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STUnderline@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_39",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STVerticalAlignRun@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_40",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STWrapText@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_41",
+          "type": {
+            "kind": "value",
+            "id": "Omml::Models::STXAlign@omml"
+          },
+          "required": false,
+          "collection": false,
+          "default": {
+            "present": false
+          },
+          "initialize_empty": false
+        },
+        {
+          "name": "value_42",
           "type": {
             "kind": "value",
             "id": "Omml::Models::STYAlign@omml"
@@ -1155,6 +1220,91 @@
                 "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
                 "prefix": "w"
               }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_38"
+              ],
+              "to": "value_38",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_39"
+              ],
+              "to": "value_39",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_40"
+              ],
+              "to": "value_40",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_41"
+              ],
+              "to": "value_41",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
+            },
+            {
+              "kind": "attribute",
+              "name": [
+                "value_42"
+              ],
+              "to": "value_42",
+              "render": {
+                "nil": "omit",
+                "empty": "omit",
+                "default": false
+              },
+              "namespace": {
+                "mode": "uri",
+                "uri": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                "prefix": "w"
+              }
             }
           ],
           "namespace": {
@@ -1167,6 +1317,30 @@
     }
   },
   "value_types": {
+    "Omml::Models::STAlignH@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "left",
+          "right",
+          "center",
+          "inside",
+          "outside"
+        ]
+      }
+    },
+    "Omml::Models::STAlignV@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "top",
+          "bottom",
+          "center",
+          "inside",
+          "outside"
+        ]
+      }
+    },
     "Omml::Models::STBorder@omml": {
       "base": "string",
       "facets": {
@@ -1633,6 +1807,36 @@
         ]
       }
     },
+    "Omml::Models::STRelFromH@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "margin",
+          "page",
+          "column",
+          "character",
+          "leftMargin",
+          "rightMargin",
+          "insideMargin",
+          "outsideMargin"
+        ]
+      }
+    },
+    "Omml::Models::STRelFromV@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "margin",
+          "page",
+          "paragraph",
+          "line",
+          "topMargin",
+          "bottomMargin",
+          "insideMargin",
+          "outsideMargin"
+        ]
+      }
+    },
     "Omml::Models::STRubyAlign@omml": {
       "base": "string",
       "facets": {
@@ -1828,6 +2032,17 @@
           "baseline",
           "superscript",
           "subscript"
+        ]
+      }
+    },
+    "Omml::Models::STWrapText@omml": {
+      "base": "string",
+      "facets": {
+        "enumeration": [
+          "bothSides",
+          "left",
+          "right",
+          "largest"
         ]
       }
     },
