@@ -1,0 +1,202 @@
+{
+  "_comment": "Generated with Ruby BigDecimal#to_s('F') (Ruby 3.4.8); canonical = to_s('F') with trailing '.0' stripped and '-0.0' as '0'. Portable to other targets (08d).",
+  "decimals": [
+    {
+      "input": "0",
+      "canonical": "0",
+      "ruby_to_s_F": "0.0"
+    },
+    {
+      "input": "1",
+      "canonical": "1",
+      "ruby_to_s_F": "1.0"
+    },
+    {
+      "input": "-1",
+      "canonical": "-1",
+      "ruby_to_s_F": "-1.0"
+    },
+    {
+      "input": "+1",
+      "canonical": "1",
+      "ruby_to_s_F": "1.0"
+    },
+    {
+      "input": "1.50",
+      "canonical": "1.5",
+      "ruby_to_s_F": "1.5"
+    },
+    {
+      "input": "0.10",
+      "canonical": "0.1",
+      "ruby_to_s_F": "0.1"
+    },
+    {
+      "input": "-0.0",
+      "canonical": "0",
+      "ruby_to_s_F": "-0.0"
+    },
+    {
+      "input": "100",
+      "canonical": "100",
+      "ruby_to_s_F": "100.0"
+    },
+    {
+      "input": "100.000",
+      "canonical": "100",
+      "ruby_to_s_F": "100.0"
+    },
+    {
+      "input": "007.5",
+      "canonical": "7.5",
+      "ruby_to_s_F": "7.5"
+    },
+    {
+      "input": ".5",
+      "canonical": "0.5",
+      "ruby_to_s_F": "0.5"
+    },
+    {
+      "input": "5.",
+      "canonical": "5",
+      "ruby_to_s_F": "5.0"
+    },
+    {
+      "input": "0.000",
+      "canonical": "0",
+      "ruby_to_s_F": "0.0"
+    },
+    {
+      "input": "123456789012345678901234567890.123456789012345678901234567890",
+      "canonical": "123456789012345678901234567890.12345678901234567890123456789",
+      "ruby_to_s_F": "123456789012345678901234567890.12345678901234567890123456789"
+    },
+    {
+      "input": "-0.000001",
+      "canonical": "-0.000001",
+      "ruby_to_s_F": "-0.000001"
+    },
+    {
+      "input": "1000000",
+      "canonical": "1000000",
+      "ruby_to_s_F": "1000000.0"
+    },
+    {
+      "input": "0.125",
+      "canonical": "0.125",
+      "ruby_to_s_F": "0.125"
+    },
+    {
+      "input": "3.14159",
+      "canonical": "3.14159",
+      "ruby_to_s_F": "3.14159"
+    }
+  ],
+  "rationals": [
+    {
+      "numerator": "1",
+      "denominator": "2",
+      "reduced": "1/2",
+      "canonical": "0.5",
+      "refusal": null
+    },
+    {
+      "numerator": "1",
+      "denominator": "8",
+      "reduced": "1/8",
+      "canonical": "0.125",
+      "refusal": null
+    },
+    {
+      "numerator": "3",
+      "denominator": "4",
+      "reduced": "3/4",
+      "canonical": "0.75",
+      "refusal": null
+    },
+    {
+      "numerator": "-5",
+      "denominator": "4",
+      "reduced": "-5/4",
+      "canonical": "-1.25",
+      "refusal": null
+    },
+    {
+      "numerator": "7",
+      "denominator": "1",
+      "reduced": "7/1",
+      "canonical": "7",
+      "refusal": null
+    },
+    {
+      "numerator": "0",
+      "denominator": "5",
+      "reduced": "0/1",
+      "canonical": "0",
+      "refusal": null
+    },
+    {
+      "numerator": "1",
+      "denominator": "3",
+      "reduced": "1/3",
+      "canonical": null,
+      "refusal": "nonterminating_rational"
+    },
+    {
+      "numerator": "2",
+      "denominator": "6",
+      "reduced": "1/3",
+      "canonical": null,
+      "refusal": "nonterminating_rational"
+    },
+    {
+      "numerator": "1",
+      "denominator": "7",
+      "reduced": "1/7",
+      "canonical": null,
+      "refusal": "nonterminating_rational"
+    },
+    {
+      "numerator": "1",
+      "denominator": "12",
+      "reduced": "1/12",
+      "canonical": null,
+      "refusal": "nonterminating_rational"
+    },
+    {
+      "numerator": "22",
+      "denominator": "7",
+      "reduced": "22/7",
+      "canonical": null,
+      "refusal": "nonterminating_rational"
+    },
+    {
+      "numerator": "1",
+      "denominator": "1024",
+      "reduced": "1/1024",
+      "canonical": "0.0009765625",
+      "refusal": null
+    },
+    {
+      "numerator": "6",
+      "denominator": "-4",
+      "reduced": "-3/2",
+      "canonical": "-1.5",
+      "refusal": null
+    },
+    {
+      "numerator": "1000000000000000000000000000000",
+      "denominator": "300000",
+      "reduced": "10000000000000000000000000/3",
+      "canonical": null,
+      "refusal": "nonterminating_rational"
+    },
+    {
+      "numerator": "1000000000000000000000000000000",
+      "denominator": "8",
+      "reduced": "125000000000000000000000000000/1",
+      "canonical": "125000000000000000000000000000",
+      "refusal": null
+    }
+  ]
+}

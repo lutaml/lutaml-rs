@@ -1,4 +1,4 @@
-use lutaml_model::*;
+use lutaml_rs::*;
 use serde_json::json;
 use std::collections::BTreeMap;
 
@@ -56,7 +56,13 @@ fn neutral_numbers_have_no_floating_fallback() {
         ExactRational::from_integer(exact)
     );
     assert!(serde_json::from_value::<Collection>(json!(true)).is_err());
-    assert!(serde_json::from_value::<TypeRef>(json!({"kind":"builtin","name":"float"})).is_err());
+    assert_eq!(
+        serde_json::from_value::<TypeRef>(json!({"kind":"builtin","name":"float"})).unwrap(),
+        TypeRef::Builtin {
+            name: BuiltinType::Float
+        }
+    );
+    assert!(serde_json::from_value::<TypeRef>(json!({"kind":"builtin","name":"double"})).is_err());
 }
 
 #[test]

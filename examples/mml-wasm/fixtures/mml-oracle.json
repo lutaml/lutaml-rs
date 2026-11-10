@@ -1,0 +1,340 @@
+{
+ "cases": [
+  {
+   "expected": {
+    "data": {
+     "__lml_content": [
+      {
+       "attribute": "value",
+       "index": 0,
+       "kind": "text"
+      },
+      {
+       "attribute": "malignmark_value",
+       "index": 0,
+       "kind": "element"
+      },
+      {
+       "attribute": "value",
+       "index": 1,
+       "kind": "text"
+      },
+      {
+       "attribute": "mglyph_value",
+       "index": 0,
+       "kind": "element"
+      },
+      {
+       "attribute": "value",
+       "index": 2,
+       "kind": "text"
+      }
+     ],
+     "__lml_model": "Mml::V3::Mi@mml_v3",
+     "aria_describedby": null,
+     "aria_description": null,
+     "aria_details": null,
+     "aria_label": null,
+     "autofocus": null,
+     "background": null,
+     "class_attr": null,
+     "color": null,
+     "data_other": null,
+     "dir": null,
+     "displaystyle": null,
+     "fontfamily": null,
+     "fontsize": null,
+     "fontstyle": null,
+     "fontweight": null,
+     "href": null,
+     "id": null,
+     "lang": null,
+     "malignmark_value": [
+      {
+       "__lml_model": "Mml::V3::Malignmark@mml_v3",
+       "edge": null,
+       "mathbackground": null,
+       "mathcolor": null
+      }
+     ],
+     "mathbackground": null,
+     "mathcolor": null,
+     "mathsize": null,
+     "mathvariant": "bold",
+     "mglyph_value": [
+      {
+       "__lml_model": "Mml::V3::Mglyph@mml_v3",
+       "alt": "g",
+       "background": null,
+       "color": null,
+       "fontfamily": null,
+       "fontsize": null,
+       "fontstyle": null,
+       "fontweight": null,
+       "height": null,
+       "index": null,
+       "mathbackground": null,
+       "mathcolor": null,
+       "mathvariant": null,
+       "src": "g.png",
+       "valign": null,
+       "width": null
+      }
+     ],
+     "nonce": null,
+     "scriptlevel": null,
+     "style_attr": null,
+     "tabindex": null,
+     "value": [
+      "x",
+      "y",
+      "z"
+     ],
+     "xref": null
+    },
+    "output": "<mi xmlns=\"http://www.w3.org/1998/Math/MathML\" mathvariant=\"bold\">x<malignmark/>y<mglyph src=\"g.png\" alt=\"g\"/>z</mi>",
+    "tree": [
+     [
+      "http://www.w3.org/1998/Math/MathML",
+      "mi"
+     ],
+     [
+      [
+       [
+        "",
+        "mathvariant"
+       ],
+       "bold"
+      ]
+     ],
+     [
+      "x",
+      [
+       [
+        "http://www.w3.org/1998/Math/MathML",
+        "malignmark"
+       ],
+       [],
+       []
+      ],
+      "y",
+      [
+       [
+        "http://www.w3.org/1998/Math/MathML",
+        "mglyph"
+       ],
+       [
+        [
+         [
+          "",
+          "alt"
+         ],
+         "g"
+        ],
+        [
+         [
+          "",
+          "src"
+         ],
+         "g.png"
+        ]
+       ],
+       []
+      ],
+      "z"
+     ]
+    ]
+   },
+   "id": "v3-mi-mixed",
+   "input": "<mi xmlns=\"http://www.w3.org/1998/Math/MathML\" mathvariant=\"bold\">x<malignmark/>y<mglyph src=\"g.png\" alt=\"g\"/>z</mi>",
+   "model_id": "Mml::V3::Mi@mml_v3",
+   "register": "mml_v3"
+  },
+  {
+   "expected": {
+    "data": {
+     "__lml_content": [
+      {
+       "attribute": "value",
+       "index": 0,
+       "kind": "text"
+      },
+      {
+       "attribute": "malignmark_value",
+       "index": 0,
+       "kind": "element"
+      },
+      {
+       "attribute": "value",
+       "index": 1,
+       "kind": "text"
+      },
+      {
+       "attribute": "mglyph_value",
+       "index": 0,
+       "kind": "element"
+      },
+      {
+       "attribute": "value",
+       "index": 2,
+       "kind": "text"
+      }
+     ],
+     "__lml_model": "Mml::V4::Mi@mml_v4",
+     "arg": null,
+     "aria_describedby": null,
+     "aria_description": null,
+     "aria_details": null,
+     "aria_label": null,
+     "autofocus": null,
+     "class_attr": null,
+     "data_other": null,
+     "dir": null,
+     "displaystyle": null,
+     "href": null,
+     "id": null,
+     "intent": null,
+     "lang": null,
+     "malignmark_value": [
+      {
+       "__lml_model": "Mml::V4::Malignmark@mml_v4",
+       "arg": null,
+       "aria_describedby": null,
+       "aria_description": null,
+       "aria_details": null,
+       "aria_label": null,
+       "autofocus": null,
+       "class_attr": null,
+       "data_other": null,
+       "displaystyle": null,
+       "edge": null,
+       "href": null,
+       "id": null,
+       "intent": null,
+       "mathbackground": null,
+       "mathcolor": null,
+       "mathsize": null,
+       "nonce": null,
+       "other_attributes": {
+        "state": "absent"
+       },
+       "scriptlevel": null,
+       "style_attr": null,
+       "tabindex": null,
+       "xref": null
+      }
+     ],
+     "mathbackground": null,
+     "mathcolor": null,
+     "mathsize": null,
+     "mathvariant": "bold",
+     "mglyph_value": [
+      {
+       "__lml_model": "Mml::V4::Mglyph@mml_v4",
+       "alt": "g",
+       "arg": null,
+       "aria_describedby": null,
+       "aria_description": null,
+       "aria_details": null,
+       "aria_label": null,
+       "autofocus": null,
+       "class_attr": null,
+       "data_other": null,
+       "displaystyle": null,
+       "fontfamily": null,
+       "height": null,
+       "href": null,
+       "id": null,
+       "index": null,
+       "intent": null,
+       "mathbackground": null,
+       "mathcolor": null,
+       "mathsize": null,
+       "mathvariant": null,
+       "nonce": null,
+       "other_attributes": {
+        "state": "absent"
+       },
+       "scriptlevel": null,
+       "src": "g.png",
+       "style_attr": null,
+       "tabindex": null,
+       "valign": null,
+       "width": null,
+       "xref": null
+      }
+     ],
+     "nonce": null,
+     "other_attributes": {
+      "state": "absent"
+     },
+     "scriptlevel": null,
+     "style_attr": null,
+     "tabindex": null,
+     "value": [
+      "x",
+      "y",
+      "z"
+     ],
+     "xref": null
+    },
+    "output": "<mi xmlns=\"http://www.w3.org/1998/Math/MathML\" mathvariant=\"bold\">x<malignmark/>y<mglyph src=\"g.png\" alt=\"g\"/>z</mi>",
+    "tree": [
+     [
+      "http://www.w3.org/1998/Math/MathML",
+      "mi"
+     ],
+     [
+      [
+       [
+        "",
+        "mathvariant"
+       ],
+       "bold"
+      ]
+     ],
+     [
+      "x",
+      [
+       [
+        "http://www.w3.org/1998/Math/MathML",
+        "malignmark"
+       ],
+       [],
+       []
+      ],
+      "y",
+      [
+       [
+        "http://www.w3.org/1998/Math/MathML",
+        "mglyph"
+       ],
+       [
+        [
+         [
+          "",
+          "alt"
+         ],
+         "g"
+        ],
+        [
+         [
+          "",
+          "src"
+         ],
+         "g.png"
+        ]
+       ],
+       []
+      ],
+      "z"
+     ]
+    ]
+   },
+   "id": "v4-mi-mixed",
+   "input": "<mi xmlns=\"http://www.w3.org/1998/Math/MathML\" mathvariant=\"bold\">x<malignmark/>y<mglyph src=\"g.png\" alt=\"g\"/>z</mi>",
+   "model_id": "Mml::V4::Mi@mml_v4",
+   "register": "mml_v4"
+  }
+ ]
+}

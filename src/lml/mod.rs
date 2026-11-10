@@ -65,34 +65,30 @@ impl Snapshot {
                 "snapshot is not a bundle",
             ));
         }
-        let mut wire: serde_json::Value = serde_json::from_str(&self.canonical)
+        let wire: serde_json::Value = serde_json::from_str(&self.canonical)
             .map_err(|e| failure(ErrorReason::InvalidDocument, "", e.to_string()))?;
-        // Normalize only representable aliases in the detached typed view. The
-        // Snapshot retains the original wire tree and canonical schema identity.
-        for model in wire["models"].as_object_mut().unwrap().values_mut() {
-            for attr in model["attributes"].as_array_mut().unwrap() {
-                if let Some(values) = attr.as_object_mut().unwrap().remove("values") {
-                    attr["enum"] = values;
-                }
-            }
-            for mapping in model["mappings"].as_object_mut().unwrap().values_mut() {
-                for rule in mapping["rules"].as_array_mut().unwrap() {
-                    if let Some(render) = rule.get_mut("render") {
-                        for (key, affirmative) in [("nil", "nil"), ("empty", "blank")] {
-                            if let Some(value) =
-                                render.get(key).and_then(serde_json::Value::as_bool)
-                            {
-                                render[key] = serde_json::Value::String(
-                                    if value { affirmative } else { "omit" }.into(),
-                                );
-                            }
-                        }
-                    }
-                }
+        // The typed view has no TOML mapping: refuse it by name instead of
+        // silently dropping a declaration the validator accepted (Ruby accepts
+        // `mappings.toml`; the schema identity still covers it).
+        for (id, model) in wire["models"].as_object().unwrap() {
+            if model["mappings"].get("toml").is_some() {
+                let mut error = failure(
+                    ErrorReason::UnsupportedFormat,
+                    &format!("{}/mappings/toml", pointer("/models", id)),
+                    "the typed Rust graph has no toml mapping",
+                );
+                error.model_id = Some(id.clone());
+                error.format = Some("toml".into());
+                return Err(error);
             }
         }
-        serde_json::from_value(wire)
-            .map_err(|e| failure(ErrorReason::InvalidDocument, "", e.to_string()))
+        serde_json::from_value(wire).map_err(|e| {
+            failure(
+                ErrorReason::UnsupportedMapping,
+                "",
+                format!("typed graph cannot represent declaration: {e}"),
+            )
+        })
     }
 }
 
@@ -121,10 +117,7 @@ pub fn load(bytes: &[u8], format: InputFormat) -> ContractResult<Snapshot> {
     if tree.get("lml").and_then(Node::integer) == Some(1) {
         let mut fields = Vec::new();
         for key in ["lml", "model", "register", "attributes", "mappings"] {
-            if let Some(value) = tree.get(key).filter(|value| {
-                !((key == "attributes" || key == "mappings")
-                    && matches!(value, Node::Null | Node::Bool(false)))
-            }) {
+            if let Some(value) = tree.get(key) {
                 if key != "register" || value != &Node::Null {
                     fields.push((key.into(), value.clone()));
                 }
@@ -135,9 +128,14 @@ pub fn load(bytes: &[u8], format: InputFormat) -> ContractResult<Snapshot> {
             }
         }
         tree = Node::Object(fields);
-        if format == InputFormat::Yaml {
-            reject_legacy_yaml_floats(&tree, "").map_err(|mut e| {
-                e.format = Some("yaml".into());
+        {
+            let name = if format == InputFormat::Yaml {
+                "yaml"
+            } else {
+                "json"
+            };
+            reject_legacy_floats(&tree, "", format).map_err(|mut e| {
+                e.format = Some(name.into());
                 e.klass = tree.get("model").and_then(Node::string).map(str::to_owned);
                 let parts: Vec<_> = e.location.split('/').collect();
                 if parts.get(1) == Some(&"attributes") {
@@ -187,12 +185,43 @@ pub fn load(bytes: &[u8], format: InputFormat) -> ContractResult<Snapshot> {
         checksum,
     })
 }
-fn reject_legacy_yaml_floats(node: &Node, at: &str) -> ContractResult<()> {
+/// A v1 identity is the Ruby `JSON.generate` of the parsed hash, so a float
+/// is safe only when its spelling is what every Ruby JSON generator prints:
+/// fixed notation and the shortest round-trip digits (`1.5`, `100.0`,
+/// `0.0001`, `-0.0`). `1.50`, `1e2` and every exponent form re-render
+/// differently (and differently per Ruby/json version), so they would change
+/// the checksum; they refuse here, as every YAML float does.
+fn reject_legacy_floats(node: &Node, at: &str, format: InputFormat) -> ContractResult<()> {
     match node {
-        Node::Number(number) if number.to_string().contains(['.','e','E'])=>return Err(failure(ErrorReason::UnsupportedType,at,"legacy YAML float checksum is ambiguous; load producer-canonical v1 JSON or use v2 exact decimal strings")),
-        Node::Array(values)=>for (i,value) in values.iter().enumerate(){reject_legacy_yaml_floats(value,&pointer(at,&i.to_string()))?;},
-        Node::Object(values)=>for (key,value) in values {reject_legacy_yaml_floats(value,&pointer(at,key))?;},
-        _=>{}
+        Node::Number(number) => {
+            let text = number.to_string();
+            if text.contains(['.', 'e', 'E']) {
+                let stable = format == InputFormat::Json
+                    && !text.contains(['e', 'E'])
+                    && text
+                        .parse::<f64>()
+                        .is_ok_and(|v| v.is_finite() && crate::values::float_wire(v) == text);
+                if !stable {
+                    let hint = if format == InputFormat::Yaml {
+                        "legacy YAML float checksum is ambiguous; load producer-canonical v1 JSON or use v2 exact decimal strings"
+                    } else {
+                        "legacy JSON float is not in Ruby's canonical JSON spelling (fixed notation, shortest digits); its checksum would differ from Ruby's"
+                    };
+                    return Err(failure(ErrorReason::UnsupportedType, at, hint));
+                }
+            }
+        }
+        Node::Array(values) => {
+            for (i, value) in values.iter().enumerate() {
+                reject_legacy_floats(value, &pointer(at, &i.to_string()), format)?;
+            }
+        }
+        Node::Object(values) => {
+            for (key, value) in values {
+                reject_legacy_floats(value, &pointer(at, key), format)?;
+            }
+        }
+        _ => {}
     }
     Ok(())
 }
@@ -226,7 +255,10 @@ pub fn validate_ordered_content(
     let mut kinds = std::collections::BTreeMap::new();
     if let Some(xml) = &model.mappings.xml {
         for rule in &xml.rules {
-            if matches!(rule.kind, XmlRuleKind::Attribute) {
+            if matches!(
+                rule.kind,
+                XmlRuleKind::Attribute | XmlRuleKind::AnyAttribute
+            ) {
                 continue;
             }
             kinds.insert(rule.to.as_str(), &rule.kind);

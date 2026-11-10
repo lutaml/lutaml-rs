@@ -13,6 +13,7 @@ const BUILTINS: &[&str] = &[
     "integer",
     "decimal",
     "rational",
+    "float",
     "date",
     "time",
     "date_time",
@@ -23,7 +24,21 @@ const BUILTINS: &[&str] = &[
     "hex_binary",
     "symbol",
     "hash",
+    "email_address",
+    "ip_v4_address",
+    "ip_v6_address",
+    "uuid",
+    "reference",
+    "uri_reference",
+    "date_with_timezone",
+    "date_time_with_timezone",
+    "day_time_duration",
+    "year_month_duration",
+    "positive_integer",
+    "non_negative_integer",
 ];
+pub(super) const INTEGER_BUILTINS: &[&str] =
+    &["integer", "positive_integer", "non_negative_integer"];
 const MAX_INTEGER: u64 = 9_007_199_254_740_991;
 mod defaults;
 mod graph;
@@ -112,6 +127,56 @@ fn strings(n: &Node, at: &str, sorted: bool) -> ContractResult<()> {
     }
     Ok(())
 }
+/// Pinned names that break Serializable (Ruby RESERVED_ATTRIBUTE_NAMES).
+const RESERVED_ATTRIBUTE_NAMES: &[&str] = &[
+    "__id__",
+    "__send__",
+    "attribute_order",
+    "class",
+    "doctype",
+    "element_order",
+    "encoding",
+    "extract_register_id",
+    "import_declaration_plan",
+    "initialize",
+    "initialize_clone",
+    "initialize_copy",
+    "initialize_dup",
+    "lutaml_register",
+    "pending_plan_root_element",
+    "prepare_instance_format_options",
+    "public_send",
+    "record_mutation",
+    "to_format",
+    "to_json",
+    "to_xml",
+    "to_yaml",
+    "value_set_for",
+    "xml_declaration",
+    "xml_ns_prefixes",
+];
+/// Attribute names match `\\A[a-z_][a-zA-Z0-9_]*\\z` and avoid the reserved list.
+fn attribute_name(name: &str, at: &str) -> ContractResult<()> {
+    let mut chars = name.chars();
+    let lexical = chars
+        .next()
+        .is_some_and(|c| c.is_ascii_lowercase() || c == '_')
+        && chars.all(|c| c.is_ascii_alphanumeric() || c == '_');
+    if !lexical {
+        return Err(invalid(
+            at,
+            format!("attribute name {name:?} must match \\A[a-z_][a-zA-Z0-9_]*\\z"),
+        ));
+    }
+    if RESERVED_ATTRIBUTE_NAMES.contains(&name) {
+        return Err(failure(
+            ErrorReason::ReservedMember,
+            at,
+            format!("attribute name {name} breaks Serializable (reserved attribute name)"),
+        ));
+    }
+    Ok(())
+}
 fn portable_name(s: &str) -> bool {
     !s.is_empty()
         && s.split("::").all(|part| {
@@ -128,10 +193,8 @@ fn register(s: &str) -> bool {
 fn neutral(n: &Node, at: &str) -> ContractResult<()> {
     match n {
         Node::Number(num) => {
-            if !num.as_u64().is_some_and(|v| v <= MAX_INTEGER)
-                && !num
-                    .as_i64()
-                    .is_some_and(|v| v.unsigned_abs() <= MAX_INTEGER)
+            if num.as_u64().is_none_or(|v| v > MAX_INTEGER)
+                && num.as_i64().is_none_or(|v| v.unsigned_abs() > MAX_INTEGER)
             {
                 return Err(invalid(
                     at,
@@ -162,16 +225,21 @@ pub fn validate(n: &Node) -> ContractResult<()> {
         let version = field(n, "lml", "")?.integer();
         match version {
             Some(1) => {
+                // Mirrors Ruby DocumentValidator#document_v1 exactly: present
+                // members must have their declared shape (null is not "absent").
                 string(field(n, "model", "")?, "/model")?;
+                if let Some(v) = n.get("register") {
+                    if !matches!(v, Node::Null | Node::String(_)) {
+                        return Err(invalid("/register", "register must be a string"));
+                    }
+                }
                 if let Some(v) = n.get("attributes") {
-                    if v != &Node::Null {
-                        array(v, "/attributes")?;
+                    for (i, attr) in array(v, "/attributes")?.iter().enumerate() {
+                        object(attr, &format!("/attributes/{i}"))?;
                     }
                 }
                 if let Some(v) = n.get("mappings") {
-                    if v != &Node::Null {
-                        object(v, "/mappings")?;
-                    }
+                    object(v, "/mappings")?;
                 }
                 Ok(())
             }
@@ -247,10 +315,13 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
     }
     let attrs = field(n, "attributes", at)?;
     let mut names = BTreeSet::new();
+    // Non-collection builtin `hash` attributes: the only `any_attribute` targets.
+    let mut hashes = BTreeSet::new();
     for (i, attr) in array(attrs, &pointer(at, "attributes"))?.iter().enumerate() {
         let loc = format!("{at}/attributes/{i}");
         let result = (|| {
             let name = text(attr, "name", &loc)?;
+            attribute_name(name, &pointer(&loc, "name"))?;
             if name == "__lml_content" {
                 return Err(failure(
                     ErrorReason::ReservedMember,
@@ -265,7 +336,17 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
                     "duplicate attribute",
                 ));
             }
-            attribute(attr, &loc)
+            attribute(attr, &loc)?;
+            let hash = attr.get("type").is_some_and(|t| {
+                t.get("kind").and_then(Node::string) == Some("builtin")
+                    && t.get("name").and_then(Node::string) == Some("hash")
+            }) && attr
+                .get("collection")
+                .is_none_or(|c| c == &Node::Bool(false));
+            if hash {
+                hashes.insert(name);
+            }
+            Ok(())
         })();
         result.map_err(|mut e: Box<crate::contracts::ContractError>| {
             e.model_id = Some(format!("{name}@{reg}"));
@@ -286,13 +367,15 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
             ));
         }
     }
-    let mappings = field(n, "mappings", at)?;
+    let empty = Node::Object(vec![]);
+    let mappings = n.get("mappings").unwrap_or(&empty);
     object(mappings, &pointer(at, "mappings"))?;
     for (format, mapping) in mappings.object().unwrap() {
         let loc = pointer(&pointer(at, "mappings"), format);
         let result = match format.as_str() {
-            "xml" => xml(mapping, &names, &loc),
-            "json" | "yaml" => key_mapping(mapping, &names, &loc),
+            "xml" => xml(mapping, &names, &hashes, &loc),
+            // toml validates like json/yaml; the typed view refuses it by name.
+            "json" | "yaml" | "toml" => key_mapping(mapping, &names, &loc),
             _ => Err(failure(
                 ErrorReason::UnsupportedFormat,
                 &loc,

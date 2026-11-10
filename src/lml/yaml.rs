@@ -2,9 +2,13 @@
 //! arbitrary-integer -> f64 fallback in serde_yaml's generic deserializer.
 use super::{failure, pointer, Node};
 use crate::contracts::{ContractResult, ErrorReason};
+use std::collections::HashSet;
 use std::marker::PhantomData;
 use std::mem::MaybeUninit;
 use unsafe_libyaml as unsafe_yaml;
+
+/// Longest radix (0x/0o/0b) integer scalar parsed through BigInt.
+const RADIX_DIGIT_LIMIT: usize = 4096;
 
 struct Parser<'input> {
     // The parser stores pointers into itself and the input. Heap allocation keeps
@@ -77,13 +81,6 @@ impl<'input> Parser<'input> {
         }
     }
     fn node(&mut self, event: Event, at: &str, depth: usize) -> ContractResult<Node> {
-        if depth > 128 {
-            return Err(failure(
-                ErrorReason::InvalidDocument,
-                at,
-                "maximum nesting exceeded",
-            ));
-        }
         // SAFETY: union fields are read only for their corresponding event type.
         // Value slices are parser-owned and remain valid until Event is dropped;
         // all returned Node data is copied into owned Rust allocations.
@@ -107,6 +104,7 @@ impl<'input> Parser<'input> {
                     }
                 }
                 unsafe_yaml::YAML_SEQUENCE_START_EVENT => {
+                    super::tree::nesting(at, depth)?;
                     let sequence = &event.0.data.sequence_start;
                     properties(sequence.anchor, sequence.tag, at)?;
                     let mut nodes = Vec::new();
@@ -121,9 +119,11 @@ impl<'input> Parser<'input> {
                     Ok(Node::Array(nodes))
                 }
                 unsafe_yaml::YAML_MAPPING_START_EVENT => {
+                    super::tree::nesting(at, depth)?;
                     let mapping = &event.0.data.mapping_start;
                     properties(mapping.anchor, mapping.tag, at)?;
                     let mut entries = Vec::new();
+                    let mut names = HashSet::new();
                     loop {
                         let key = self.next(at)?;
                         if key.0.type_ == unsafe_yaml::YAML_MAPPING_END_EVENT {
@@ -137,13 +137,9 @@ impl<'input> Parser<'input> {
                             ));
                         };
                         let child = pointer(at, &key);
-                        if entries.iter().any(|(previous, _)| previous == &key) {
+                        if !names.insert(key.clone()) {
                             return Err(failure(
-                                if at == "/models" || at == "/value_types" {
-                                    ErrorReason::DuplicateId
-                                } else {
-                                    ErrorReason::InvalidDocument
-                                },
+                                ErrorReason::InvalidDocument,
                                 &child,
                                 "duplicate YAML mapping key",
                             ));
@@ -217,6 +213,14 @@ fn plain(value: &str, at: &str) -> ContractResult<Node> {
     for (prefix, radix) in [("0x", 16), ("0o", 8), ("0b", 2)] {
         if let Some(digits) = unsigned.strip_prefix(prefix) {
             if !digits.is_empty() && digits.chars().all(|c| c.is_digit(radix)) {
+                // BigInt parsing is quadratic: bound the scalar before it runs.
+                if digits.len() > RADIX_DIGIT_LIMIT {
+                    return Err(failure(
+                        ErrorReason::InvalidDocument,
+                        at,
+                        format!("radix integer scalar exceeds {RADIX_DIGIT_LIMIT} digits"),
+                    ));
+                }
                 let mut integer =
                     num_bigint::BigInt::parse_bytes(digits.as_bytes(), radix).unwrap();
                 if negative {
@@ -233,8 +237,14 @@ fn plain(value: &str, at: &str) -> ContractResult<Node> {
         if unsigned.len() > 1 && unsigned.starts_with('0') {
             return Ok(Node::String(value.into()));
         }
-        let integer = num_bigint::BigInt::parse_bytes(unpositive.as_bytes(), 10).unwrap();
-        return number(&integer.to_string(), at);
+        // A decimal integer is already its own exact lexical form; only the
+        // sign needs normalizing. No BigInt, so cost stays linear in length.
+        let text = if negative && unsigned != "0" {
+            format!("-{unsigned}")
+        } else {
+            unsigned.to_owned()
+        };
+        return number(&text, at);
     }
     if [".inf", ".nan"].contains(&unsigned.to_ascii_lowercase().as_str()) {
         return Err(failure(
@@ -243,26 +253,47 @@ fn plain(value: &str, at: &str) -> ContractResult<Node> {
             "nonfinite YAML numbers are not portable",
         ));
     }
-    let lexical = if let Some(fraction) = unsigned.strip_prefix('.') {
-        format!("0.{fraction}")
-    } else {
-        unsigned.to_owned()
-    };
-    let (mantissa, exponent) = lexical
-        .find(['e', 'E'])
-        .map_or((lexical.as_str(), ""), |i| lexical.split_at(i));
-    let mantissa = if mantissa.ends_with('.') {
-        format!("{mantissa}0")
-    } else {
-        mantissa.into()
-    };
-    let lexical = format!("{}{mantissa}{exponent}", if negative { "-" } else { "" });
-    if (value.contains('.') || value.contains(['e', 'E']))
-        && lexical.parse::<serde_json::Number>().is_ok()
-    {
-        return number(&lexical, at);
+    if let Some(lexical) = float_lexical(unsigned) {
+        let lexical = format!("{}{lexical}", if negative { "-" } else { "" });
+        if lexical.parse::<serde_json::Number>().is_ok() {
+            return number(&lexical, at);
+        }
     }
     Ok(Node::String(value.into()))
+}
+/// YAML 1.2 core float: `( \.[0-9]+ | [0-9]+(\.[0-9]*)? ) ([eE][-+]?[0-9]+)?`
+/// with a fraction point or an exponent (a bare digit run is an integer).
+/// At least one digit is required: `.`, `.e5` and `+.` are plain strings.
+/// Returns the JSON-number spelling of the same exact lexical value.
+fn float_lexical(unsigned: &str) -> Option<String> {
+    let digits = |s: &str| s.bytes().all(|b| b.is_ascii_digit());
+    let (mantissa, exponent) = unsigned
+        .find(['e', 'E'])
+        .map_or((unsigned, ""), |i| unsigned.split_at(i));
+    if !exponent.is_empty() {
+        let tail = &exponent[1..];
+        let tail = tail.strip_prefix(['+', '-']).unwrap_or(tail);
+        if tail.is_empty() || !digits(tail) {
+            return None;
+        }
+    }
+    let (whole, fraction) = mantissa.split_once('.').unwrap_or((mantissa, ""));
+    let has_point = mantissa.contains('.');
+    if !digits(whole) || !digits(fraction) || (whole.is_empty() && fraction.is_empty()) {
+        return None;
+    }
+    if !has_point && exponent.is_empty() {
+        return None;
+    }
+    let whole = if whole.is_empty() { "0" } else { whole };
+    let point = if !has_point {
+        String::new()
+    } else if fraction.is_empty() {
+        ".0".to_owned()
+    } else {
+        format!(".{fraction}")
+    };
+    Some(format!("{whole}{point}{exponent}"))
 }
 fn number(value: &str, at: &str) -> ContractResult<Node> {
     value

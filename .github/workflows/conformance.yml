@@ -1,0 +1,211 @@
+name: Rust conformance
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUSTUP_TOOLCHAIN: 1.85.0
+  CARGO_BUILD_JOBS: 1
+  CARGO_TERM_COLOR: always
+
+jobs:
+  native:
+    name: Native Rust conformance
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust with lint components
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              subprocess.run(['rustup', 'toolchain', 'install', '1.85.0', '--profile', 'minimal', '--component', 'rustfmt', '--component', 'clippy'], check=True)
+          PY
+      - name: Locked native, generated-crate and CLI conformance
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              commands = [
+                  ['cargo', 'fetch', '--locked'],
+                  ['cargo', 'fmt', '--all', '--check'],
+                  ['cargo', 'clippy', '--locked', '--all-targets', '--', '-D', 'warnings'],
+                  ['cargo', 'test', '--locked', '--all-targets', '--', '--nocapture'],
+                  ['cargo', 'build', '--locked', '--all-targets'],
+                  ['cargo', 'test', '--locked', '--manifest-path', 'tests/fixtures/rust_generated/Cargo.toml'],
+                  ['cargo', 'build', '--locked', '--manifest-path', 'tests/fixtures/rust_generated/Cargo.toml'],
+                  ['cargo', 'check', '--locked', '--no-default-features', '--features', 'runtime'],
+                  ['cargo', 'test', '--locked', '--manifest-path', 'examples/model-wasm/Cargo.toml'],
+              ]
+              for command in commands:
+                  print('$', ' '.join(command), flush=True)
+                  subprocess.run(command, check=True)
+          PY
+
+  native-xml:
+    name: Native XML codecs over moxml-rs
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    # The pinned moxml-rs revision needs a newer compiler than the 1.85.0 baseline,
+    # so the `xml` feature is exercised on its own toolchain.
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust 1.99.1 with lint components
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              subprocess.run(['rustup', 'toolchain', 'install', '1.99.1', '--profile', 'minimal', '--component', 'clippy'], check=True)
+          PY
+      - name: Locked XML codec conformance against the Ruby oracle
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              commands = [
+                  ['cargo', 'fetch', '--locked'],
+                  ['cargo', 'clippy', '--locked', '--all-targets', '--features', 'xml', '--', '-D', 'warnings', '-A', 'clippy::derivable_impls'],
+                  ['cargo', 'test', '--locked', '--features', 'xml', '--test', 'xml_runtime', '--', '--nocapture'],
+              ]
+              for command in commands:
+                  print('$', ' '.join(command), flush=True)
+                  subprocess.run(command, check=True)
+          PY
+
+  wasm-json:
+    name: Generated JSON wasm in Node and Chrome
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.23.1
+      - name: Install pinned Chrome for actual browser execution
+        id: chrome
+        uses: browser-actions/setup-chrome@48483d551c22a1fe6154c6a195ccc6d5773dc8c4 # v2
+        with:
+          chrome-version: 156.0.8078.80
+          install-dependencies: true
+      - name: Install pinned wasm toolchain
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              commands = [
+                  ['rustup', 'toolchain', 'install', '1.85.0', '--profile', 'minimal', '--component', 'rustfmt', '--component', 'clippy', '--target', 'wasm32-unknown-unknown'],
+                  ['cargo', 'install', 'wasm-bindgen-cli', '--version', '0.2.100', '--locked', '--jobs', '1'],
+              ]
+              for command in commands:
+                  subprocess.run(command, check=True)
+          PY
+      - name: Verify pins and execute every required wasm case in both runtimes
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              commands = [
+                  ['cargo', 'fmt', '--manifest-path', 'examples/model-wasm/Cargo.toml', '--check'],
+                  ['cargo', 'clippy', '--locked', '--manifest-path', 'examples/model-wasm/Cargo.toml', '--lib', '--', '-D', 'warnings'],
+                  ['cargo', 'build', '--locked', '--release', '--manifest-path', 'examples/model-wasm/Cargo.toml', '--target', 'wasm32-unknown-unknown'],
+                  ['node', '--test', 'tests/wasm_json/loader.test.mjs'],
+                  ['node', 'examples/model-wasm/package.mjs'],
+                  ['node', 'tests/wasm_json/run.mjs'],
+              ]
+              for command in commands:
+                  print('$', ' '.join(command), flush=True)
+                  subprocess.run(command, check=True)
+          PY
+
+  wasm-xml:
+    name: Generated XML wasm in Node and Chrome
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    # The pinned moxml-rs revision needs Rust >= 1.87 (see native-xml).
+    env:
+      RUSTUP_TOOLCHAIN: 1.99.1
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.23.1
+      - name: Install pinned Chrome for actual browser execution
+        id: chrome
+        uses: browser-actions/setup-chrome@48483d551c22a1fe6154c6a195ccc6d5773dc8c4 # v2
+        with:
+          chrome-version: 156.0.8078.80
+          install-dependencies: true
+      - name: Install pinned wasm toolchain
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              commands = [
+                  ['rustup', 'toolchain', 'install', '1.99.1', '--profile', 'minimal', '--component', 'rustfmt', '--component', 'clippy', '--target', 'wasm32-unknown-unknown'],
+                  ['cargo', 'install', 'wasm-bindgen-cli', '--version', '0.2.100', '--locked', '--jobs', '1'],
+              ]
+              for command in commands:
+                  subprocess.run(command, check=True)
+          PY
+      - name: Build generated XML codecs for wasm; replay the Ruby/native case IDs in Node and Chrome
+        env:
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          REQUIRE_BROWSER: '1'
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import fcntl, subprocess
+          with open('/tmp/lutaml-1033-memory.lock', 'w') as lock:
+              fcntl.flock(lock, fcntl.LOCK_EX)
+              commands = [
+                  ['cargo', 'fmt', '--manifest-path', 'examples/mml-wasm/Cargo.toml', '--check'],
+                  ['cargo', 'clippy', '--locked', '--manifest-path', 'examples/mml-wasm/Cargo.toml', '--lib', '--target', 'wasm32-unknown-unknown', '--', '-D', 'warnings', '-A', 'clippy::derivable_impls'],
+                  ['cargo', 'build', '--locked', '--release', '--manifest-path', 'examples/mml-wasm/Cargo.toml', '--target', 'wasm32-unknown-unknown'],
+                  ['node', 'examples/mml-wasm/package.mjs'],
+                  ['node', 'tests/wasm_xml/run.mjs'],
+              ]
+              for command in commands:
+                  print('$', ' '.join(command), flush=True)
+                  subprocess.run(command, check=True)
+          PY
+
+# XML runtime parity (native: native-xml; wasm in Node and Chrome: wasm-xml) covers the
+# generated mml/oracle codecs only; the large mml graphs are not replayed here.

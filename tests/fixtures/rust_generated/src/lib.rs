@@ -58,6 +58,18 @@ mod tests {
         assert!(ExactDecimal::parse("1e4").is_err());
         assert!(ExactInteger::parse("123456789012345678901234567890").is_ok());
         assert!(ExactInteger::parse("1.0").is_err());
+        for ok in ["5.", ".5", "+1", "-.5", "+5.", "0.5"] {
+            assert!(ExactDecimal::parse(ok).is_ok(), "{ok}");
+        }
+        for bad in [".", "+", "-", "", "1e4", "1.2.3", "++1", "+-1", " 1"] {
+            assert!(ExactDecimal::parse(bad).is_err(), "{bad:?}");
+        }
+        for ok in ["+1", "-1", "007"] {
+            assert!(ExactInteger::parse(ok).is_ok(), "{ok}");
+        }
+        for bad in ["", "+", "-", "5.", ".5", "1e2", "+-1"] {
+            assert!(ExactInteger::parse(bad).is_err(), "{bad:?}");
+        }
     }
     #[test]
     fn parg_capture_constructor_has_static_result_type() {
@@ -103,5 +115,34 @@ mod tests {
             },
         };
         assert_eq!(literal.reference(), None);
+    }
+
+    #[test]
+    fn content_tokens_reject_contradictory_and_unknown_fields() {
+        for token in [
+            r#"{"kind":"element","attribute":"tags","index":0,"literal":"x"}"#,
+            r#"{"kind":"text","literal":"x","attribute":"title","index":0}"#,
+            r#"{"kind":"text","literal":"x","bogus":1}"#,
+            r#"{"kind":"nope","literal":"x"}"#,
+        ] {
+            assert!(serde_json::from_str::<ContentToken>(token).is_err(), "{token}");
+        }
+        assert!(serde_json::from_str::<ContentToken>(r#"{"kind":"text","literal":"x"}"#).is_ok());
+    }
+    #[test]
+    fn discriminator_tag_is_hoisted_onto_the_case_and_written_once() {
+        let node: Node = serde_json::from_str(r#"{"item":{"kind":"leaf","text":"ok"}}"#).unwrap();
+        match &node.item {
+            Presence::Value(Node_item_Union::Case0(leaf)) => {
+                assert_eq!(leaf.kind, Presence::Value("leaf".into()))
+            }
+            other => panic!("unexpected {other:?}"),
+        }
+        let out = serde_json::to_string(&node).unwrap();
+        assert_eq!(out.matches("\"kind\"").count(), 1, "{out}");
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(&out).unwrap(),
+            serde_json::from_str::<serde_json::Value>(r#"{"item":{"kind":"leaf","text":"ok"}}"#).unwrap()
+        );
     }
 }

@@ -1,0 +1,11 @@
+{"corpus":1,"generation":"wasm-json-v1","cases":[
+{"id":"wasm-exact-decimal-integer","input":"{\"amount\":\"9007199254740993123456789.2300\",\"count\":\"9007199254740993123456789\"}","expected":{"total":"9007199254740993123456789.2300","count":"9007199254740993123456789"}},
+{"id":"wasm-absent","input":"{\"total\":\"1.00\"}","expected":{"total":"1.00"}},
+{"id":"wasm-false-empty-null","input":"{\"total\":\"-0.000\",\"count\":null,\"enabled\":false,\"title\":\"\"}","expected":{"total":"-0.000","count":null,"enabled":false,"title":""}},
+{"id":"wasm-explicit-default","input":"{\"total\":\"1\",\"enabled\":true,\"title\":null}","expected":{"total":"1","enabled":true,"title":null}},
+{"id":"wasm-invalid-number-boundary","input":"{\"total\":123.5}","expected_error":"invalid_document"},
+{"id":"wasm-invalid-exact-exponent","input":"{\"total\":\"1e30\"}","expected_error":"invalid_document"},
+{"id":"wasm-required-absent","input":"{}","expected_error":"invalid_document"},
+{"id":"wasm-required-null","input":"{\"total\":null}","expected_error":"invalid_document"},
+{"id":"wasm-malformed-json","input":"{","expected_error":"invalid_document"}
+]}

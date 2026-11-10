@@ -107,7 +107,7 @@ fn compile_preserves_static_batch_and_all_field_metadata() {
         Some(RenderPolicy {
             nil: RenderAction::AsNil,
             empty: RenderAction::Blank,
-            default: false
+            default: false.into()
         })
     );
     assert_eq!(fields[0].render, None);
@@ -115,18 +115,25 @@ fn compile_preserves_static_batch_and_all_field_metadata() {
     assert_eq!(fields[1].discriminator.as_ref().unwrap().cases["node"], ID);
     assert!(fields[2].cdata);
     assert_eq!(
-        p.operations[4],
-        Operation::Sequence(
-            source.models[ID]
-                .mappings
-                .xml
-                .as_ref()
-                .unwrap()
-                .sequence
-                .clone()
-                .unwrap()
-        )
+        source.models[ID]
+            .mappings
+            .xml
+            .as_ref()
+            .unwrap()
+            .sequence
+            .as_ref()
+            .unwrap()
+            .len(),
+        2
     );
+    assert!(matches!(
+        &p.operations[4],
+        Operation::Sequence(Compositor::Sequence {
+            min: 0,
+            max: None,
+            ..
+        })
+    ));
     assert!(matches!(
         &p.operations[5],
         Operation::Choice(Compositor::Choice {
@@ -339,7 +346,7 @@ fn policy_variants_and_attribute_discriminators_are_never_dropped() {
             panic!("missing field")
         };
         let render = field.render.as_ref().unwrap();
-        assert!(render.default);
+        assert_eq!(render.default, RenderAction::Boolean(true));
         assert_eq!(serde_json::to_value(&render.nil).unwrap(), action);
         assert_eq!(serde_json::to_value(&render.empty).unwrap(), action);
         assert_eq!(field.discriminator.as_ref().unwrap().attribute, "kind");
@@ -371,7 +378,7 @@ fn invalid_compositors_duplicate_mappings_and_conflicting_discriminators_refuse(
     let mut unknown = fixture();
     unknown["models"][ID]["mappings"]["xml"]["sequence"]["members"][0] = json!("id");
     let mut wrong = fixture();
-    wrong["models"][ID]["mappings"]["xml"]["sequence"]["kind"] = json!("choice");
+    wrong["models"][ID]["mappings"]["xml"]["sequence"]["members"] = json!([]);
     let mut duplicate = fixture();
     let rule = duplicate["models"][ID]["mappings"]["xml"]["rules"][0].clone();
     duplicate["models"][ID]["mappings"]["xml"]["rules"]
@@ -385,5 +392,70 @@ fn invalid_compositors_duplicate_mappings_and_conflicting_discriminators_refuse(
         let e = compile_projection(&bundle(v), ID).unwrap_err();
         assert_eq!(e.reason, ErrorReason::UnsupportedMapping);
         assert!(e.detail.is_some());
+    }
+}
+
+#[test]
+fn canonical_rule_groups_and_mixed_flags_lower_without_losing_field_metadata() {
+    let mut v = fixture();
+    let xml = &mut v["models"][ID]["mappings"]["xml"];
+    let leaf = xml["rules"][1].clone();
+    xml.as_object_mut().unwrap().remove("choice");
+    xml["ordered"] = json!(true);
+    xml["mixed_content"] = json!(true);
+    xml["root"]["mixed"] = json!(true);
+    xml["sequence"] = json!([{"kind":"sequence","members":[leaf.clone(),{"kind":"choice","min":0,"max":1,"members":[leaf]}]}]);
+    let graph = bundle(v);
+    let p = compile_projection(&graph, ID).unwrap();
+    assert_eq!(p.operations.len(), 6);
+    let Operation::Sequence(Compositor::Sequence { members, min, max }) = &p.operations[4] else {
+        panic!("missing canonical sequence")
+    };
+    assert_eq!((*min, *max), (1, Some(1)));
+    assert!(
+        matches!(&members[1],CompositorMember::Group(group)if matches!(group.as_ref(),Compositor::Choice{min:0,max:Some(1),..}))
+    );
+    assert_eq!(validate_order(&p, &tokens(), &counts()).unwrap(), tokens());
+}
+#[test]
+fn unsupported_new_xml_rule_metadata_is_retained_then_refused_by_projection() {
+    let mut v = fixture();
+    v["models"][ID]["mappings"]["xml"]["rules"][1]["polymorphic_map"] =
+        json!({"Example::Node":"node"});
+    let graph = bundle(v);
+    assert_eq!(
+        graph.models[ID].mappings.xml.as_ref().unwrap().rules[1]
+            .polymorphic_map
+            .as_ref()
+            .unwrap()["Example::Node"],
+        "node"
+    );
+    assert_eq!(
+        compile_projection(&graph, ID).unwrap_err().reason,
+        ErrorReason::UnsupportedMapping
+    );
+}
+
+#[test]
+fn invalid_xml_names_are_refused_at_generate_time_with_the_location() {
+    type Edit = fn(&mut Value);
+    let edits: [(&str, Edit); 4] = [
+        ("/root/element", |v| v["root"]["element"] = json!("n:r\"#")),
+        ("/rules/0/name/1", |v| {
+            v["rules"][0]["name"] = json!(["id", "a*/b"])
+        }),
+        ("/rules/1/prefix", |v| {
+            v["rules"][1]["prefix"] = json!("1bad")
+        }),
+        ("/namespace/prefix", |v| {
+            v["namespace"]["prefix"] = json!("a b")
+        }),
+    ];
+    for (suffix, edit) in edits {
+        let mut v = fixture();
+        edit(&mut v["models"][ID]["mappings"]["xml"]);
+        let e = compile_projection(&bundle(v), ID).unwrap_err();
+        assert_eq!(e.reason, ErrorReason::UnsupportedMapping, "{suffix}");
+        assert!(e.location.ends_with(suffix), "{suffix}: {}", e.location);
     }
 }
