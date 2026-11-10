@@ -371,7 +371,10 @@ impl JsonCodecEmitter for RustJsonEmitter {
         let mut hoisted = crate::generator::effective_discriminators(bundle)?;
         crate::generator::named_values::realize_named_enums(&mut hoisted, bindings)?;
         let bundle = &hoisted;
-        if bindings.values().any(|b| b.codec.is_some()) {
+        if bindings
+            .values()
+            .any(|b| b.codec.is_some() && b.xml_codec_module().is_none())
+        {
             return Err(fail(
                 "",
                 "",

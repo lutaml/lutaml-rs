@@ -1,5 +1,6 @@
 //! Actual OMML scalar declarations and native XML corpus, not inferred XSD types.
 #![cfg(feature = "xml")]
+use lutaml_rs::codecs::RustJsonEmitter;
 use lutaml_rs::contracts::*;
 use lutaml_rs::generator::{model_names, RustEmitter};
 use lutaml_rs::xml::RustXmlEmitter;
@@ -13,21 +14,66 @@ fn declared_string_enums_generate_and_execute_xml_codecs() {
         include_bytes!("fixtures/omml_enum_bundle.json"),
         include_bytes!("fixtures/omml_enum_corpus.json"),
         "Omml::Models::CTBr@omml",
+        &TypeBindings::new(),
     );
     replay_enum_corpus(
         include_bytes!("fixtures/enum_family_bundle.json"),
         include_bytes!("fixtures/enum_family_corpus.json"),
         "OmmlPortableEnumFamilyProbe@omml",
+        &TypeBindings::new(),
+    );
+
+    // A caller can override XML lexical handling without replacing the
+    // declaration or the binding's serde representation.
+    let bytes = include_bytes!("fixtures/omml_enum_bundle.json");
+    let bundle = lutaml_rs::lml::load_bundle(bytes, InputFormat::Json).unwrap();
+    let id = "Omml::Models::STBrType@omml";
+    let mut bindings = TypeBindings::from([(
+        id.into(),
+        TypeBinding {
+            rust_type: "crate::lexical::BreakType".into(),
+            codec: Some("xml:crate::lexical".into()),
+        },
+    )]);
+    RustJsonEmitter
+        .generate_json_codecs(&bundle, &bindings)
+        .unwrap();
+    let mut corpus: Value =
+        serde_json::from_slice(include_bytes!("fixtures/omml_enum_corpus.json")).unwrap();
+    let mut row = corpus["rows"][1].clone();
+    row["input"] = row["input"]
+        .as_str()
+        .unwrap()
+        .replace("=\"page\"", "=\" page \"")
+        .into();
+    corpus["rows"] = serde_json::json!([row]);
+    replay_enum_corpus(
+        bytes,
+        &serde_json::to_vec(&corpus).unwrap(),
+        "Omml::Models::CTBr@omml",
+        &bindings,
+    );
+    bindings.get_mut(id).unwrap().codec = Some("xml:crate::lexical;invalid".into());
+    assert_eq!(
+        RustXmlEmitter
+            .generate_xml_codecs(&bundle, &bindings)
+            .unwrap_err()
+            .reason,
+        ErrorReason::UnsupportedMapping,
     );
 }
 
-fn replay_enum_corpus(bundle_bytes: &[u8], corpus_bytes: &[u8], model_id: &str) {
+fn replay_enum_corpus(
+    bundle_bytes: &[u8],
+    corpus_bytes: &[u8],
+    model_id: &str,
+    bindings: &TypeBindings,
+) {
     let bundle = lutaml_rs::lml::load_bundle(bundle_bytes, InputFormat::Json).unwrap();
     let original = bundle.clone();
-    let bindings = TypeBindings::new();
-    let models = RustEmitter.generate_models(&bundle, &bindings).unwrap();
+    let models = RustEmitter.generate_models(&bundle, bindings).unwrap();
     let xml = RustXmlEmitter
-        .generate_xml_codecs(&bundle, &bindings)
+        .generate_xml_codecs(&bundle, bindings)
         .unwrap();
     assert_eq!(
         bundle, original,
@@ -40,7 +86,33 @@ fn replay_enum_corpus(bundle_bytes: &[u8], corpus_bytes: &[u8], model_id: &str) 
     std::fs::create_dir_all(dir.join("src")).unwrap();
     std::fs::write(dir.join("src/models.rs"), &models["models.rs"]).unwrap();
     std::fs::write(dir.join("src/xml_codecs.rs"), &xml["xml_codecs.rs"]).unwrap();
-    std::fs::write(dir.join("src/lib.rs"),"pub mod contracts {pub use lutaml_rs::contracts::*;}pub mod values {pub use lutaml_rs::values::*;}pub mod xml_rt {pub use lutaml_rs::xml::*;}pub mod models;pub mod xml_codecs;").unwrap();
+    std::fs::write(
+        dir.join("src/lib.rs"),
+        r#"
+pub use lutaml_rs::{contracts, values};
+pub use lutaml_rs::xml as xml_rt;
+pub mod lexical;
+pub mod models;
+pub mod xml_codecs;
+"#,
+    )
+    .unwrap();
+    std::fs::write(
+        dir.join("src/lexical.rs"),
+        r#"
+#[derive(Clone, Debug, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum BreakType { Page, Column, TextWrapping }
+pub fn parse(text: &str) -> Result<Option<BreakType>, serde_json::Error> {
+    serde_json::from_value(serde_json::Value::String(text.trim().into())).map(Some)
+}
+pub fn format(value: &BreakType) -> Result<String, std::convert::Infallible> {
+    Ok(match value { BreakType::Page => "page", BreakType::Column => "column",
+        BreakType::TextWrapping => "textWrapping" }.into())
+}
+"#,
+    )
+    .unwrap();
     let main = format!(
         r#"use enum_consumer::xml_codecs;use serde_json::Value;use std::io::Read;
 fn tree(xml:&str)->Value{{

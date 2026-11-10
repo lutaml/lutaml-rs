@@ -81,10 +81,9 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
     for a in &p.attrs {
         writeln!(
             out,
-            " values.attrs.push(match &v.{} {{ Presence::Value(x) => Some(rt::encode(x, {}, {id}, {})?), _ => None }});",
+            " values.attrs.push(match &v.{} {{ Presence::Value(x) => Some({}), _ => None }});",
             a.ident,
-            a.kind.path(),
-            q(&a.member)
+            a.kind.encode(&id, &q(&a.member))
         )
         .unwrap();
     }
@@ -92,11 +91,7 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
         let nm = format!("WS_{name}.elems[{i}].name");
         let ns = format!("WS_{name}.elems[{i}].ns.as_ref()");
         let one = match &e.child {
-            Child::Scalar(k) => format!(
-                "rt::Item::Text(rt::encode(x, {}, {id}, {})?)",
-                k.path(),
-                q(&e.member)
-            ),
+            Child::Scalar(k) => format!("rt::Item::Text({})", k.encode(&id, &q(&e.member))),
             Child::Model(n) => format!("rt::Item::Child(write_{n}_el(x, {nm}, {ns}, None)?)"),
             Child::Poly { .. } => {
                 format!("rt::Item::Child(write_{name}_{i}_poly(x, {nm}, {ns})?)")
@@ -115,8 +110,7 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
         .unwrap();
     }
     if let Some(c) = &p.content {
-        let k = c.kind.path();
-        let enc = format!("rt::encode(x, {k}, {id}, {})?", q(&c.member));
+        let enc = c.kind.encode(&id, &q(&c.member));
         if c.collection {
             writeln!(out, " if let Presence::Value(l) = &v.{} {{ for x in l {{ values.content.push({enc}); }} }}", c.ident).unwrap();
         } else {

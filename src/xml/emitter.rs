@@ -27,12 +27,15 @@ impl XmlCodecEmitter for RustXmlEmitter {
         let mut normalized = bundle.clone();
         crate::generator::named_values::realize_named_enums(&mut normalized, bindings)?;
         let bundle = &normalized;
-        if bindings.values().any(|b| b.codec.is_some()) {
+        if bindings
+            .values()
+            .any(|b| b.codec.is_some() && b.xml_codec_module().is_none())
+        {
             return Err(refuse(
                 "",
                 ErrorReason::UnsupportedMapping,
                 "",
-                "custom codec bindings require a declared callable signature",
+                "custom XML codec binding must be xml:<Rust module path>",
             ));
         }
         let names = model_names(bundle)?;
@@ -41,7 +44,7 @@ impl XmlCodecEmitter for RustXmlEmitter {
             if model.mappings.xml.is_none() {
                 continue;
             }
-            let plan = plan(bundle, &names, id)?;
+            let plan = plan(bundle, &names, bindings, id)?;
             emit_reader(&mut out, &plan);
             emit_writer(&mut out, &plan);
         }

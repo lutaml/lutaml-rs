@@ -74,7 +74,7 @@ pub(super) fn ns_lit(ns: &Ns) -> String {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub(super) enum Kind {
     Str,
     Bool,
@@ -82,10 +82,11 @@ pub(super) enum Kind {
     Decimal,
     Float,
     QName,
+    Bound(String),
 }
 
 impl Kind {
-    pub(super) fn path(self) -> String {
+    fn path(&self) -> String {
         let n = match self {
             Self::Str => "Str",
             Self::Bool => "Bool",
@@ -93,8 +94,25 @@ impl Kind {
             Self::Decimal => "Decimal",
             Self::Float => "Float",
             Self::QName => "QName",
+            Self::Bound(_) => unreachable!("bound scalars have separate calls"),
         };
         format!("rt::Kind::{n}")
+    }
+
+    fn decode(&self, ord: &str, text: &str) -> String {
+        match self {
+            Self::Bound(module) => format!("rt::decode_bound({text}, &at, {module}::parse)?"),
+            _ => format!("rt::decode(doc, {ord}, {}, {text}, &at)?", self.path()),
+        }
+    }
+
+    pub(super) fn encode(&self, id: &str, member: &str) -> String {
+        match self {
+            Self::Bound(module) => {
+                format!("rt::encode_bound(x, {id}, {member}, {module}::format)?")
+            }
+            _ => format!("rt::encode(x, {}, {id}, {member})?", self.path()),
+        }
     }
 }
 
@@ -181,7 +199,12 @@ pub(super) struct Plan {
     pub writer_refusals: Vec<String>,
 }
 
-fn scalar_kind(bundle: &Bundle, id: &str, attribute: &Attribute) -> ContractResult<Kind> {
+fn scalar_kind(
+    bundle: &Bundle,
+    bindings: &TypeBindings,
+    id: &str,
+    attribute: &Attribute,
+) -> ContractResult<Kind> {
     let base = |name: &BuiltinType| -> ContractResult<Kind> {
         Ok(match name {
             BuiltinType::String
@@ -234,6 +257,9 @@ fn scalar_kind(bundle: &Bundle, id: &str, attribute: &Attribute) -> ContractResu
     match &attribute.value_type {
         TypeRef::Builtin { name } => base(name),
         TypeRef::Value { id: vt } => {
+            if let Some(codec) = bindings.get(vt).and_then(TypeBinding::xml_codec_module) {
+                return Ok(Kind::Bound(codec.into()));
+            }
             let spec = bundle
                 .value_types
                 .get(vt)
@@ -299,6 +325,7 @@ fn model_ns(bundle: &Bundle, id: &str, target: &str, member: &str) -> ContractRe
 pub(super) fn plan(
     bundle: &Bundle,
     names: &BTreeMap<String, String>,
+    bindings: &TypeBindings,
     id: &str,
 ) -> ContractResult<Plan> {
     let model = &bundle.models[id];
@@ -329,7 +356,9 @@ pub(super) fn plan(
             Operation::Sequence(_) | Operation::Choice(_) => out
                 .writer_refusals
                 .push("the sequence compositor is not written by this emitter".into()),
-            Operation::Field(field) => field_plan(bundle, names, id, &own, field, &mut out)?,
+            Operation::Field(field) => {
+                field_plan(bundle, names, bindings, id, &own, field, &mut out)?
+            }
             _ => {}
         }
     }
@@ -339,6 +368,7 @@ pub(super) fn plan(
 fn field_plan(
     bundle: &Bundle,
     names: &BTreeMap<String, String>,
+    bindings: &TypeBindings,
     id: &str,
     own: &Ns,
     field: &Field,
@@ -363,7 +393,7 @@ fn field_plan(
                 ident,
                 collection,
                 cdata: field.cdata,
-                kind: scalar_kind(bundle, id, &field.attribute)?,
+                kind: scalar_kind(bundle, bindings, id, &field.attribute)?,
             });
         }
         XmlRuleKind::AnyAttribute => {
@@ -378,7 +408,7 @@ fn field_plan(
                     "a collection cannot be one XML attribute",
                 ));
             }
-            let kind = scalar_kind(bundle, id, &field.attribute)?;
+            let kind = scalar_kind(bundle, bindings, id, &field.attribute)?;
             let (accept, outns) = match &field.namespace {
                 Namespace::Uri { uri, prefix } => (
                     accept_list(&[Some(uri)]),
@@ -466,7 +496,7 @@ fn field_plan(
                     }
                 }
                 None => (
-                    Child::Scalar(scalar_kind(bundle, id, attribute)?),
+                    Child::Scalar(scalar_kind(bundle, bindings, id, attribute)?),
                     own.clone(),
                 ),
             };
@@ -560,10 +590,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     .unwrap();
     for (i, a) in p.attrs.iter().enumerate() {
         let first = q(&a.names[0]);
-        let value = present(&format!(
-            "rt::decode(doc, ord, {}, raw, &at)?",
-            a.kind.path()
-        ));
+        let value = present(&a.kind.decode("ord", "raw"));
         writeln!(out,
             " if let Some(raw) = &s.attrs[{i}] {{ let at_loc = format!(\"{{loc}}/@{{}}\", {first}); let at = rt::Where {{ id: {id}, attribute: {}, rule: {first}, loc: &at_loc }}; m.{} = {value}; }}",
             q(&a.member), a.ident).unwrap();
@@ -579,10 +606,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             let (prelude, value, optional) = match &e.child {
                 Child::Scalar(k) => (
                     at.clone(),
-                    format!(
-                        "rt::decode(doc, hit.ord, {}, &doc.text_of(hit.ord), &at)?",
-                        k.path()
-                    ),
+                    k.decode("hit.ord", "&doc.text_of(hit.ord)"),
                     true,
                 ),
                 Child::Model(n) => (
@@ -646,12 +670,10 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             q(&c.member)
         );
         if c.collection {
-            writeln!(out, " if !s.content_list.is_empty() {{ {at} let mut list = Vec::new(); for t in &s.content_list {{ if let Some(v) = rt::decode(doc, ord, {}, t, &at)? {{ list.push(v); }} }} m.{} = Presence::Value(list); }}", c.kind.path(), c.ident).unwrap();
+            let decode = c.kind.decode("ord", "t");
+            writeln!(out, " if !s.content_list.is_empty() {{ {at} let mut list = Vec::new(); for t in &s.content_list {{ if let Some(v) = {decode} {{ list.push(v); }} }} m.{} = Presence::Value(list); }}", c.ident).unwrap();
         } else {
-            let value = present(&format!(
-                "rt::decode(doc, ord, {}, &s.content_text, &at)?",
-                c.kind.path()
-            ));
+            let value = present(&c.kind.decode("ord", "&s.content_text"));
             writeln!(out, " {{ {at} m.{} = {value}; }}", c.ident).unwrap();
         }
     }
