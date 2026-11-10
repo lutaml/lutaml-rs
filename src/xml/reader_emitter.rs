@@ -102,6 +102,7 @@ impl Kind {
 pub(super) enum Pol {
     Omit,
     AsNil,
+    AsEmpty,
     AsBlank,
 }
 
@@ -110,6 +111,7 @@ impl Pol {
         match self {
             Self::Omit => "rt::Policy::Omit",
             Self::AsNil => "rt::Policy::AsNil",
+            Self::AsEmpty => "rt::Policy::AsEmpty",
             Self::AsBlank => "rt::Policy::AsBlank",
         }
     }
@@ -264,6 +266,7 @@ fn policy(id: &str, field: &Field) -> ContractResult<(Pol, Pol)> {
             RenderAction::Boolean(true) => affirmative,
             RenderAction::Nil | RenderAction::AsNil => Pol::AsNil,
             RenderAction::Blank | RenderAction::AsBlank => Pol::AsBlank,
+            RenderAction::Other(name) if name == "as_empty" => Pol::AsEmpty,
             RenderAction::Other(name) => {
                 return Err(refuse(
                     id,
@@ -665,5 +668,5 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         .map_or("None".to_string(), |r| format!("Some({})", q(r)));
     let accept = str_list(&accept_list(&[p.own.as_ref().map(|n| n.0.as_str())]));
     writeln!(out,
-        "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}").unwrap();
+        "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate_shape().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}").unwrap();
 }

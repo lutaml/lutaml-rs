@@ -155,7 +155,7 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
     };
     writeln!(
         out,
-        "fn write_{name}_root(v: &{name}, order: Option<&[super::contracts::ContentToken]>) -> ContractResult<String> {{\n v.validate().map_err(|e| rt::fail(ErrorReason::NotSerializable, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/output\", e.reason))?;\n let el = {{ {root} }}?;\n rt::to_xml({id}, el)\n}}\npub fn write_{name}_xml(v: &{name}) -> ContractResult<String> {{\n write_{name}_root(v, None)\n}}"
+        "fn write_{name}_root(v: &{name}, order: Option<&[super::contracts::ContentToken]>) -> ContractResult<String> {{\n v.validate_shape().map_err(|e| rt::fail(ErrorReason::NotSerializable, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/output\", e.reason))?;\n let el = {{ {root} }}?;\n rt::to_xml({id}, el)\n}}\npub fn write_{name}_xml(v: &{name}) -> ContractResult<String> {{\n write_{name}_root(v, None)\n}}"
     )
     .unwrap();
     writeln!(

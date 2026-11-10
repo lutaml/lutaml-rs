@@ -59,6 +59,19 @@ pub(super) fn bundle(n: &Node) -> ContractResult<()> {
                     e
                 })?;
             }
+            if m.get("choices").is_some()
+                && !caps
+                    .array()
+                    .unwrap()
+                    .iter()
+                    .any(|c| c.string() == Some("model.choices.v1"))
+            {
+                return Err(failure(
+                    ErrorReason::CapabilityMissing,
+                    &pointer(&at, "choices"),
+                    "model.choices.v1 capability required",
+                ));
+            }
             for (format, mapping) in m.get("mappings").and_then(Node::object).unwrap_or(&[]) {
                 if !caps
                     .array()

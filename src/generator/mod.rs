@@ -1,6 +1,8 @@
 //! Static Rust source emission. Schemas are data; only caller-supplied bindings
 //! may name external Rust types. No grammar is interpreted at runtime.
+mod model_choices;
 use crate::contracts::*;
+use model_choices::{choice_attribute, compile_model_choices};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write;
 
@@ -342,6 +344,7 @@ struct ModelPlan {
     id: String,
     name: String,
     ordered_content: bool,
+    choice_checks: String,
     attrs: Vec<AttrPlan>,
 }
 struct AttrPlan {
@@ -536,7 +539,11 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
                 shaped_ty: shape(a, &ty),
                 required: a.required,
                 bounded: bounds.is_some(),
-                bounds,
+                bounds: if choice_attribute(m, &a.name) {
+                    None
+                } else {
+                    bounds
+                },
                 nested_validate: a.enumeration.is_none()
                     && (a.discriminator.is_some()
                         || a.reference.is_some()
@@ -551,6 +558,7 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
             id: id.clone(),
             name: name.clone(),
             ordered_content: m.ordered_content.is_some(),
+            choice_checks: compile_model_choices(m, id)?,
             attrs,
         });
     }
@@ -694,7 +702,7 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
             .unwrap();
         }
     }
-    output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{\n");
+    output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}\npub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}\nfn validate_phase(&self, choices:bool)->Result<(),ValidationError>{\n");
     for a in &model.attrs {
         let field = &a.field;
         let err = format!(
@@ -724,11 +732,11 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
         }
         if a.nested_validate {
             if a.bounded {
-                writeln!(output,"if let Presence::Value(values)=&self.{field} {{ for v in values {{ v.validate()?; }} }}").unwrap();
+                writeln!(output,"if let Presence::Value(values)=&self.{field} {{ for v in values {{ v.validate_phase(choices)?; }} }}").unwrap();
             } else {
                 writeln!(
                     output,
-                    "if let Presence::Value(v)=&self.{field} {{ v.validate()?; }}"
+                    "if let Presence::Value(v)=&self.{field} {{ v.validate_phase(choices)?; }}"
                 )
                 .unwrap();
             }
@@ -760,6 +768,9 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
             .unwrap();
         }
         writeln!(output,"_ => return Err({err}), }}; if index>=count || !seen.insert((member,index)) {{ return Err({err}); }} }} }} }}").unwrap();
+    }
+    if !model.choice_checks.is_empty() {
+        writeln!(output, "if choices {{ {} }}", model.choice_checks).unwrap();
     }
     output.push_str("Ok(()) }\n}\n");
 }
@@ -886,11 +897,15 @@ fn emit_union(output: &mut String, union: &UnionPlan, id: &str) {
     output.push_str("_ => Err(serde::de::Error::custom(\"unknown discriminator\")), } } }\n");
     writeln!(
         output,
-        "impl {ty} {{ pub fn validate(&self)->Result<(),ValidationError>{{ match self {{"
+        "impl {ty} {{ pub fn validate(&self)->Result<(),ValidationError>{{self.validate_phase(true)}} pub fn validate_shape(&self)->Result<(),ValidationError>{{self.validate_phase(false)}} fn validate_phase(&self,choices:bool)->Result<(),ValidationError>{{ match self {{"
     )
     .unwrap();
     for (index, case) in cases.iter().enumerate() {
-        write!(output, "Self::Case{index}(v) => {{ v.validate()?; ").unwrap();
+        write!(
+            output,
+            "Self::Case{index}(v) => {{ v.validate_phase(choices)?; "
+        )
+        .unwrap();
         if let Some(member) = &case.declared {
             write!(output, "if let Presence::Value(t)=&v.{member} {{ if t!={} {{ return Err(invalid({}, {}, \"unknown_discriminator\")); }} }} ", quote(&case.tag), quote(id), quote(field)).unwrap();
         }
@@ -1131,7 +1146,7 @@ impl PargBindingEmitter for RustEmitter {
             if assignments.len() < model.attributes.len() || model.ordered_content.is_some() {
                 assignments.push("..Default::default()".into());
             }
-            writeln!(output,"pub fn {function}({})->Result<{model_name},ValidationError>{{ let mut value={model_name}{{ {} }}; value.apply_defaults()?; value.validate()?; Ok(value) }}",args.join(", "),assignments.join(", ")).unwrap();
+            writeln!(output,"pub fn {function}({})->Result<{model_name},ValidationError>{{ let mut value={model_name}{{ {} }}; value.apply_defaults()?; value.validate_shape()?; Ok(value) }}",args.join(", "),assignments.join(", ")).unwrap();
         }
         Ok(BTreeMap::from([("parg_bindings.rs".into(), output)]))
     }

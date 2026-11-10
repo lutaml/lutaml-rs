@@ -44,6 +44,7 @@ fn model(name: &str, attributes: Vec<Attribute>, rules: Vec<KeyRule>) -> ModelDo
             ..Default::default()
         },
         ordered_content: None,
+        choices: None,
     }
 }
 fn rule(

@@ -500,7 +500,9 @@ pub enum Policy {
     Omit,
     /// Write `xsi:nil="true"`.
     AsNil,
-    /// Write an empty value.
+    /// Write an empty element; nil XML attributes remain omitted.
+    AsEmpty,
+    /// Write an empty value, including a nil XML attribute.
     AsBlank,
 }
 

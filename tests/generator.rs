@@ -38,6 +38,7 @@ fn model(name: &str, attributes: Vec<Attribute>) -> ModelDocument {
         attributes,
         mappings: Mappings::default(),
         ordered_content: None,
+        choices: None,
     }
 }
 fn bundle() -> Bundle {

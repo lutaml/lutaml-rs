@@ -551,6 +551,28 @@ pub struct ModelDocument {
     pub mappings: Mappings,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ordered_content: Option<OrderedContent>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choices: Option<ModelChoices>,
+}
+/// Versioned class-level choice validation, deliberately deferred until validate().
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ModelChoices {
+    pub version: u32,
+    pub validation: String,
+    pub groups: Vec<ModelChoiceGroup>,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ModelChoiceGroup {
+    pub min: u64,
+    pub max: Option<u64>,
+    pub format: Option<String>,
+    pub members: Vec<ModelChoiceMember>,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ModelChoiceMember {
+    Attribute { attribute: String },
+    Choice { choice: Box<ModelChoiceGroup> },
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Bundle {
