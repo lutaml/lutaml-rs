@@ -15,6 +15,16 @@ name = "lutaml-rs"
 path = "src/main.rs"
 required-features = ["generator"]
 
+[[bin]]
+name = "mml-xml-codegen"
+path = "src/bin/mml-xml-codegen.rs"
+required-features = ["generator", "xml"]
+
+[[bin]]
+name = "omml-xml-codegen"
+path = "src/bin/omml-xml-codegen.rs"
+required-features = ["generator", "xml"]
+
 [features]
 default = ["generator"]
 # Host-only loading, canonical identity, and artifact production.
