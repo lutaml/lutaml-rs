@@ -395,7 +395,11 @@ pub(super) fn plan(
             || mapping.root.as_ref().is_some_and(|r| r.mixed == Some(true)),
         tokens: model.ordered_content.is_some(),
         simple_sequence: flat_sequence(mapping, model.ordered_content.is_some(), true),
-        initialize_missing_sequence_collections: flat_sequence(mapping, model.ordered_content.is_some(), false),
+        initialize_missing_sequence_collections: flat_sequence(
+            mapping,
+            model.ordered_content.is_some(),
+            false,
+        ),
         attrs: Vec::new(),
         elems: Vec::new(),
         content: None,
@@ -564,8 +568,10 @@ fn field_plan(
                 },
             };
             // Match native flat-sequence occurrence semantics for repeatable members.
-            let repeated_sequence =
-                out.initialize_missing_sequence_collections && collection && nil == Pol::Omit && empty == Pol::AsEmpty;
+            let repeated_sequence = out.initialize_missing_sequence_collections
+                && collection
+                && nil == Pol::Omit
+                && empty == Pol::AsEmpty;
             out.elems.push(ElemPlan {
                 member: field.member.clone(),
                 ident,
@@ -743,7 +749,11 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         writeln!(out, " if !s.any.is_empty() {{ m.{ident} = Presence::Value(NeutralHash::from_string_pairs(s.any)); }}").unwrap();
     }
     if p.tokens {
-        writeln!(out, " m.__lml_content = Presence::Value(model_tokens(&s.tokens));").unwrap();
+        writeln!(
+            out,
+            " m.__lml_content = Presence::Value(model_tokens(&s.tokens));"
+        )
+        .unwrap();
     }
     out.push_str(" Ok(m)\n}\n");
     let root = p
