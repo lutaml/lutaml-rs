@@ -215,3 +215,32 @@ fn malformed_closed_string_enumerations_are_refused() {
         ErrorReason::InvalidDocument
     );
 }
+
+#[test]
+fn lexical_builtin_requires_a_trusted_binding_and_calls_its_xml_codec() {
+    let bundle = lutaml_rs::lml::load_bundle(
+        include_bytes!("fixtures/omml_datetime_bundle.json"),
+        InputFormat::Json,
+    )
+    .unwrap();
+    let error = RustEmitter
+        .generate_models(&bundle, &TypeBindings::new())
+        .unwrap_err();
+    assert_eq!(error.reason, ErrorReason::UnsupportedType);
+    assert_eq!(error.attribute.as_deref(), Some("date"));
+
+    let bindings = TypeBindings::from([(
+        "builtin:date_time".into(),
+        TypeBinding {
+            rust_type: "crate::date::DateTime".into(),
+            codec: Some("xml:crate::date".into()),
+        },
+    )]);
+    let models = RustEmitter.generate_models(&bundle, &bindings).unwrap();
+    assert!(models["models.rs"].contains("Presence<crate::date::DateTime>"));
+    let xml = RustXmlEmitter
+        .generate_xml_codecs(&bundle, &bindings)
+        .unwrap();
+    assert!(xml["xml_codecs.rs"].contains("crate::date::parse"));
+    assert!(xml["xml_codecs.rs"].contains("crate::date::format"));
+}

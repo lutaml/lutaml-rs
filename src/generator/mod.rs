@@ -282,6 +282,18 @@ fn builtin(t: &BuiltinType, id: &str, field: &str) -> ContractResult<String> {
     }
     .into())
 }
+// Caller bindings implement lexical builtins the generator cannot realize itself.
+pub(crate) fn builtin_binding<'a>(
+    name: &BuiltinType,
+    bindings: &'a TypeBindings,
+) -> Option<&'a TypeBinding> {
+    if builtin(name, "", "").is_ok() {
+        return None;
+    }
+    let wire = serde_json::to_value(name).ok()?;
+    bindings.get(&format!("builtin:{}", wire.as_str()?))
+}
+
 fn field_type(
     a: &Attribute,
     id: &str,
@@ -295,7 +307,9 @@ fn field_type(
         .map(|id| TypeRef::Model { id: id.clone() })
         .unwrap_or_else(|| a.value_type.clone());
     match target {
-        TypeRef::Builtin { name } => builtin(&name, id, &a.name),
+        TypeRef::Builtin { name } => builtin_binding(&name, bindings)
+            .map(|binding| Ok(binding.rust_type.clone()))
+            .unwrap_or_else(|| builtin(&name, id, &a.name)),
         TypeRef::Model { id: target } => names
             .get(&target)
             .map(|n| format!("Box<{n}>"))

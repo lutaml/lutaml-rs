@@ -258,7 +258,14 @@ fn scalar_kind(
         })
     };
     match &attribute.value_type {
-        TypeRef::Builtin { name } => base(name),
+        TypeRef::Builtin { name } => {
+            if let Some(codec) = crate::generator::builtin_binding(name, bindings)
+                .and_then(TypeBinding::xml_codec_module)
+            {
+                return Ok(Kind::Bound(codec.into()));
+            }
+            base(name)
+        }
         TypeRef::Value { id: vt } => {
             if let Some(codec) = bindings.get(vt).and_then(TypeBinding::xml_codec_module) {
                 return Ok(Kind::Bound(codec.into()));
@@ -325,7 +332,7 @@ fn model_ns(bundle: &Bundle, id: &str, target: &str, member: &str) -> ContractRe
         })
 }
 
-fn flat_sequence(mapping: &XmlMapping) -> bool {
+fn flat_sequence(mapping: &XmlMapping, ordered: bool) -> bool {
     let Some([group]) = mapping.sequence.as_deref() else {
         return false;
     };
@@ -342,12 +349,19 @@ fn flat_sequence(mapping: &XmlMapping) -> bool {
     let Some(members) = &group.members else {
         return false;
     };
-    !members.is_empty()
-        && mapping
-            .rules
+    if members.is_empty()
+        || members
             .iter()
-            .filter(|rule| rule.kind == XmlRuleKind::Element)
-            .eq(members)
+            .any(|member| member.kind != XmlRuleKind::Element || member.name.is_none())
+    {
+        return false;
+    }
+    let mut elements = mapping
+        .rules
+        .iter()
+        .filter(|rule| rule.kind == XmlRuleKind::Element)
+        .peekable();
+    ordered || elements.peek().is_none() || elements.eq(members)
 }
 
 pub(super) fn plan(
@@ -373,14 +387,7 @@ pub(super) fn plan(
         mixed: mapping.mixed_content == Some(true)
             || mapping.root.as_ref().is_some_and(|r| r.mixed == Some(true)),
         tokens: model.ordered_content.is_some(),
-        simple_sequence: model.ordered_content.is_none()
-            && mapping.ordered != Some(true)
-            && mapping.mixed_content != Some(true)
-            && !mapping
-                .root
-                .as_ref()
-                .is_some_and(|root| root.mixed == Some(true))
-            && flat_sequence(mapping),
+        simple_sequence: flat_sequence(mapping, model.ordered_content.is_some()),
         attrs: Vec::new(),
         elems: Vec::new(),
         content: None,

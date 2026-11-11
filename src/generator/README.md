@@ -28,7 +28,8 @@ must enforce the declared base/facets. A binding can additionally name
 The module exports `parse(&str) -> Result<Option<T>, E>` (receiving the raw
 text, with `None` representing nil) and `format(&T) -> Result<String, E>`;
 errors must implement `ToString`. JSON continues using the type's serde
-representation. Only caller-supplied module paths can select these functions. Builtins needing lexical codecs, custom
+representation. Unsupported lexical builtins accept the same binding under a
+key such as `builtin:date_time`. Only caller-supplied module paths can select these functions. Builtins needing lexical codecs, custom
 collection classes and nonliteral structured defaults currently refuse with named
 contract errors. No unchecked JSON field substitutes for an unsupported type.
 
