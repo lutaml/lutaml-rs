@@ -427,9 +427,8 @@ fn model_choice_group(
     keys(n, &["min", "max", "format", "members"], at)?;
     let min = field(n, "min", at)?.integer();
     let max = field(n, "max", at)?;
-    if min.is_none_or(|v| v < 0)
-        || !(matches!(max, Node::Null) || max.integer().is_some_and(|v| v >= 0))
-    {
+    // integer() yields u64, so a present bound is already non-negative.
+    if min.is_none() || !(matches!(max, Node::Null) || max.integer().is_some()) {
         return Err(invalid(at, "invalid model choice bounds"));
     }
     let format = field(n, "format", at)?;
