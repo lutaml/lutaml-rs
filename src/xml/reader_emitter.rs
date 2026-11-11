@@ -361,7 +361,10 @@ fn flat_sequence(mapping: &XmlMapping, ordered: bool) -> bool {
         .iter()
         .filter(|rule| rule.kind == XmlRuleKind::Element)
         .peekable();
-    ordered || elements.peek().is_none() || elements.eq(members)
+    // Imported field mappings can appear only in the expanded sequence.
+    // Direct mappings must retain their relative order within that sequence.
+    let mut remaining = members.iter();
+    ordered || elements.all(|element| remaining.any(|member| member == element))
 }
 
 pub(super) fn plan(
