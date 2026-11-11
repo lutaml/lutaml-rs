@@ -406,9 +406,41 @@ impl ModelEmitter for RustEmitter {
         bindings: &TypeBindings,
     ) -> ContractResult<SourceMap> {
         let plan = plan_models(bundle, bindings)?;
-        Ok(BTreeMap::from([("models.rs".into(), emit_models(&plan))]))
+        Ok(BTreeMap::from([(
+            "models.rs".into(),
+            emit_models(&plan, false),
+        )]))
     }
 }
+impl RustEmitter {
+    /// XML consumers can opt in to the same serde model implementations via
+    /// the "model-serde" feature. The native field and validation plan stays
+    /// identical, so XML-only builds avoid expanding irrelevant derive macros.
+    pub fn generate_xml_models(
+        &self,
+        bundle: &Bundle,
+        bindings: &TypeBindings,
+    ) -> ContractResult<SourceMap> {
+        let plan = plan_models(bundle, bindings)?;
+        for model in &plan.models {
+            for attr in &model.attrs {
+                if attr.union.is_some() || (attr.nested_validate && attr.default_wire.is_some()) {
+                    return Err(error(
+                        ErrorReason::UnsupportedType,
+                        &model.id,
+                        &attr.name,
+                        "XML-only model generation requires no serde-dependent model defaults or unions",
+                    ));
+                }
+            }
+        }
+        Ok(BTreeMap::from([(
+            "models.rs".into(),
+            emit_models(&plan, true),
+        )]))
+    }
+}
+
 /// Make every decision and validation for the bundle; emission is then pure.
 fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan> {
     let mut hoisted = effective_discriminators(bundle)?;
@@ -638,13 +670,13 @@ fn validate_ordered_content(id: &str, m: &ModelDocument) -> ContractResult<()> {
     Ok(())
 }
 /// Pure emission: a function of the plan only, with no decisions or errors.
-fn emit_models(plan: &Plan) -> String {
+fn emit_models(plan: &Plan, optional_serde: bool) -> String {
     let mut output = include_str!("runtime.rs.txt").to_owned();
     if plan.needs_same_integer {
         output.push_str("fn same_integer(a:&ExactInteger,b:&ExactInteger)->bool { fn parts(s:&str)->(bool,&str) { let negative=s.starts_with('-'); let digits=s.trim_start_matches(['-','+']).trim_start_matches('0'); (negative&&!digits.is_empty(),digits) } parts(a.as_str())==parts(b.as_str()) }\n");
     }
     for model in &plan.models {
-        emit_model(&mut output, model);
+        emit_model(&mut output, model, optional_serde);
     }
     output
 }
@@ -671,7 +703,7 @@ fn emit_enum(output: &mut String, en: &EnumPlan) {
     }
     output.push_str("Err(serde::de::Error::custom(\"invalid enum value\")) } }\n");
 }
-fn emit_model(output: &mut String, model: &ModelPlan) {
+fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
     let (id, name) = (&model.id, &model.name);
     for a in &model.attrs {
         if let Some(union) = &a.union {
@@ -681,12 +713,41 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
             emit_enum(output, en);
         }
     }
-    writeln!(output,"#[allow(non_camel_case_types, non_snake_case)]\n#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]\n#[serde(deny_unknown_fields)]\npub struct {name} {{").unwrap();
+    output.push_str("#[allow(non_camel_case_types, non_snake_case)]\n");
+    if optional_serde {
+        output.push_str("#[derive(Clone, Debug, PartialEq, Eq)]\n#[cfg_attr(feature = \"model-serde\", derive(Serialize, Deserialize))]\n");
+    } else {
+        output.push_str("#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]\n");
+    }
+    let serde_attribute = |attribute: &str, output: &mut String| {
+        if optional_serde {
+            writeln!(
+                output,
+                "#[cfg_attr(feature = \"model-serde\", serde({attribute}))]"
+            )
+            .unwrap();
+        } else {
+            writeln!(output, "#[serde({attribute})]").unwrap();
+        }
+    };
+    serde_attribute("deny_unknown_fields", output);
+    writeln!(output, "pub struct {name} {{").unwrap();
     for a in &model.attrs {
-        writeln!(output,"#[serde(rename = {}, default, skip_serializing_if = \"Presence::is_absent\")]\npub {}: Presence<{}>,",quote(&a.name),a.field,a.shaped_ty).unwrap();
+        serde_attribute(
+            &format!(
+                "rename = {}, default, skip_serializing_if = \"Presence::is_absent\"",
+                quote(&a.name)
+            ),
+            output,
+        );
+        writeln!(output, "pub {}: Presence<{}>,", a.field, a.shaped_ty).unwrap();
     }
     if model.ordered_content {
-        output.push_str("#[serde(default, skip_serializing_if = \"Presence::is_absent\")]\npub __lml_content: Presence<Vec<ContentToken>>,\n");
+        serde_attribute(
+            "default, skip_serializing_if = \"Presence::is_absent\"",
+            output,
+        );
+        output.push_str("pub __lml_content: Presence<Vec<ContentToken>>,\n");
     }
     output.push_str("}\n");
     writeln!(

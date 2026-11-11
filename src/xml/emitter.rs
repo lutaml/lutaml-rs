@@ -40,6 +40,7 @@ impl XmlCodecEmitter for RustXmlEmitter {
         }
         let names = model_names(bundle)?;
         let mut out = String::from(HEADER);
+        out.push_str(include_str!("token_bridge.rs.txt"));
         for (id, model) in &bundle.models {
             if model.mappings.xml.is_none() {
                 continue;

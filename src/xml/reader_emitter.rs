@@ -635,7 +635,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     .unwrap();
     writeln!(
         out,
-        "fn read_{name}_el(doc: &rt::Doc, ord: usize, loc: &str) -> ContractResult<{name}> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = {name}::default();"
+        "fn read_{name}_el(doc: &rt::Doc, ord: usize, loc: &str) -> ContractResult<Box<{name}>> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = Box::new({name}::default());"
     )
     .unwrap();
     for (i, a) in p.attrs.iter().enumerate() {
@@ -661,7 +661,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                 ),
                 Child::Model(n) => (
                     String::new(),
-                    format!("Box::new(read_{n}_el(doc, hit.ord, &hit.loc)?)"),
+                    format!("read_{n}_el(doc, hit.ord, &hit.loc)?"),
                     false,
                 ),
                 Child::Poly {
@@ -675,7 +675,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                     let mut arms = String::new();
                     for (index, (tag, case)) in cases.iter().enumerate() {
                         arms += &format!(
-                            "Some({}) => {union}::Case{index}(Box::new(read_{case}_el(doc, hit.ord, &hit.loc)?)), ",
+                            "Some({}) => {union}::Case{index}(read_{case}_el(doc, hit.ord, &hit.loc)?), ",
                             q(tag)
                         );
                     }
@@ -683,7 +683,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                     // hold through the case that maps to it.
                     if let Some(index) = cases.iter().position(|(_, case)| case == base) {
                         arms += &format!(
-                            "None => {union}::Case{index}(Box::new(read_{base}_el(doc, hit.ord, &hit.loc)?)), "
+                            "None => {union}::Case{index}(read_{base}_el(doc, hit.ord, &hit.loc)?), "
                         );
                     }
                     let dloc = format!(
@@ -735,7 +735,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         writeln!(out, " if !s.any.is_empty() {{ m.{ident} = Presence::Value(NeutralHash::from_string_pairs(s.any)); }}").unwrap();
     }
     if p.tokens {
-        writeln!(out, " m.__lml_content = Presence::Value(rt::retype(&s.tokens, &rt::Where {{ id: {id}, attribute: \"__lml_content\", rule: \"\", loc }})?);").unwrap();
+        writeln!(out, " m.__lml_content = Presence::Value(model_tokens(&s.tokens));").unwrap();
     }
     out.push_str(" Ok(m)\n}\n");
     let root = p
@@ -744,5 +744,5 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         .map_or("None".to_string(), |r| format!("Some({})", q(r)));
     let accept = str_list(&accept_list(&[p.own.as_ref().map(|n| n.0.as_str())]));
     writeln!(out,
-        "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate_shape().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}").unwrap();
+        "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate_shape().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(*m)\n}}").unwrap();
 }

@@ -136,7 +136,7 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
         .unwrap();
     }
     if p.tokens {
-        writeln!(out, " let at = rt::Where {{ id: {id}, attribute: \"__lml_content\", rule: \"\", loc: \"/__lml_content\" }};\n values.tokens = match order {{ Some(t) => Some(t.to_vec()), None => match &v.__lml_content {{ Presence::Value(t) => Some(rt::retype(t, &at)?), _ => None }} }};").unwrap();
+        writeln!(out, " values.tokens = match order {{ Some(t) => Some(t.to_vec()), None => match &v.__lml_content {{ Presence::Value(t) => Some(contract_tokens(t)), _ => None }} }};").unwrap();
     } else {
         writeln!(out, " if order.is_some() {{ return Err(rt::fail(ErrorReason::InvalidOrderedContent, {id}, None, None, \"/order\", \"the model carries no ordered content\")); }}").unwrap();
     }

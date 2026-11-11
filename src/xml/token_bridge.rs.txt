@@ -1,0 +1,28 @@
+
+fn model_tokens(tokens: &[super::contracts::ContentToken]) -> Vec<super::models::ContentToken> {
+    use super::contracts::{ContentToken as Input, TextSource as InputText};
+    use super::models::{ContentToken as Output, TextSource as OutputText};
+    let text = |source: &InputText| match source {
+        InputText::Member { attribute, index } => OutputText::Member { attribute: attribute.clone(), index: *index },
+        InputText::Literal { literal } => OutputText::Literal { literal: literal.clone() },
+    };
+    tokens.iter().map(|token| match token {
+        Input::Element { attribute, index } => Output::Element { attribute: attribute.clone(), index: *index },
+        Input::Text { source } => Output::Text { source: text(source) },
+        Input::Cdata { source } => Output::Cdata { source: text(source) },
+    }).collect()
+}
+
+fn contract_tokens(tokens: &[super::models::ContentToken]) -> Vec<super::contracts::ContentToken> {
+    use super::models::{ContentToken as Input, TextSource as InputText};
+    use super::contracts::{ContentToken as Output, TextSource as OutputText};
+    let text = |source: &InputText| match source {
+        InputText::Member { attribute, index } => OutputText::Member { attribute: attribute.clone(), index: *index },
+        InputText::Literal { literal } => OutputText::Literal { literal: literal.clone() },
+    };
+    tokens.iter().map(|token| match token {
+        Input::Element { attribute, index } => Output::Element { attribute: attribute.clone(), index: *index },
+        Input::Text { source } => Output::Text { source: text(source) },
+        Input::Cdata { source } => Output::Cdata { source: text(source) },
+    }).collect()
+}
