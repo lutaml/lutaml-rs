@@ -677,7 +677,7 @@ pub struct TypeBinding {
     pub codec: Option<String>,
 }
 impl TypeBinding {
-    pub(crate) fn xml_codec_module(&self) -> Option<&str> {
+    pub fn xml_codec_module(&self) -> Option<&str> {
         let path = self.codec.as_deref()?.strip_prefix("xml:")?;
         path.strip_prefix("::")
             .unwrap_or(path)
