@@ -193,6 +193,7 @@ pub(super) struct Plan {
     pub mixed: bool,
     pub tokens: bool,
     pub simple_sequence: bool,
+    pub initialize_missing_sequence_collections: bool,
     pub attrs: Vec<AttrPlan>,
     pub elems: Vec<ElemPlan>,
     pub content: Option<ContentPlan>,
@@ -332,7 +333,7 @@ fn model_ns(bundle: &Bundle, id: &str, target: &str, member: &str) -> ContractRe
         })
 }
 
-fn flat_sequence(mapping: &XmlMapping, ordered: bool) -> bool {
+fn flat_sequence(mapping: &XmlMapping, ordered: bool, imported_fields: bool) -> bool {
     let Some([group]) = mapping.sequence.as_deref() else {
         return false;
     };
@@ -361,6 +362,9 @@ fn flat_sequence(mapping: &XmlMapping, ordered: bool) -> bool {
         .iter()
         .filter(|rule| rule.kind == XmlRuleKind::Element)
         .peekable();
+    if !imported_fields {
+        return ordered || elements.peek().is_none() || elements.eq(members);
+    }
     // Imported field mappings can appear only in the expanded sequence.
     // Direct mappings must retain their relative order within that sequence.
     let mut remaining = members.iter();
@@ -390,7 +394,8 @@ pub(super) fn plan(
         mixed: mapping.mixed_content == Some(true)
             || mapping.root.as_ref().is_some_and(|r| r.mixed == Some(true)),
         tokens: model.ordered_content.is_some(),
-        simple_sequence: flat_sequence(mapping, model.ordered_content.is_some()),
+        simple_sequence: flat_sequence(mapping, model.ordered_content.is_some(), true),
+        initialize_missing_sequence_collections: flat_sequence(mapping, model.ordered_content.is_some(), false),
         attrs: Vec::new(),
         elems: Vec::new(),
         content: None,
@@ -560,7 +565,7 @@ fn field_plan(
             };
             // Match native flat-sequence occurrence semantics for repeatable members.
             let repeated_sequence =
-                out.simple_sequence && collection && nil == Pol::Omit && empty == Pol::AsEmpty;
+                out.initialize_missing_sequence_collections && collection && nil == Pol::Omit && empty == Pol::AsEmpty;
             out.elems.push(ElemPlan {
                 member: field.member.clone(),
                 ident,
