@@ -227,7 +227,7 @@ pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
 Ok(()) }
 pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}
 pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}
-fn validate_phase(&self, choices:bool)->Result<(),ValidationError>{
+fn validate_phase(&self, _choices:bool)->Result<(),ValidationError>{
 Ok(()) }
 }
 #[allow(non_camel_case_types)]

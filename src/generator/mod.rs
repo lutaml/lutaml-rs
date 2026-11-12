@@ -779,7 +779,22 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
             .unwrap();
         }
     }
-    output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}\npub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}\nfn validate_phase(&self, choices:bool)->Result<(),ValidationError>{\n");
+    output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}\npub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}\n");
+    let choice_parameter = if model.choice_checks.is_empty()
+        && !model
+            .attrs
+            .iter()
+            .any(|attribute| attribute.nested_validate)
+    {
+        "_choices"
+    } else {
+        "choices"
+    };
+    writeln!(
+        output,
+        "fn validate_phase(&self, {choice_parameter}:bool)->Result<(),ValidationError>{{"
+    )
+    .unwrap();
     for a in &model.attrs {
         let field = &a.field;
         let err = format!(

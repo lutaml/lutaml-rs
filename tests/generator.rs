@@ -114,6 +114,24 @@ fn parg() -> Vec<PargClassBinding> {
     }]
 }
 #[test]
+fn xml_models_keep_serde_optional_for_scalar_models() {
+    let b = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Leaf@default".into()],
+        models: BTreeMap::from([("Leaf@default".into(), model("Leaf", vec![string("text")]))]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    };
+    let generated = RustEmitter
+        .generate_xml_models(&b, &TypeBindings::new())
+        .unwrap();
+    let source = &generated["models.rs"];
+    assert!(source.contains("cfg_attr(feature = \"model-serde\", derive(Serialize, Deserialize))"));
+    assert!(source.contains("fn validate_phase(&self, _choices:bool)"));
+}
+
+#[test]
 fn static_sources_are_deterministic_and_match_compiled_fixture() {
     let b = bundle();
     let sources = RustEmitter
