@@ -1,0 +1,104 @@
+{
+  "rows": [
+    {
+      "id": "empty",
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"></m:CT_PosH>",
+      "expected": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"/>",
+      "values": {
+        "align": [],
+        "pos_offset": [],
+        "relative_from": "column"
+      },
+      "valid": false
+    },
+    {
+      "id": "align",
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"><m:align>left</m:align></m:CT_PosH>",
+      "expected": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\">\n  <m:align>left</m:align>\n</m:CT_PosH>",
+      "values": {
+        "align": [
+          "left"
+        ],
+        "pos_offset": [],
+        "relative_from": "column"
+      },
+      "valid": false
+    },
+    {
+      "id": "offset",
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"><m:posOffset>10</m:posOffset></m:CT_PosH>",
+      "expected": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\">\n  <m:posOffset>10</m:posOffset>\n</m:CT_PosH>",
+      "values": {
+        "align": [],
+        "pos_offset": [
+          "10"
+        ],
+        "relative_from": "column"
+      },
+      "valid": false
+    },
+    {
+      "id": "both",
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"><m:align>left</m:align><m:posOffset>10</m:posOffset></m:CT_PosH>",
+      "expected": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\">\n  <m:align>left</m:align>\n  <m:posOffset>10</m:posOffset>\n</m:CT_PosH>",
+      "values": {
+        "align": [
+          "left"
+        ],
+        "pos_offset": [
+          "10"
+        ],
+        "relative_from": "column"
+      },
+      "valid": false
+    },
+    {
+      "id": "reversed",
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"><m:posOffset>10</m:posOffset><m:align>left</m:align></m:CT_PosH>",
+      "expected": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\">\n  <m:align>left</m:align>\n  <m:posOffset>10</m:posOffset>\n</m:CT_PosH>",
+      "values": {
+        "align": [
+          "left"
+        ],
+        "pos_offset": [
+          "10"
+        ],
+        "relative_from": "column"
+      },
+      "valid": false
+    },
+    {
+      "id": "repeated",
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"><m:align>left</m:align><m:align>right</m:align></m:CT_PosH>",
+      "expected": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\">\n  <m:align>left</m:align>\n  <m:align>right</m:align>\n</m:CT_PosH>",
+      "values": {
+        "align": [
+          "left",
+          "right"
+        ],
+        "pos_offset": [],
+        "relative_from": "column"
+      },
+      "valid": false
+    },
+    {
+      "id": "empty_align",
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"><m:align/></m:CT_PosH>",
+      "expected": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\">\n  <m:align/>\n</m:CT_PosH>",
+      "values": {
+        "align": [
+          ""
+        ],
+        "pos_offset": [],
+        "relative_from": "column"
+      },
+      "valid": false
+    }
+  ],
+  "refusals": [
+    {
+      "input": "<m:CT_PosH xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" m:relativeFrom=\"column\"><m:align>wrong</m:align></m:CT_PosH>",
+      "id": "invalid_enum"
+    }
+  ]
+}

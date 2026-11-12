@@ -225,7 +225,9 @@ kind: Presence::Absent,
 impl Leaf {
 pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
 Ok(()) }
-pub fn validate(&self)->Result<(),ValidationError>{
+pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}
+pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}
+fn validate_phase(&self, _choices:bool)->Result<(),ValidationError>{
 Ok(()) }
 }
 #[allow(non_camel_case_types)]
@@ -257,9 +259,9 @@ Some("leaf") => { Ok(Self::Case0(Box::new(serde_json::from_value(serde_json::Val
 Some("node") => { payload.remove("kind"); Ok(Self::Case1(Box::new(serde_json::from_value(serde_json::Value::Object(payload)).map_err(serde::de::Error::custom)?))) },
 None => { Ok(Self::Case0(Box::new(serde_json::from_value(serde_json::Value::Object(payload)).map_err(serde::de::Error::custom)?))) },
 _ => Err(serde::de::Error::custom("unknown discriminator")), } } }
-impl Node_item_Union { pub fn validate(&self)->Result<(),ValidationError>{ match self {
-Self::Case0(v) => { v.validate()?; if let Presence::Value(t)=&v.kind { if t!="leaf" { return Err(invalid("Node@default", "item", "unknown_discriminator")); } } Ok(()) },
-Self::Case1(v) => { v.validate()?; Ok(()) },
+impl Node_item_Union { pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)} pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)} fn validate_phase(&self,choices:bool)->Result<(),ValidationError>{ match self {
+Self::Case0(v) => { v.validate_phase(choices)?; if let Presence::Value(t)=&v.kind { if t!="leaf" { return Err(invalid("Node@default", "item", "unknown_discriminator")); } } Ok(()) },
+Self::Case1(v) => { v.validate_phase(choices)?; Ok(()) },
 } } }
 #[allow(non_camel_case_types, non_snake_case)]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -293,11 +295,13 @@ impl Node {
 pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
 if self.enabled.is_absent() { self.enabled=serde_json::from_str::<Presence<Node_enabled_Enum>>("false").map_err(|_|invalid("Node@default", "enabled", "non_serializable_default"))?; }
 Ok(()) }
-pub fn validate(&self)->Result<(),ValidationError>{
+pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}
+pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}
+fn validate_phase(&self, choices:bool)->Result<(),ValidationError>{
 if matches!(self.title,Presence::Absent|Presence::Null) { return Err(invalid("Node@default", "title", "invalid_document")); }
 if let Presence::Value(v)=&self.tags { if (v.len() as u64) < 1u64 || (v.len() as u64) > 2u64 { return Err(invalid("Node@default", "tags", "invalid_document")); } }
-if let Presence::Value(v)=&self.child { v.validate()?; }
-if let Presence::Value(v)=&self.item { v.validate()?; }
+if let Presence::Value(v)=&self.child { v.validate_phase(choices)?; }
+if let Presence::Value(v)=&self.item { v.validate_phase(choices)?; }
 if matches!(self.__lml_content,Presence::Null) { return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")); }
 if let Presence::Value(tokens)=&self.__lml_content { let mut seen=std::collections::BTreeSet::new(); for token in tokens { if let Some((member,index))=token.reference() { let count=match member {
 "title" => match &self.title { Presence::Value(_)=>1, _=>0 },

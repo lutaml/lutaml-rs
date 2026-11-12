@@ -463,6 +463,15 @@ pub fn decode<T: DeserializeOwned>(
         .map_err(|e| at.fail(ErrorReason::InvalidDocument, e))
 }
 
+/// Decodes an unmodified lexical value with a caller-trusted target binding.
+pub fn decode_bound<T, E: ToString>(
+    text: &str,
+    at: &Where<'_>,
+    parse: impl FnOnce(&str) -> Result<Option<T>, E>,
+) -> ContractResult<Option<T>> {
+    parse(text).map_err(|error| at.fail(ErrorReason::InvalidDocument, error))
+}
+
 /// A discriminator selector: the attribute on the child element, if present.
 pub fn discriminator(doc: &Doc, ord: usize, names: &[&str], ns: &[&str]) -> Option<String> {
     doc.attribute(ord, names, ns).map(String::from)
@@ -500,7 +509,9 @@ pub enum Policy {
     Omit,
     /// Write `xsi:nil="true"`.
     AsNil,
-    /// Write an empty value.
+    /// Write an empty element; nil XML attributes remain omitted.
+    AsEmpty,
+    /// Write an empty value, including a nil XML attribute.
     AsBlank,
 }
 
@@ -744,6 +755,25 @@ pub fn assemble(
         el.content.push(text_node(text, content_cdata));
     }
     Ok(el)
+}
+
+/// Encodes one typed member with a caller-trusted target binding.
+pub fn encode_bound<T, E: ToString>(
+    value: &T,
+    id: &str,
+    member: &str,
+    format: impl FnOnce(&T) -> Result<String, E>,
+) -> ContractResult<String> {
+    format(value).map_err(|error| {
+        fail(
+            ErrorReason::NotSerializable,
+            id,
+            Some(member),
+            None,
+            "/output",
+            error.to_string(),
+        )
+    })
 }
 
 /// Encodes one typed member to XML text.

@@ -1,6 +1,9 @@
 //! Static Rust source emission. Schemas are data; only caller-supplied bindings
 //! may name external Rust types. No grammar is interpreted at runtime.
+pub(crate) mod model_choices;
+pub(crate) mod named_values;
 use crate::contracts::*;
+use model_choices::{choice_attribute, compile_model_choices};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write;
 
@@ -279,6 +282,18 @@ fn builtin(t: &BuiltinType, id: &str, field: &str) -> ContractResult<String> {
     }
     .into())
 }
+// Caller bindings implement lexical builtins the generator cannot realize itself.
+pub(crate) fn builtin_binding<'a>(
+    name: &BuiltinType,
+    bindings: &'a TypeBindings,
+) -> Option<&'a TypeBinding> {
+    if builtin(name, "", "").is_ok() {
+        return None;
+    }
+    let wire = serde_json::to_value(name).ok()?;
+    bindings.get(&format!("builtin:{}", wire.as_str()?))
+}
+
 fn field_type(
     a: &Attribute,
     id: &str,
@@ -292,7 +307,9 @@ fn field_type(
         .map(|id| TypeRef::Model { id: id.clone() })
         .unwrap_or_else(|| a.value_type.clone());
     match target {
-        TypeRef::Builtin { name } => builtin(&name, id, &a.name),
+        TypeRef::Builtin { name } => builtin_binding(&name, bindings)
+            .map(|binding| Ok(binding.rust_type.clone()))
+            .unwrap_or_else(|| builtin(&name, id, &a.name)),
         TypeRef::Model { id: target } => names
             .get(&target)
             .map(|n| format!("Box<{n}>"))
@@ -342,6 +359,7 @@ struct ModelPlan {
     id: String,
     name: String,
     ordered_content: bool,
+    choice_checks: String,
     attrs: Vec<AttrPlan>,
 }
 struct AttrPlan {
@@ -388,12 +406,45 @@ impl ModelEmitter for RustEmitter {
         bindings: &TypeBindings,
     ) -> ContractResult<SourceMap> {
         let plan = plan_models(bundle, bindings)?;
-        Ok(BTreeMap::from([("models.rs".into(), emit_models(&plan))]))
+        Ok(BTreeMap::from([(
+            "models.rs".into(),
+            emit_models(&plan, false),
+        )]))
     }
 }
+impl RustEmitter {
+    /// XML consumers can opt in to the same serde model implementations via
+    /// the "model-serde" feature. The native field and validation plan stays
+    /// identical, so XML-only builds avoid expanding irrelevant derive macros.
+    pub fn generate_xml_models(
+        &self,
+        bundle: &Bundle,
+        bindings: &TypeBindings,
+    ) -> ContractResult<SourceMap> {
+        let plan = plan_models(bundle, bindings)?;
+        for model in &plan.models {
+            for attr in &model.attrs {
+                if attr.union.is_some() || (attr.nested_validate && attr.default_wire.is_some()) {
+                    return Err(error(
+                        ErrorReason::UnsupportedType,
+                        &model.id,
+                        &attr.name,
+                        "XML-only model generation requires no serde-dependent model defaults or unions",
+                    ));
+                }
+            }
+        }
+        Ok(BTreeMap::from([(
+            "models.rs".into(),
+            emit_models(&plan, true),
+        )]))
+    }
+}
+
 /// Make every decision and validation for the bundle; emission is then pure.
 fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan> {
-    let hoisted = effective_discriminators(bundle)?;
+    let mut hoisted = effective_discriminators(bundle)?;
+    named_values::realize_named_enums(&mut hoisted, bindings)?;
     let bundle = &hoisted;
     let names = model_names(bundle)?;
     let needs_same_integer = bundle.models.values().flat_map(|m| &m.attributes).any(|a| {
@@ -536,7 +587,11 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
                 shaped_ty: shape(a, &ty),
                 required: a.required,
                 bounded: bounds.is_some(),
-                bounds,
+                bounds: if choice_attribute(m, &a.name) {
+                    None
+                } else {
+                    bounds
+                },
                 nested_validate: a.enumeration.is_none()
                     && (a.discriminator.is_some()
                         || a.reference.is_some()
@@ -551,6 +606,7 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
             id: id.clone(),
             name: name.clone(),
             ordered_content: m.ordered_content.is_some(),
+            choice_checks: compile_model_choices(m, id)?,
             attrs,
         });
     }
@@ -614,13 +670,13 @@ fn validate_ordered_content(id: &str, m: &ModelDocument) -> ContractResult<()> {
     Ok(())
 }
 /// Pure emission: a function of the plan only, with no decisions or errors.
-fn emit_models(plan: &Plan) -> String {
+fn emit_models(plan: &Plan, optional_serde: bool) -> String {
     let mut output = include_str!("runtime.rs.txt").to_owned();
     if plan.needs_same_integer {
         output.push_str("fn same_integer(a:&ExactInteger,b:&ExactInteger)->bool { fn parts(s:&str)->(bool,&str) { let negative=s.starts_with('-'); let digits=s.trim_start_matches(['-','+']).trim_start_matches('0'); (negative&&!digits.is_empty(),digits) } parts(a.as_str())==parts(b.as_str()) }\n");
     }
     for model in &plan.models {
-        emit_model(&mut output, model);
+        emit_model(&mut output, model, optional_serde);
     }
     output
 }
@@ -647,7 +703,7 @@ fn emit_enum(output: &mut String, en: &EnumPlan) {
     }
     output.push_str("Err(serde::de::Error::custom(\"invalid enum value\")) } }\n");
 }
-fn emit_model(output: &mut String, model: &ModelPlan) {
+fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
     let (id, name) = (&model.id, &model.name);
     for a in &model.attrs {
         if let Some(union) = &a.union {
@@ -657,12 +713,41 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
             emit_enum(output, en);
         }
     }
-    writeln!(output,"#[allow(non_camel_case_types, non_snake_case)]\n#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]\n#[serde(deny_unknown_fields)]\npub struct {name} {{").unwrap();
+    output.push_str("#[allow(non_camel_case_types, non_snake_case)]\n");
+    if optional_serde {
+        output.push_str("#[derive(Clone, Debug, PartialEq, Eq)]\n#[cfg_attr(feature = \"model-serde\", derive(Serialize, Deserialize))]\n");
+    } else {
+        output.push_str("#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]\n");
+    }
+    let serde_attribute = |attribute: &str, output: &mut String| {
+        if optional_serde {
+            writeln!(
+                output,
+                "#[cfg_attr(feature = \"model-serde\", serde({attribute}))]"
+            )
+            .unwrap();
+        } else {
+            writeln!(output, "#[serde({attribute})]").unwrap();
+        }
+    };
+    serde_attribute("deny_unknown_fields", output);
+    writeln!(output, "pub struct {name} {{").unwrap();
     for a in &model.attrs {
-        writeln!(output,"#[serde(rename = {}, default, skip_serializing_if = \"Presence::is_absent\")]\npub {}: Presence<{}>,",quote(&a.name),a.field,a.shaped_ty).unwrap();
+        serde_attribute(
+            &format!(
+                "rename = {}, default, skip_serializing_if = \"Presence::is_absent\"",
+                quote(&a.name)
+            ),
+            output,
+        );
+        writeln!(output, "pub {}: Presence<{}>,", a.field, a.shaped_ty).unwrap();
     }
     if model.ordered_content {
-        output.push_str("#[serde(default, skip_serializing_if = \"Presence::is_absent\")]\npub __lml_content: Presence<Vec<ContentToken>>,\n");
+        serde_attribute(
+            "default, skip_serializing_if = \"Presence::is_absent\"",
+            output,
+        );
+        output.push_str("pub __lml_content: Presence<Vec<ContentToken>>,\n");
     }
     output.push_str("}\n");
     writeln!(
@@ -694,7 +779,22 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
             .unwrap();
         }
     }
-    output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{\n");
+    output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}\npub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}\n");
+    let choice_parameter = if model.choice_checks.is_empty()
+        && !model
+            .attrs
+            .iter()
+            .any(|attribute| attribute.nested_validate)
+    {
+        "_choices"
+    } else {
+        "choices"
+    };
+    writeln!(
+        output,
+        "fn validate_phase(&self, {choice_parameter}:bool)->Result<(),ValidationError>{{"
+    )
+    .unwrap();
     for a in &model.attrs {
         let field = &a.field;
         let err = format!(
@@ -724,11 +824,11 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
         }
         if a.nested_validate {
             if a.bounded {
-                writeln!(output,"if let Presence::Value(values)=&self.{field} {{ for v in values {{ v.validate()?; }} }}").unwrap();
+                writeln!(output,"if let Presence::Value(values)=&self.{field} {{ for v in values {{ v.validate_phase(choices)?; }} }}").unwrap();
             } else {
                 writeln!(
                     output,
-                    "if let Presence::Value(v)=&self.{field} {{ v.validate()?; }}"
+                    "if let Presence::Value(v)=&self.{field} {{ v.validate_phase(choices)?; }}"
                 )
                 .unwrap();
             }
@@ -760,6 +860,9 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
             .unwrap();
         }
         writeln!(output,"_ => return Err({err}), }}; if index>=count || !seen.insert((member,index)) {{ return Err({err}); }} }} }} }}").unwrap();
+    }
+    if !model.choice_checks.is_empty() {
+        writeln!(output, "if choices {{ {} }}", model.choice_checks).unwrap();
     }
     output.push_str("Ok(()) }\n}\n");
 }
@@ -886,11 +989,15 @@ fn emit_union(output: &mut String, union: &UnionPlan, id: &str) {
     output.push_str("_ => Err(serde::de::Error::custom(\"unknown discriminator\")), } } }\n");
     writeln!(
         output,
-        "impl {ty} {{ pub fn validate(&self)->Result<(),ValidationError>{{ match self {{"
+        "impl {ty} {{ pub fn validate(&self)->Result<(),ValidationError>{{self.validate_phase(true)}} pub fn validate_shape(&self)->Result<(),ValidationError>{{self.validate_phase(false)}} fn validate_phase(&self,choices:bool)->Result<(),ValidationError>{{ match self {{"
     )
     .unwrap();
     for (index, case) in cases.iter().enumerate() {
-        write!(output, "Self::Case{index}(v) => {{ v.validate()?; ").unwrap();
+        write!(
+            output,
+            "Self::Case{index}(v) => {{ v.validate_phase(choices)?; "
+        )
+        .unwrap();
         if let Some(member) = &case.declared {
             write!(output, "if let Presence::Value(t)=&v.{member} {{ if t!={} {{ return Err(invalid({}, {}, \"unknown_discriminator\")); }} }} ", quote(&case.tag), quote(id), quote(field)).unwrap();
         }
@@ -1131,7 +1238,7 @@ impl PargBindingEmitter for RustEmitter {
             if assignments.len() < model.attributes.len() || model.ordered_content.is_some() {
                 assignments.push("..Default::default()".into());
             }
-            writeln!(output,"pub fn {function}({})->Result<{model_name},ValidationError>{{ let mut value={model_name}{{ {} }}; value.apply_defaults()?; value.validate()?; Ok(value) }}",args.join(", "),assignments.join(", ")).unwrap();
+            writeln!(output,"pub fn {function}({})->Result<{model_name},ValidationError>{{ let mut value={model_name}{{ {} }}; value.apply_defaults()?; value.validate_shape()?; Ok(value) }}",args.join(", "),assignments.join(", ")).unwrap();
         }
         Ok(BTreeMap::from([("parg_bindings.rs".into(), output)]))
     }
