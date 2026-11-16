@@ -1,0 +1,187 @@
+#[cfg(test)]
+mod tests {
+use super::{models::*,json_codecs::*};
+use serde_json::json;
+#[test] fn aliases_presence_and_typed_false_default() {
+ let mut model=read_Record_json(r#"{"old_label":"hello","enabled":false,"items":[]}"#).unwrap();assert!(matches!(model.amount,Presence::Absent));assert_eq!(serde_json::to_value(&model).unwrap()["enabled"],false);
+ assert_eq!(serde_json::from_str::<serde_json::Value>(&write_Record_json(&model).unwrap()).unwrap(),json!({"label":"hello"}));
+ model.enabled=Presence::Absent;let absent=write_Record_json(&model).unwrap();assert!(!absent.contains("enabled"));
+ let null=read_Record_json(r#"{"label":null,"amount":null}"#).unwrap();assert!(matches!(null.title,Presence::Null));assert!(matches!(null.amount,Presence::Null));assert_eq!(serde_json::from_str::<serde_json::Value>(&write_Record_json(&null).unwrap()).unwrap(),json!({"label":null,"amount":null}));
+}
+#[test] fn exact_boundaries_use_merged_scalar_validation() {
+ let wire=r#"{"amount":"123456789012345678901234567890.00100","count":"9007199254740993123456789"}"#;let model=read_Record_json(wire).unwrap();assert_eq!(serde_json::from_str::<serde_json::Value>(&write_Record_json(&model).unwrap()).unwrap(),serde_json::from_str::<serde_json::Value>(wire).unwrap());
+ assert!(read_Record_json(r#"{"count":9007199254740993}"#).is_err());assert!(read_Record_json(r#"{"amount":0.1}"#).is_err());assert!(read_Record_json(r#"{"amount":"1e100"}"#).is_err());
+}
+#[test] fn portable_float_vectors_round_trip_byte_for_byte_and_refuse_noncanonical() {
+ let v:serde_json::Value=serde_json::from_str(include_str!("float_wire_vectors.json")).unwrap();
+ let encode=v["encode"].as_array().unwrap();assert_eq!(encode.len(),37);
+ for e in encode {
+  let bits=u64::from_str_radix(e["bits"].as_str().unwrap(),16).unwrap();let wire=e["wire"].as_str().unwrap();
+  let input=format!("{{\"value\":{}}}",serde_json::to_string(wire).unwrap());
+  let model=read_Measure_json(&input).unwrap();
+  match &model.value { Presence::Value(f)=>{assert_eq!(f.get().to_bits(),bits,"{wire}");assert_eq!(super::values::PortableFloat::new(f64::from_bits(bits)).unwrap().to_wire(),wire);} _=>panic!("{wire}") }
+  assert_eq!(write_Measure_json(&model).unwrap(),input,"{wire}");
+ }
+ let verdicts=v["canonical"].as_array().unwrap();assert_eq!(verdicts.len(),21);
+ for c in verdicts {
+  let text=c["text"].as_str().unwrap();let input=format!("{{\"value\":{}}}",serde_json::to_string(text).unwrap());
+  assert_eq!(read_Measure_json(&input).is_ok(),c["canonical"].as_bool().unwrap(),"{text:?}");
+  assert_eq!(super::values::PortableFloat::parse(text).is_ok(),c["canonical"].as_bool().unwrap(),"{text:?}");
+ }
+ assert!(read_Measure_json(r#"{"value":0.71}"#).is_err());assert!(read_Measure_json(r#"{"value":1}"#).is_err());
+ let mut defaulted=read_Measure_json("{}").unwrap();defaulted.apply_defaults().unwrap();assert_eq!(write_Measure_json(&defaulted).unwrap(),r#"{"ratio":"0.71"}"#);
+}
+#[test] fn nested_models_and_discriminators_use_wire_aliases() {
+ let model=read_Record_json(r#"{"child":{"old_name":"nested"},"selected":{"kind":"item","wire_name":"selected"}}"#).unwrap();let output=serde_json::from_str::<serde_json::Value>(&write_Record_json(&model).unwrap()).unwrap();assert_eq!(output,json!({"child":{"wire_name":"nested"},"selected":{"kind":"item","wire_name":"selected"}}));
+ let err=read_Record_json(r#"{"selected":{"kind":"unknown"}}"#).unwrap_err();assert_eq!(err.reason,super::contracts::ErrorReason::UnknownDiscriminator);
+ let bare=read_Record_json(r#"{"selected":{}}"#).unwrap();assert_eq!(serde_json::from_str::<serde_json::Value>(&write_Record_json(&bare).unwrap()).unwrap(),json!({"selected":{"kind":"item"}}),"missing tag reads as the base type, like Ruby; Item has no kind member, so the base tag is written");
+}
+#[test] fn root_keyed_collection_preserves_remaining_wire_mappings() {
+ let wire=r#"{"first":{"wire_name":"a","price":"2.00"},"second":{"wire_name":"b"}}"#;let model=read_Root_json(wire).unwrap();let output=write_Root_json(&model).unwrap();assert_eq!(serde_json::from_str::<serde_json::Value>(&output).unwrap(),serde_json::from_str::<serde_json::Value>(wire).unwrap());
+}
+#[test] fn child_keyed_collection_preserves_nested_paths() {
+ let wire=r#"{"records":{"a":{"path":{"name":"alpha"},"price":"3.100"},"b":{"path":{"name":"beta"}}}}"#;let model=read_Children_json(wire).unwrap();let output=write_Children_json(&model).unwrap();assert_eq!(serde_json::from_str::<serde_json::Value>(&output).unwrap(),serde_json::from_str::<serde_json::Value>(wire).unwrap());
+}
+#[test] fn malformed_unknown_duplicate_and_alias_conflicts_reject() {
+ for wire in ["{",r#"{"unknown":1}"#,r#"{"label":"a","label":"b"}"#,r#"{"label":"a","old_label":"b"}"#,r#"{"enabled":"false"}"#] {let error=read_Record_json(wire).unwrap_err();assert_eq!(error.reason,super::contracts::ErrorReason::InvalidDocument);assert_eq!(error.format.as_deref(),Some("json"));}
+}
+
+#[test] fn mixed_content_tokens_survive_json_mapping() {
+ let wire=r#"{"label":"title","__lml_content":[{"kind":"text","literal":"before"},{"kind":"element","attribute":"title","index":0},{"kind":"cdata","literal":"after"}]}"#;
+ let model=read_Record_json(wire).unwrap();let output=write_Record_json(&model).unwrap();assert_eq!(serde_json::from_str::<serde_json::Value>(&output).unwrap(),serde_json::from_str::<serde_json::Value>(wire).unwrap());
+}
+
+#[test] fn pinned_ruby_portable_profile_replays_every_required_case() {
+ let replay:serde_json::Value=serde_json::from_str(include_str!("oracle-cases.json")).unwrap();
+ assert_eq!(replay["profile"],"portable-exact-json-v1");
+ let expected:Vec<_>=replay["expected_case_ids"].as_array().unwrap().iter().map(|id|id.as_str().unwrap()).collect();
+ let mut executed=Vec::new();
+ for case in replay["cases"].as_array().unwrap() {
+  assert_eq!(case["model_id"],"LmlConformance::Record@default","missing static model reader for case {}",case["id"]);
+  assert_eq!(case["wire_profile"],"portable-exact-json-v1");assert_eq!(case["format"],"json");
+  let model=read_LmlConformance_Record_json(case["input"].as_str().unwrap()).unwrap();
+  assert!(case["expected_error"].is_null());assert_eq!(serde_json::to_value(&model).unwrap(),case["expected_data"]);
+  assert_eq!(case["comparison"],"data");let output=write_LmlConformance_Record_json(&model).unwrap();
+  assert_eq!(serde_json::from_str::<serde_json::Value>(&output).unwrap(),serde_json::from_str::<serde_json::Value>(case["expected_output"].as_str().unwrap()).unwrap());
+  executed.push(case["id"].as_str().unwrap());
+ }
+ assert_eq!(expected,executed);assert_eq!(expected.len(),1);assert_eq!(executed.len(),1);
+ println!("profile=portable-exact-json-v1 expected={expected:?} executed={executed:?} expected_count={} executed_count={}",expected.len(),executed.len());
+}
+
+#[test] fn typed_integer_enum_metadata_stays_numeric_and_matches_exact_values() {
+ let model=read_LmlPreservation_TypedEnum_json(r#"{"number":"0001","flag":true}"#).unwrap();
+ assert_eq!(serde_json::from_str::<serde_json::Value>(&write_LmlPreservation_TypedEnum_json(&model).unwrap()).unwrap(),json!({"number":"1","flag":true}));
+ let mut defaulted=read_BigEnum_json("{}").unwrap();assert!(matches!(defaulted.number,Presence::Absent));defaulted.apply_defaults().unwrap();assert_eq!(serde_json::from_str::<serde_json::Value>(&write_BigEnum_json(&defaulted).unwrap()).unwrap(),json!({"number":"9007199254740993123456789"}));
+ let big=read_BigEnum_json(r#"{"number":"009007199254740993123456789"}"#).unwrap();
+ assert_eq!(serde_json::from_str::<serde_json::Value>(&write_BigEnum_json(&big).unwrap()).unwrap(),json!({"number":"9007199254740993123456789"}));
+ for wire in [r#"{"number":"3"}"#,r#"{"number":1}"#,r#"{"number":"9007199254740993123456789"}"#] { assert!(read_LmlPreservation_TypedEnum_json(wire).is_err()); }
+}
+
+#[test] fn ruby_numeric_integer_default_applies_as_the_exact_integer_wire_value() {
+ let mut model=read_IntDefault_json("{}").unwrap();assert!(matches!(model.count,Presence::Absent));
+ model.apply_defaults().unwrap();
+ assert!(matches!(&model.count,Presence::Value(v) if v.as_str()=="5"));
+ let explicit=read_IntDefault_json(r#"{"count":"7"}"#).unwrap();assert_eq!(write_IntDefault_json(&explicit).unwrap(),r#"{"count":"7"}"#);
+ let same=read_IntDefault_json(r#"{"count":"5"}"#).unwrap();assert_eq!(write_IntDefault_json(&same).unwrap(),"{}","a value equal to the numeric default is omitted like any default");
+}
+#[test] fn generated_rust_literals_preserve_control_text() {
+ let control_text="\0\u{8}\u{c}\u{2028}";
+ let mut model=read_ControlText_json("{}").unwrap();
+ model.apply_defaults().unwrap();
+ assert!(matches!(&model.default_value,Presence::Value(value) if value==control_text));
+ let wire=serde_json::to_string(&serde_json::Map::from_iter([
+  (control_text.into(),serde_json::json!("alias value")),
+  ("enum_value".into(),serde_json::json!(control_text)),
+  ("default_value".into(),serde_json::json!(control_text)),
+ ])).unwrap();
+ let model=read_ControlText_json(&wire).unwrap();
+ assert!(matches!(&model.aliased,Presence::Value(value) if value=="alias value"));
+ assert!(matches!(&model.enum_value,Presence::Value(ControlText_enum_value_Enum::Case0)));
+ assert!(matches!(&model.default_value,Presence::Value(value) if value==control_text));
+ let encoded=write_ControlText_json(&model).unwrap();
+ let value:serde_json::Value=serde_json::from_str(&encoded).unwrap();
+ assert_eq!(value[control_text],"alias value");
+ assert_eq!(value["enum_value"],control_text);
+ assert_eq!(value["default_value"],control_text);
+}
+#[test] fn hash_holds_neutral_json_in_wire_order_and_refuses_what_ts_refuses() {
+ // Ruby, TS and Rust agree: any exact neutral JSON value, keys in wire order, byte-equal on write.
+ let wire=r#"{"meta":{"k":[1,null],"n":2,"f":0.1,"big":"x","o":{"d":true}}}"#;
+ let model=read_Record_json(wire).unwrap();
+ assert_eq!(write_Record_json(&model).unwrap(),wire);
+ let Presence::Value(h)=&model.meta else { panic!("meta") };
+ assert_eq!(h.pairs().iter().map(|e|e.0.as_str()).collect::<Vec<_>>(),["k","n","f","big","o"]);
+ for exact in [r#"{"meta":{"a":1.5e-7,"b":1e+21,"c":9007199254740991,"d":-9007199254740991,"e":-1.5,"f":[],"g":{}}}"#] {
+  assert_eq!(write_Record_json(&read_Record_json(exact).unwrap()).unwrap(),exact.replace(r#","g":{}"#,r#","g":{}"#));
+ }
+ // Spellings a double cannot hold exactly are refused, like the TS strict reader.
+ for bad in ["9007199254740993","-9007199254740992","-0","1.0","1e20","1E+21","0.10","100000000000000000000","1e400","0.1e1"] {
+  let wire=format!(r#"{{"meta":{{"x":{bad}}}}}"#);
+  assert!(read_Record_json(&wire).is_err(),"{wire}");
+  let nested=format!(r#"{{"meta":{{"x":[{{"y":{bad}}}]}}}}"#);
+  assert!(read_Record_json(&nested).is_err(),"{nested}");
+ }
+ // Not an object, duplicate keys and lone surrogates are refused.
+ for bad in [r#"{"meta":[1]}"#,r#"{"meta":"s"}"#,r#"{"meta":{"a":1,"a":2}}"#,r#"{"meta":{"a":{"b":1,"b":1}}}"#,r#"{"meta":{"\ud800":1}}"#,r#"{"meta":{"a":"\udc00"}}"#] {
+  assert!(read_Record_json(bad).is_err(),"{bad}");
+ }
+ // Nesting past 200 is refused (serde_json stops the parser first, at its own limit).
+ let deep=|n:usize|format!(r#"{{"meta":{{"a":{}0{}}}}}"#,"[".repeat(n),"]".repeat(n));
+ assert!(read_Record_json(&deep(50)).is_ok());
+ assert!(read_Record_json(&deep(201)).is_err());
+ // A hand-built value nested past 200 is refused on write; 199 levels below the hash are written.
+ let nest=|n:usize|{let mut v=Neutral::Null;for _ in 0..n{v=Neutral::Array(vec![v]);}v};
+ let mut model=read_Record_json("{}").unwrap();
+ model.meta=Presence::Value(NeutralHash::from_pairs(vec![("a".into(),nest(199))]));
+ assert!(write_Record_json(&model).is_ok());
+ model.meta=Presence::Value(NeutralHash::from_pairs(vec![("a".into(),nest(200))]));
+ assert!(write_Record_json(&model).is_err());
+ // Numbers anywhere else still need the exact-string boundary.
+ for wire in [r#"{"label":1.5,"meta":{}}"#,r#"{"count":1.5}"#,r#"{"child":{"name":0.1}}"#,r#"{"items":[1.5]}"#,r#"{"extra":0.1}"#,r#"{"__lml_content":[{"kind":"element","attribute":"title","index":1.5}]}"#] {
+  let error=read_Record_json(wire).unwrap_err();
+  assert!(format!("{error:?}").contains("not a portable exact boundary")||format!("{error:?}").contains("exact value requires string"),"{wire}: {error:?}");
+ }
+}
+#[test] fn numeric_json_is_refused_with_the_portable_boundary_error_under_arbitrary_precision() {
+ for wire in [r#"{"label":"a","extra":1.5}"#,r#"{"label":"a","extra":1e2}"#,r#"{"label":"a","extra":123456789012345678901234567890}"#] {
+  let error=read_Record_json(wire).unwrap_err();
+  assert!(format!("{error:?}").contains("not a portable exact boundary")&&format!("{error:?}").contains("portable-exact-json-v1")&&format!("{error:?}").contains("ruby-native-v1"),"{wire}: {error:?}");
+ }
+ read_Record_json(r#"{"label":"a","__lml_content":[{"kind":"element","attribute":"title","index":0}]}"#).unwrap();
+}
+#[test] fn content_tokens_reject_unknown_and_contradictory_fields() {
+ for token in [r#"{"kind":"text","literal":"a","element":"x"}"#,r#"{"kind":"text","literal":"a","attribute":"title","index":0}"#,r#"{"kind":"element","attribute":"title","index":0,"literal":"a"}"#,r#"{"kind":"text","literal":"a","bogus":1}"#,r#"{"kind":"nope","literal":"a"}"#,r#"{"kind":"text"}"#] {
+  let wire=format!(r#"{{"label":"a","__lml_content":[{token}]}}"#);
+  let error=read_Record_json(&wire).unwrap_err();
+  assert_eq!(error.reason,super::contracts::ErrorReason::InvalidDocument,"{token}");
+ }
+}
+#[test] fn the_number_marker_key_carries_only_a_strict_json_number() {
+ let marker=r#""$serde_json::private::Number""#;
+ for smuggled in [r#""\"abc\"""#,r#""{\"id\":\"zz\"}""#,r#"" 1""#,r#""1 ""#,r#""+1""#,r#""01""#,r#""1.""#,r#""""#,r#""true""#] {
+  let wire=format!(r#"{{"label":"a","meta":{{"a":{{{marker}:{smuggled}}}}}}}"#);
+  assert!(read_Record_json(&wire).is_err(),"{wire}");
+ }
+ for wire in [format!(r#"{{"label":{{{marker}:"\"abc\""}}}}"#),format!(r#"{{"label":"a","meta":{{"a":{{{marker}:"1","b":2}}}}}}"#),format!(r#"{{"label":"a","meta":{{"a":{{{marker}:1}}}}}}"#)] { assert!(read_Record_json(&wire).is_err(),"{wire}"); }
+ assert!(read_Record_json(r#"{"label":"a","meta":{"a":1.5}}"#).is_ok());
+}
+#[test] fn hash_numbers_in_the_one_e_minus_six_range_keep_their_es_spelling() {
+ for ok in ["0.000001","0.0000012","0.000005","0.000009999","1.5e-7","-0.000001"] {
+  let wire=format!(r#"{{"label":"a","meta":{{"a":{ok}}}}}"#);
+  let model=read_Record_json(&wire).unwrap_or_else(|e|panic!("{wire}: {e:?}"));
+  assert_eq!(write_Record_json(&model).unwrap(),wire,"{wire}");
+ }
+ for bad in ["1e-6","1E-6","1.2e-6","0.0000010","1e-05","0.00001e0"] {
+  let wire=format!(r#"{{"label":"a","meta":{{"a":{bad}}}}}"#);
+  assert!(read_Record_json(&wire).is_err(),"{wire}");
+ }
+}
+#[test] fn hash_bundles_refuse_numbers_in_unmapped_keyed_collection_bodies() {
+ for wire in [r#"{"records":{"k":1.5}}"#,r#"{"records":{"k":{"path":{"name":"x"},"price":"1","extra":1.5}}}"#,r#"{"records":{"k":{"path":{"name":"x","extra":1.5},"price":"1"}}}"#,r#"{"records":{"k":{"path":1.5}}}"#] {
+  let error=read_Children_json(wire).unwrap_err();
+  assert!(format!("{error:?}").contains("not a portable exact boundary"),"{wire}: {error:?}");
+ }
+ read_Children_json(r#"{"records":{"k":{"path":{"name":"x"},"price":"1"}}}"#).unwrap();
+}
+}

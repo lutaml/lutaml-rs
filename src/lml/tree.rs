@@ -1,6 +1,7 @@
 use super::{failure, pointer};
 use crate::contracts::{ContractResult, ErrorReason, InputFormat};
 use serde::Serialize;
+use std::collections::HashSet;
 
 /// An ordered neutral syntax tree: JSON object order is retained until explicit
 /// canonicalization, and duplicate keys are rejected before a map can erase them.
@@ -123,6 +124,19 @@ pub fn parse(bytes: &[u8], format: InputFormat) -> ContractResult<Node> {
     }
 }
 
+/// Containers nested deeper than this are refused (Ruby DocumentValidator::MAX_DEPTH).
+pub(crate) const MAX_DEPTH: usize = 100;
+pub(crate) fn nesting(at: &str, depth: usize) -> ContractResult<()> {
+    if depth >= MAX_DEPTH {
+        return Err(failure(
+            ErrorReason::InvalidDocument,
+            at,
+            format!("nesting deeper than {MAX_DEPTH} levels"),
+        ));
+    }
+    Ok(())
+}
+
 struct Json<'a> {
     bytes: &'a [u8],
     pos: usize,
@@ -160,20 +174,15 @@ impl Json<'_> {
         ))
     }
     fn value(&mut self, at: &str, depth: usize) -> ContractResult<Node> {
-        if depth > 128 {
-            return Err(failure(
-                ErrorReason::InvalidDocument,
-                at,
-                "maximum nesting exceeded",
-            ));
-        }
         self.space();
         match self.bytes.get(self.pos) {
             Some(b'"') => Ok(Node::String(self.string(at)?)),
             Some(b'{') => {
+                nesting(at, depth)?;
                 self.pos += 1;
                 self.space();
                 let mut entries = Vec::new();
+                let mut names = HashSet::new();
                 if self.bytes.get(self.pos) == Some(&b'}') {
                     self.pos += 1;
                     return Ok(Node::Object(entries));
@@ -189,13 +198,9 @@ impl Json<'_> {
                     }
                     let key = self.string(at)?;
                     let child = pointer(at, &key);
-                    if entries.iter().any(|(existing, _)| existing == &key) {
+                    if !names.insert(key.clone()) {
                         return Err(failure(
-                            if at == "/models" || at == "/value_types" {
-                                ErrorReason::DuplicateId
-                            } else {
-                                ErrorReason::InvalidDocument
-                            },
+                            ErrorReason::InvalidDocument,
                             &child,
                             "duplicate object key",
                         ));
@@ -229,6 +234,7 @@ impl Json<'_> {
                 Ok(Node::Object(entries))
             }
             Some(b'[') => {
+                nesting(at, depth)?;
                 self.pos += 1;
                 self.space();
                 let mut entries = Vec::new();
@@ -270,6 +276,8 @@ impl Json<'_> {
                     "null" => Ok(Node::Null),
                     "true" => Ok(Node::Bool(true)),
                     "false" => Ok(Node::Bool(false)),
+                    // Ruby parses "-0" as the integer 0, so its identity is "0".
+                    "-0" => Ok(Node::Number(0.into())),
                     _ => token
                         .parse::<serde_json::Number>()
                         .map(Node::Number)

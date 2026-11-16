@@ -1,12 +1,13 @@
 use super::*;
+use std::collections::HashSet;
 
 pub(super) fn builtin(n: &Node, at: &str) -> ContractResult<()> {
     let name = string(n, at)?;
-    if ["float", "double"].contains(&name) {
+    if name == "double" {
         return Err(failure(
             ErrorReason::UnsupportedType,
             at,
-            "no lossless floating type contract",
+            "double is not a portable type; declare float",
         ));
     }
     if !BUILTINS.contains(&name) {
@@ -47,8 +48,6 @@ pub(super) fn attribute(n: &Node, at: &str) -> ContractResult<()> {
             "default",
             "initialize_empty",
             "discriminator",
-            "reference",
-            "enum",
             "values",
         ],
         at,
@@ -56,9 +55,11 @@ pub(super) fn attribute(n: &Node, at: &str) -> ContractResult<()> {
     let typ = field(n, "type", at)?;
     type_ref(typ, &pointer(at, "type"))?;
     for key in ["required", "initialize_empty"] {
-        boolean(field(n, key, at)?, &pointer(at, key))?;
+        if let Some(value) = n.get(key) {
+            boolean(value, &pointer(at, key))?;
+        }
     }
-    let collection = field(n, "collection", at)?;
+    let collection = n.get("collection").unwrap_or(&Node::Bool(false));
     if collection != &Node::Bool(false) {
         keys(
             collection,
@@ -70,7 +71,8 @@ pub(super) fn attribute(n: &Node, at: &str) -> ContractResult<()> {
             string(c, &format!("{at}/collection/class"))?;
         }
     }
-    let default = field(n, "default", at)?;
+    let absent = Node::Object(vec![("present".into(), Node::Bool(false))]);
+    let default = n.get("default").unwrap_or(&absent);
     let loc = pointer(at, "default");
     if default.get("proc").is_some() || default.get("lambda").is_some() {
         return Err(failure(
@@ -83,6 +85,16 @@ pub(super) fn attribute(n: &Node, at: &str) -> ContractResult<()> {
     match (field(default, "present", &loc)?, default.get("value")) {
         (Node::Bool(false), None) => {}
         (Node::Bool(true), Some(value)) => {
+            // A float default is one canonical float string (Ruby's float_default):
+            // never null, never a collection of floats.
+            let float = typ.get("kind").and_then(Node::string) == Some("builtin")
+                && typ.get("name").and_then(Node::string) == Some("float");
+            if float && (value == &Node::Null || collection != &Node::Bool(false)) {
+                return Err(invalid(
+                    &pointer(&loc, "value"),
+                    "float default must be a canonical float string",
+                ));
+            }
             if collection == &Node::Bool(false) {
                 typed_value(value, typ, &pointer(&loc, "value"))?;
             } else if value != &Node::Null {
@@ -101,20 +113,23 @@ pub(super) fn attribute(n: &Node, at: &str) -> ContractResult<()> {
             ))
         }
     }
-    if n.get("enum").is_some() && n.get("values").is_some() {
-        return Err(invalid(at, "enum and values cannot both be supplied"));
-    }
-    if let Some(values) = n.get("enum").or_else(|| n.get("values")) {
+    if let Some(values) = n.get("values") {
+        let mut keys = HashSet::new();
         let mut seen = Vec::new();
-        for (i, value) in array(values, &pointer(at, "enum"))?.iter().enumerate() {
-            typed_value(value, typ, &format!("{at}/enum/{i}"))?;
-            if seen.contains(&value) {
-                return Err(invalid(&pointer(at, "enum"), "duplicate enum value"));
+        for (i, value) in array(values, &pointer(at, "values"))?.iter().enumerate() {
+            enum_value(value, typ, &format!("{at}/values/{i}"))?;
+            // Hashed identity keeps the duplicate check linear in the list.
+            let identity = serde_json::to_string(value).expect("tree nodes serialize");
+            if !keys.insert(identity) {
+                return Err(invalid(&pointer(at, "values"), "duplicate enum value"));
             }
             seen.push(value);
         }
         if let Some(value) = default.get("value") {
-            if value != &Node::Null && collection == &Node::Bool(false) && !seen.contains(&value) {
+            if value != &Node::Null
+                && collection == &Node::Bool(false)
+                && !seen.iter().any(|entry| enum_equal(value, entry, typ))
+            {
                 return Err(failure(
                     ErrorReason::NonSerializableDefault,
                     &loc,
@@ -125,9 +140,6 @@ pub(super) fn attribute(n: &Node, at: &str) -> ContractResult<()> {
     }
     if let Some(d) = n.get("discriminator") {
         discriminator(d, &pointer(at, "discriminator"))?;
-    }
-    if let Some(r) = n.get("reference") {
-        string(r, &pointer(at, "reference"))?;
     }
     Ok(())
 }
@@ -144,21 +156,19 @@ pub(super) fn check_count(len: usize, bounds: &Node, at: &str) -> ContractResult
     }
     Ok(())
 }
+/// The one lexical rule for exact numbers, shared with `values::ExactDecimal`
+/// and `values::ExactInteger` (see `values::is_exact_decimal`/`is_exact_integer`).
 pub(super) fn exact(s: &str, decimal: bool) -> bool {
-    let s = s
-        .strip_prefix('-')
-        .or_else(|| s.strip_prefix('+'))
-        .unwrap_or(s);
-    let mut parts = s.split('.');
-    let first = parts.next().unwrap();
-    let second = parts.next();
-    !first.is_empty()
-        && first.bytes().all(|c| c.is_ascii_digit())
-        && parts.next().is_none()
-        && match second {
-            None => true,
-            Some(v) => decimal && !v.is_empty() && v.bytes().all(|c| c.is_ascii_digit()),
-        }
+    if decimal {
+        crate::values::is_exact_decimal(s)
+    } else {
+        crate::values::is_exact_integer(s)
+    }
+}
+fn is_integer_name(typ: &Node) -> bool {
+    typ.get("name")
+        .and_then(Node::string)
+        .is_some_and(|n| INTEGER_BUILTINS.contains(&n))
 }
 pub(super) fn typed_value(value: &Node, typ: &Node, at: &str) -> ContractResult<()> {
     if value == &Node::Null {
@@ -167,15 +177,16 @@ pub(super) fn typed_value(value: &Node, typ: &Node, at: &str) -> ContractResult<
     let valid = match typ.get("kind").and_then(Node::string) {
         Some("builtin") => match typ.get("name").and_then(Node::string).unwrap() {
             "boolean" => matches!(value, Node::Bool(_)),
-            "integer" => value.string().is_some_and(|s| exact(s, false)),
-            "decimal" | "rational" => value.string().is_some_and(|s| exact(s, true)),
-            "hash" => matches!(value, Node::Object(_)),
-            "qname" => {
-                value.object().is_some()
-                    && value.get("namespace").and_then(Node::string).is_some()
-                    && value.get("local").and_then(Node::string).is_some()
-                    && value.object().unwrap().len() == 2
+            // Ruby exports integer defaults as JSON numbers and refuses strings.
+            name if INTEGER_BUILTINS.contains(&name) => {
+                matches!(value, Node::Number(v) if v.as_i64().is_some() || v.as_u64().is_some())
             }
+            "float" => value.string().is_some_and(crate::values::canonical_float),
+            "hash" => matches!(value, Node::Object(_)),
+            // Every other builtin (decimal, rational, date, time, qname, ...) is its
+            // string spelling, exactly as Ruby's exporter writes it (a qname is
+            // "prefix:local" or "{uri}local", never an object; decimal and rational
+            // are shape-checked only, like Ruby and TS). Float keeps its own rule above.
             _ => matches!(value, Node::String(_)),
         },
         Some("model") => matches!(value, Node::Object(_)),
@@ -190,6 +201,35 @@ pub(super) fn typed_value(value: &Node, typ: &Node, at: &str) -> ContractResult<
         ));
     }
     Ok(())
+}
+fn enum_equal(a: &Node, b: &Node, typ: &Node) -> bool {
+    if a == b {
+        return true;
+    }
+    if !is_integer_name(typ) {
+        return false;
+    }
+    let integer = |value: &Node| -> Option<num_bigint::BigInt> {
+        match value {
+            Node::String(s) => s.parse().ok(),
+            Node::Number(v) => v
+                .as_i64()
+                .map(num_bigint::BigInt::from)
+                .or_else(|| v.as_u64().map(num_bigint::BigInt::from)),
+            _ => None,
+        }
+    };
+    matches!((integer(a),integer(b)),(Some(a),Some(b))if a==b)
+}
+/// Integer enum literals are typed schema metadata, not instance wire values.
+/// Their bounded JSON integer spelling remains numeric in the immutable tree.
+pub(super) fn enum_value(value: &Node, typ: &Node, at: &str) -> ContractResult<()> {
+    if is_integer_name(typ)
+        && matches!(value,Node::Number(v) if v.as_i64().is_some()||v.as_u64().is_some())
+    {
+        return Ok(());
+    }
+    typed_value(value, typ, at)
 }
 pub(super) fn value_type(n: &Node, at: &str) -> ContractResult<()> {
     keys(n, &["base", "facets"], at)?;
@@ -333,8 +373,13 @@ pub(super) fn validate_member(
         } else {
             typed_value(value, typ, at)?;
         }
-        if let Some(values) = attr.get("enum").or_else(|| attr.get("values")) {
-            if !values.array().unwrap().contains(value) {
+        if let Some(values) = attr.get("values") {
+            if !values
+                .array()
+                .unwrap()
+                .iter()
+                .any(|entry| enum_equal(value, entry, typ))
+            {
                 return Err(failure(
                     ErrorReason::NonSerializableDefault,
                     at,
@@ -344,7 +389,10 @@ pub(super) fn validate_member(
         }
         Ok(())
     };
-    if attr.get("collection") == Some(&Node::Bool(false)) {
+    if attr
+        .get("collection")
+        .is_none_or(|v| v == &Node::Bool(false))
+    {
         validate_one(value, at)
     } else {
         let items = array(value, at)?;

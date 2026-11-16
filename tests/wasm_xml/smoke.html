@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><title>Wasm XML smoke</title><pre id="result">RUNNING</pre>
+<script type="module">
+import { replay } from './replay.mjs';
+try {
+  const base = '/examples/mml-wasm/target/package/';
+  const read = async path => { const response = await fetch(base + path); if (!response.ok) throw Error('missing artifact'); return new Uint8Array(await response.arrayBuffer()); };
+  const native = await (await fetch('/examples/mml-wasm/target/native-results.json')).json();
+  const result = await replay({ wasmBindgenSha256: new URL(location.href).searchParams.get('bindgen'), manifestBytes: await read('manifest.json'), expectedDigest: new TextDecoder().decode(await read('manifest.sha256')),
+    read, importModule: async source => { const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' })); try { return await import(url); } finally { URL.revokeObjectURL(url); } } }, native);
+  document.querySelector('#result').textContent = 'PASS ' + JSON.stringify(result);
+} catch (error) { document.querySelector('#result').textContent = 'FAIL ' + (error.stack ?? JSON.stringify(error)); }
+</script>

@@ -1,0 +1,239 @@
+{
+  "source": "lutaml-model 02e DocumentValidator.float_wire / canonical_float? (7e23cd72)",
+  "encode": [
+    {
+      "bits": "0000000000000000",
+      "wire": "0.0"
+    },
+    {
+      "bits": "8000000000000000",
+      "wire": "-0.0"
+    },
+    {
+      "bits": "3fb999999999999a",
+      "wire": "0.1"
+    },
+    {
+      "bits": "3fe6b851eb851eb8",
+      "wire": "0.71"
+    },
+    {
+      "bits": "3fd5555555555555",
+      "wire": "0.3333333333333333"
+    },
+    {
+      "bits": "3fe5555555555555",
+      "wire": "0.6666666666666666"
+    },
+    {
+      "bits": "3ff0000000000000",
+      "wire": "1.0"
+    },
+    {
+      "bits": "4008000000000000",
+      "wire": "3.0"
+    },
+    {
+      "bits": "c00c000000000000",
+      "wire": "-3.5"
+    },
+    {
+      "bits": "4059000000000000",
+      "wire": "100.0"
+    },
+    {
+      "bits": "3ee4f8b588e368f1",
+      "wire": "1.0e-5"
+    },
+    {
+      "bits": "3f1a36e2eb1c432d",
+      "wire": "0.0001"
+    },
+    {
+      "bits": "3f202e4b6ce5dc68",
+      "wire": "0.00012345"
+    },
+    {
+      "bits": "3f50624dd2f1a9fc",
+      "wire": "0.001"
+    },
+    {
+      "bits": "430c6bf526340000",
+      "wire": "1.0e15"
+    },
+    {
+      "bits": "4341c37937e08000",
+      "wire": "1.0e16"
+    },
+    {
+      "bits": "4341c37937e07fff",
+      "wire": "9.999999999999998e15"
+    },
+    {
+      "bits": "4376345785d8a000",
+      "wire": "1.0e17"
+    },
+    {
+      "bits": "4415af1d78b58c40",
+      "wire": "1.0e20"
+    },
+    {
+      "bits": "7e41eb2d66005835",
+      "wire": "1.5e300"
+    },
+    {
+      "bits": "01a56e1fc2f8f359",
+      "wire": "1.0e-300"
+    },
+    {
+      "bits": "437b69b4ba630f35",
+      "wire": "1.2345678901234568e17"
+    },
+    {
+      "bits": "4345ee2a2eb5a5c4",
+      "wire": "1.2345678901234568e16"
+    },
+    {
+      "bits": "0000000000000001",
+      "wire": "5.0e-324"
+    },
+    {
+      "bits": "0010000000000000",
+      "wire": "2.2250738585072014e-308"
+    },
+    {
+      "bits": "7fefffffffffffff",
+      "wire": "1.7976931348623157e308"
+    },
+    {
+      "bits": "ffefffffffffffff",
+      "wire": "-1.7976931348623157e308"
+    },
+    {
+      "bits": "bddb7cdfd9d7bdbb",
+      "wire": "-1.0e-10"
+    },
+    {
+      "bits": "3fd3333333333334",
+      "wire": "0.30000000000000004"
+    },
+    {
+      "bits": "4011666666666666",
+      "wire": "4.35"
+    },
+    {
+      "bits": "4480f0cf064dd592",
+      "wire": "1.0e22"
+    },
+    {
+      "bits": "44b52d02c7e14af6",
+      "wire": "1.0e23"
+    },
+    {
+      "bits": "40fe240c9fbe76c9",
+      "wire": "123456.789"
+    },
+    {
+      "bits": "400921fb54442d18",
+      "wire": "3.141592653589793"
+    },
+    {
+      "bits": "4340000000000000",
+      "wire": "9.007199254740992e15"
+    },
+    {
+      "bits": "43e0000000000000",
+      "wire": "9.223372036854776e18"
+    },
+    {
+      "bits": "42a67496adf40000",
+      "wire": "12345000000000.0"
+    }
+  ],
+  "canonical": [
+    {
+      "text": "1.0e-05",
+      "canonical": false
+    },
+    {
+      "text": "+0.71",
+      "canonical": false
+    },
+    {
+      "text": ".71",
+      "canonical": false
+    },
+    {
+      "text": "1e-5",
+      "canonical": false
+    },
+    {
+      "text": "1.0E5",
+      "canonical": false
+    },
+    {
+      "text": "1.0e+5",
+      "canonical": false
+    },
+    {
+      "text": "NaN",
+      "canonical": false
+    },
+    {
+      "text": "Infinity",
+      "canonical": false
+    },
+    {
+      "text": "-Infinity",
+      "canonical": false
+    },
+    {
+      "text": "1",
+      "canonical": false
+    },
+    {
+      "text": "1.",
+      "canonical": false
+    },
+    {
+      "text": "0.710",
+      "canonical": false
+    },
+    {
+      "text": "1.0e500",
+      "canonical": false
+    },
+    {
+      "text": "00.5",
+      "canonical": false
+    },
+    {
+      "text": "1.00",
+      "canonical": false
+    },
+    {
+      "text": "-0",
+      "canonical": false
+    },
+    {
+      "text": "",
+      "canonical": false
+    },
+    {
+      "text": "1.0e-0",
+      "canonical": false
+    },
+    {
+      "text": "0.5 ",
+      "canonical": false
+    },
+    {
+      "text": " 0.5",
+      "canonical": false
+    },
+    {
+      "text": "0x1.0p3",
+      "canonical": false
+    }
+  ]
+}

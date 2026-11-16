@@ -1,0 +1,1 @@
+{"manifest_sha256":"sha256:dcefa5ca5bfe655134054c4eb30fe8b4326c5f5c9f25402347ae3ca3e0fd7021","path":"spec/fixtures/lml_conformance/core","profile":"portable-exact-json-v1","repository":"lutaml/lutaml-model","required_case_ids":["core-json-portable-exact"],"revision":"22b74ccc9a22d6f19de629c1d327ec8479128efb"}

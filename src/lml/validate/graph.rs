@@ -29,15 +29,6 @@ pub(super) fn bundle(n: &Node) -> ContractResult<()> {
     object(values, "/value_types")?;
     let caps = field(n, "capabilities", "")?;
     strings(caps, "/capabilities", true)?;
-    for (i, cap) in caps.array().unwrap().iter().enumerate() {
-        if !["xml", "json", "yaml"].contains(&cap.string().unwrap()) {
-            return Err(failure(
-                ErrorReason::UnsupportedFormat,
-                &format!("/capabilities/{i}"),
-                "unsupported capability",
-            ));
-        }
-    }
     if let Some(p) = n.get("provenance") {
         object(p, "/provenance")?;
     }
@@ -68,7 +59,7 @@ pub(super) fn bundle(n: &Node) -> ContractResult<()> {
                     e
                 })?;
             }
-            for (format, mapping) in m.get("mappings").unwrap().object().unwrap() {
+            for (format, mapping) in m.get("mappings").and_then(Node::object).unwrap_or(&[]) {
                 if !caps
                     .array()
                     .unwrap()
@@ -81,20 +72,11 @@ pub(super) fn bundle(n: &Node) -> ContractResult<()> {
                         "mapping format absent from capabilities",
                     ));
                 }
-                for (i, rule) in mapping
-                    .get("rules")
-                    .unwrap()
-                    .array()
-                    .unwrap()
-                    .iter()
-                    .enumerate()
-                {
-                    if let Some(d) = rule.get("discriminator") {
-                        discriminator_refs(
-                            d,
-                            n,
-                            &format!("{at}/mappings/{format}/rules/{i}/discriminator"),
-                        )?;
+                for key in ["rules", "sequence"] {
+                    if let Some(rules) = mapping.get(key).and_then(Node::array) {
+                        for (i, rule) in rules.iter().enumerate() {
+                            rule_refs(rule, n, &format!("{at}/mappings/{format}/{key}/{i}"))?;
+                        }
                     }
                 }
             }
@@ -199,11 +181,11 @@ pub(super) fn validate_refs(attr: &Node, bundle: &Node, at: &str) -> ContractRes
             ("kind".into(), Node::String("builtin".into())),
             ("name".into(), def.get("base").unwrap().clone()),
         ]);
-        if let Some(value) = attr.get("default").unwrap().get("value") {
-            if let Some(items) = value
-                .array()
-                .filter(|_| attr.get("collection") != Some(&Node::Bool(false)))
-            {
+        if let Some(value) = attr.get("default").and_then(|d| d.get("value")) {
+            if let Some(items) = value.array().filter(|_| {
+                attr.get("collection")
+                    .is_some_and(|v| v != &Node::Bool(false))
+            }) {
                 for (i, item) in items.iter().enumerate() {
                     typed_value(item, &base, &format!("{at}/default/value/{i}"))?;
                 }
@@ -211,24 +193,29 @@ pub(super) fn validate_refs(attr: &Node, bundle: &Node, at: &str) -> ContractRes
                 typed_value(value, &base, &format!("{at}/default/value"))?;
             }
         }
-        if let Some(values) = attr.get("enum").or_else(|| attr.get("values")) {
+        if let Some(values) = attr.get("values") {
             for (i, value) in values.array().unwrap().iter().enumerate() {
-                typed_value(value, &base, &format!("{at}/enum/{i}"))?;
+                super::defaults::enum_value(value, &base, &format!("{at}/values/{i}"))?;
             }
         }
     }
-    if let Some(value) = attr.get("default").unwrap().get("value") {
+    if let Some(value) = attr.get("default").and_then(|d| d.get("value")) {
         validate_member(value, attr, bundle, &format!("{at}/default/value"))?;
-    }
-    if let Some(id) = attr.get("reference") {
-        target(
-            bundle.get("models").unwrap(),
-            id.string().unwrap(),
-            &pointer(at, "reference"),
-        )?;
     }
     if let Some(d) = attr.get("discriminator") {
         discriminator_refs(d, bundle, &pointer(at, "discriminator"))?;
+    }
+    Ok(())
+}
+
+fn rule_refs(rule: &Node, bundle: &Node, at: &str) -> ContractResult<()> {
+    if let Some(d) = rule.get("discriminator") {
+        discriminator_refs(d, bundle, &pointer(at, "discriminator"))?;
+    }
+    if let Some(members) = rule.get("members").and_then(Node::array) {
+        for (i, member) in members.iter().enumerate() {
+            rule_refs(member, bundle, &format!("{at}/members/{i}"))?;
+        }
     }
     Ok(())
 }

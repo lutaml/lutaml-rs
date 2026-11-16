@@ -1,0 +1,8771 @@
+[
+ {
+  "name": "v1_minimal",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:71145914adf4534e343ce1b726527a190b78fd7f31beda522ec1cc41c05da397",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_attributes_absent",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:71145914adf4534e343ce1b726527a190b78fd7f31beda522ec1cc41c05da397",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_mappings_absent",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[]}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:71145914adf4534e343ce1b726527a190b78fd7f31beda522ec1cc41c05da397",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_register_absent",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:9e0915b2fe8504612c7831e320494e7cafa863b1ce5febae805c5a762418b395",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_register_null",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":null,\"attributes\":[],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:9e0915b2fe8504612c7831e320494e7cafa863b1ce5febae805c5a762418b395",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_register_int",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":5,\"attributes\":[],\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_register_empty_string",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:91f27b2251f775ccb345846198b0ff8cc5f67c97bed52b8acef25396db544040",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_attributes_null",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":null,\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_attributes_false",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":false,\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_attributes_object",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":{},\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_attributes_items_ints",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[1,2],\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_attributes_items_null",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[null],\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_attributes_items_objects_any_shape",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{},{\"x\":1}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:b957e1d3889d7ac955a84b1358aec73090f39d9bbd18b07d308b72664e984fbd",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_mappings_null",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[],\"mappings\":null}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_mappings_false",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[],\"mappings\":false}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_mappings_array",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[],\"mappings\":[]}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_mappings_any_object",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[],\"mappings\":{\"toml\":1,\"zzz\":[1]}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:3a75ce684de0e972d6e04448b6fa3437a16d043ebbf6933ce7a01d162e6f9577",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_model_missing",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"register\":\"default\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_model_empty",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"\",\"register\":\"default\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_model_int",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":3,\"register\":\"default\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_model_lowercase",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"foo bar\",\"register\":\"default\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:3a3303842937f96ba7ba8886294a4ca00c1d1bc8e6b484e280c539e8034a8bc6",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_unknown_key_ignored",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[],\"mappings\":{},\"extra\":{\"x\":1}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:71145914adf4534e343ce1b726527a190b78fd7f31beda522ec1cc41c05da397",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_big_integer_default",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":123456789012345678901234567890}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:e20448ed120a8892178c2b482fa151874152d60e9e1472ed72aa17ea670f63ba",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_float_canonical_default",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.5}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:d82ad6caa39e4ab1b48f168bf0e91e083aebbf54309633f345731f08fa82a780",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_version_2_as_1_string",
+  "kind": "document",
+  "doc": {
+   "lml": "1",
+   "model": "Foo",
+   "register": "default",
+   "attributes": [],
+   "mappings": {}
+  },
+  "ruby": "ERR unsupported_version",
+  "rust": "ERR unsupported_version"
+ },
+ {
+  "name": "v1_version_3",
+  "kind": "document",
+  "doc": {
+   "lml": 3,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [],
+   "mappings": {}
+  },
+  "ruby": "ERR unsupported_version",
+  "rust": "ERR unsupported_version"
+ },
+ {
+  "name": "v2_minimal",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:a17f39f55b815ae43d80063272f4e74f1888fdeeb479ccd3316a7f1a12d44c13",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_attr_enum_alias",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "enum": [
+      "x"
+     ]
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_values",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "values": [
+      "x"
+     ]
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:0492ae0ff0087f324717acadfca95ce549855235f2e981a221c5506f672bf7b4",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_attr_reference_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "reference": "Foo@default"
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_values_not_array",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "values": "x"
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_values_wrong_typed_member",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "integer"
+     },
+     "values": [
+      true
+     ]
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:4b49f9a17f9ea7eae03a1fa9c63026a63680d95022448af76b253989bbd93570",
+  "rust": "ERR non_serializable_default",
+  "divergence": "Rust type-checks defaults and values members against the attribute type (Ruby leaves them declarative)"
+ },
+ {
+  "name": "v2_attr_values_duplicates",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "values": [
+      "x",
+      "x"
+     ]
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:fd22a6e41c6d3b95f91344ff97ef7680b1ca4fe08beab7734869912ea3722eb5",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust refuses duplicate enumeration values (Ruby accepts)"
+ },
+ {
+  "name": "v2_default_wrong_type",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "integer"
+     },
+     "default": {
+      "present": true,
+      "value": "abc"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR non_serializable_default",
+  "rust": "ERR non_serializable_default"
+ },
+ {
+  "name": "v2_default_number_for_integer",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "integer"
+     },
+     "default": {
+      "present": true,
+      "value": 5
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:e8f1761df326671ed16453103e1db937242578ab51ca982b1a3b4bbe472e0a34",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_default_not_in_values",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "values": [
+      "x"
+     ],
+     "default": {
+      "present": true,
+      "value": "y"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:f0ce1be3761f9774b6abadc8520537f4d6759837bc51236d0ef5e3285b089d05",
+  "rust": "ERR non_serializable_default",
+  "divergence": "Rust type-checks defaults and values members against the attribute type (Ruby leaves them declarative)"
+ },
+ {
+  "name": "v2_default_dot5_decimal",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "decimal"
+     },
+     "default": {
+      "present": true,
+      "value": ".5"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:4b924ecdb59a7b81a8974e66a3ce50339107290012a7d06029fdc9d2368786d1",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_default_5dot_decimal",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "decimal"
+     },
+     "default": {
+      "present": true,
+      "value": "5."
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:a779aa1fba539749241649d31fe30508e961944b10ac8a74c405ba7348ffaa86",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_default_plus1_decimal",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "decimal"
+     },
+     "default": {
+      "present": true,
+      "value": "+1"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:a1212642a3c6a250026066200cce7bfbefe861f62fca034ee747954e6d670730",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_default_plus1_integer",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "integer"
+     },
+     "default": {
+      "present": true,
+      "value": "+1"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR non_serializable_default",
+  "rust": "ERR non_serializable_default"
+ },
+ {
+  "name": "v2_default_5dot_integer",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "integer"
+     },
+     "default": {
+      "present": true,
+      "value": "5."
+     }
+    }
+   ]
+  },
+  "ruby": "ERR non_serializable_default",
+  "rust": "ERR non_serializable_default"
+ },
+ {
+  "name": "v2_default_dot_decimal",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "decimal"
+     },
+     "default": {
+      "present": true,
+      "value": "."
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:2dce8840a1dd8bf67b7a94e099253f76b9a955bc4aa2d1adbce947ab7c4fd0ca",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_default_float_canonical",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "float"
+     },
+     "default": {
+      "present": true,
+      "value": "1.5"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:e4a60f06bd91b56470cc35702af37184094756ed529a59d9518c3b7fe6e8de84",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_default_float_noncanonical",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "float"
+     },
+     "default": {
+      "present": true,
+      "value": "1.50"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR non_serializable_default"
+ },
+ {
+  "name": "v2_default_float_json_number",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "float"
+     },
+     "default": {
+      "present": true,
+      "value": 1.5
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_default_not_object",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "default": 5
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_default_present_no_value",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "default": {
+      "present": true
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR non_serializable_default"
+ },
+ {
+  "name": "v2_default_absent_with_value",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "default": {
+      "present": false,
+      "value": "x"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR non_serializable_default"
+ },
+ {
+  "name": "v2_default_lambda",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "default": {
+      "lambda": "x"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR lambda_default",
+  "rust": "ERR lambda_default"
+ },
+ {
+  "name": "v2_name_non_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": 5,
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_name_empty",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_name_reserved",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "__lml_content",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR reserved_member",
+  "rust": "ERR reserved_member"
+ },
+ {
+  "name": "v2_name_duplicate",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR duplicate_id",
+  "rust": "ERR duplicate_id"
+ },
+ {
+  "name": "v2_model_lowercase",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:b6b28ba156e5215b1089efbd608513f7013debd99cd1c40163dd27d3d191f737",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust requires portable CamelCase model names (Ruby accepts any non-empty string)"
+ },
+ {
+  "name": "v2_model_with_space",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo Bar",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:5fb465e2dcee28c26dcf087239deeb6c5ba11778c8891e8ac020eabf343fce61",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust requires portable CamelCase model names (Ruby accepts any non-empty string)"
+ },
+ {
+  "name": "v2_model_namespaced",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "A::B",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:e3540cb603ec5fb3e4ca02bf2456e21a57bd24413638dd75ae1865d1d767c69b",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_register_bad_chars",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "a b",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_register_int",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": 5,
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_register_missing",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attributes_missing",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default"
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_unknown_top_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "extra": 1
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_collection_false",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": false
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:d3def23b17681930e1b69f5fa3fac86c805b24b92c00a80ef47df9565001285f",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_collection_true",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": true
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_collection_bounds",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 0,
+      "max": null
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:065ef78694ff20cabb17fe47dac1efa022eedb19ce1796c64a646761d53591e5",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_collection_class",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 0,
+      "max": null,
+      "class": "Array"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:421e2069c19ef9f32b700f7bfa2a9083a63c4cc1e08d897095b37c6f5698b760",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_collection_unknown_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 0,
+      "max": null,
+      "x": 1
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_collection_max_lt_min",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 2,
+      "max": 1
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_collection_default_len_violates",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 2,
+      "max": null
+     },
+     "default": {
+      "present": true,
+      "value": [
+       "x"
+      ]
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:fb2dbf5216096376efb6a7bcf5786ea44b1096276e81665821ad57cb08a31eb2",
+  "rust": "ERR non_serializable_default",
+  "divergence": "Rust type-checks defaults and values members against the attribute type (Ruby leaves them declarative)"
+ },
+ {
+  "name": "v2_required_non_bool",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "required": "yes"
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_type_unknown_builtin",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "nope"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR unknown_type",
+  "rust": "ERR unknown_type"
+ },
+ {
+  "name": "v2_type_double",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "double"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR unsupported_type",
+  "rust": "ERR unsupported_type"
+ },
+ {
+  "name": "v2_type_float",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "float"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:4fae489494466f17b93264929dfc9eb8569e27b3574eac534049d6fb915e7444",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_type_unknown_kind",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "x"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR unknown_type",
+  "rust": "ERR unknown_type"
+ },
+ {
+  "name": "v2_type_extra_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string",
+      "x": 1
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_type_model_dangling_doc",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "model",
+      "id": "Nope@default"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:8046478b36621969cf522c61fe73a51ba4fda5f8a8f189a647ebedd476509605",
+  "rust": "ERR dangling_reference",
+  "divergence": "Rust rejects a standalone document referencing an absent model (Ruby does not resolve references)"
+ },
+ {
+  "name": "v2_attr_unknown_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "x": 1
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_discriminator_empty_cases",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "discriminator": {
+      "attribute": "k",
+      "cases": {}
+     }
+    }
+   ]
+  },
+  "ruby": "ERR unknown_discriminator",
+  "rust": "ERR unknown_discriminator"
+ },
+ {
+  "name": "v2_ordered_content_ok",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "ordered_content": {
+    "member": "__lml_content",
+    "version": 1
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:fc98ce72c8bc264acabdd0233f7ece3108d3b84dff6a0aa80cab4684455e5706",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_ordered_content_bad",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "ordered_content": {
+    "member": "x",
+    "version": 1
+   }
+  },
+  "ruby": "ERR invalid_ordered_content",
+  "rust": "ERR invalid_ordered_content"
+ },
+ {
+  "name": "v2_custom_initialize",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "custom_initialize": true
+  },
+  "ruby": "ERR custom_initialize",
+  "rust": "ERR custom_initialize"
+ },
+ {
+  "name": "v2_map_json_rules",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:8194c5e58e06bc02311fd12317cc01f6dda4b62499c89a20adfd11545313d6e7",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_toml",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "toml": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:48ee2b08122444e3b775f88d7179de075324e82ced4718eaaa2730cb20bfc011",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_toml_bad_rule_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "toml": {
+     "rules": [
+      {
+       "x": 1
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_unknown_format",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "csv": {}
+   }
+  },
+  "ruby": "ERR unsupported_format",
+  "rust": "ERR unsupported_format"
+ },
+ {
+  "name": "v2_map_null",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:a17f39f55b815ae43d80063272f4e74f1888fdeeb479ccd3316a7f1a12d44c13",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_not_object",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": []
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_format_not_object",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": 5
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_unknown_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "zzz": 1
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_rule_to_undeclared",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "z"
+       ],
+       "to": "z"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:37ec1fa47a3b53f610d800b7148f1e4184c997a30caac2b342ad5566bb8e3fc7",
+  "rust": "ERR dangling_reference",
+  "divergence": "Rust validates rule to/name/key against declared attributes and non-empty unique strings (Ruby accepts)"
+ },
+ {
+  "name": "v2_map_rule_no_to",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "z"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:4adb4560c6f60c5095d6cba52d184e40adcdb028c2503e9467504437cfd36ea3",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_rule_key_non_string_elements",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        1
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:0f1025db43f19d762b9c42f5009dd887e4672024474062f5e88505dff1030b3f",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates rule to/name/key against declared attributes and non-empty unique strings (Ruby accepts)"
+ },
+ {
+  "name": "v2_map_rule_key_empty_string_element",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        ""
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:d6314b10bbbee41258e20d4116c889a91113bd9e55862964eb1241d0badc004b",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates rule to/name/key against declared attributes and non-empty unique strings (Ruby accepts)"
+ },
+ {
+  "name": "v2_map_rule_key_not_array",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": "a",
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rule_name_not_array",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": "a",
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rule_name_non_string_elements",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        5
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:ff7558e294c9b279398d29b5321d4b9082bc973074afa7dae4ac899c592dc920",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates rule to/name/key against declared attributes and non-empty unique strings (Ruby accepts)"
+ },
+ {
+  "name": "v2_map_rule_to_non_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": 5
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:2cf961d490439f962583cb239df8b180e893954963f7e457e912f5ef52edb289",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates rule to/name/key against declared attributes and non-empty unique strings (Ruby accepts)"
+ },
+ {
+  "name": "v2_map_rule_duplicate_name_elements",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "a",
+        "a"
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1188ad5f79c23ff38f144f504594d8f4e16d768128919369d05a2b6dd6325daa",
+  "rust": "ERR duplicate_id",
+  "divergence": "Rust validates rule to/name/key against declared attributes and non-empty unique strings (Ruby accepts)"
+ },
+ {
+  "name": "v2_map_rule_kind_bad_xml",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "zzz",
+       "name": [
+        "a"
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_rule_kind_any_json",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "kind": "zzz",
+       "key": [
+        "a"
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:b054b8fc87a561c9dedba3732fa435a22c274e889ecb8e05457af0b857c68328",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_rule_executable",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "with": {}
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_rule_unknown_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "zz": 1
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_root_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": "foo"
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_root_object",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": {
+      "name": "foo"
+     }
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:d77d501a4646d282f76109c28cc9b943417df054c9d47c11871e89a9ad570181",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_root_null",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": null
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_root_int",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": 5
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_root_json_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "root": "x"
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_ordered_non_bool",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "ordered": "yes"
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_mixed_content_bool",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "mixed_content": true
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:085ad81667a27e03e7f8175857cdd8b909b04800ebf2c8e4ae5ff982fc616f56",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_sequence_json",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "sequence": []
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_sequence_xml_ok",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": [
+        {
+         "kind": "element",
+         "name": [
+          "a"
+         ],
+         "to": "a"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:9617259e1a3d6ff6c8f10409278e568ceb86a9c0c54d20d663a89f289b2c1d49",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_sequence_xml_member_nonrule",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "element",
+       "name": [
+        "a"
+       ],
+       "to": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_sequence_xml_not_array",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": {
+      "kind": "sequence",
+      "members": []
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_choice_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "choice": {
+      "kind": "choice",
+      "members": []
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_ns_inherit",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit"
+     }
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:4eb379bf9b94974686aeb979bb1505883287a9e9431f72723cef746706c7ea73",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_ns_uri_no_uri",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_ns_uri_ok",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "urn:x",
+      "prefix": "p"
+     }
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:17164bb957f507a663277ca6aff98a858262c2c9e7158da7e9e18bbc0990a778",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_ns_uri_prefix_nonstring",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "urn:x",
+      "prefix": 5
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_ns_bad_mode",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "q"
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_render_ok",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "render": {
+        "nil": true,
+        "empty": "x"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:41a78c473e159e72a7d718ea7872b6e3d045d2c0372aa9d877b7548d5ce9692f",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_render_bad_value",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "render": {
+        "nil": 5
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_render_bad_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "render": {
+        "zzz": true
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_polymorphic_map_ok",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "polymorphic_map": {
+        "x": "Foo@default"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:16d1c29a17c654ba85d309fe59d7bdb6911c8fcd5ba84ebccfcd7236812bfb7c",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_polymorphic_map_nonstring",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "polymorphic_map": {
+        "x": 5
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rule_min_max_any",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "a"
+       ],
+       "to": "a",
+       "min": "x",
+       "max": []
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:558477ce73e7b877b395baa8ba9a7ddb4fdb05c18842c42d79bc9d66d10778e4",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_child_mappings_nonobject",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "child_mappings": 5
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rules_nonarray",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": {}
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rule_nonobject",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      5
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_group_members_with_bounds_nonint",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "min": "x",
+       "members": []
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:0e6c8ca648dba43585af734376788012b5750561cc0640d5db1b082b2b3cf357",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_group_members_missing",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_group_member_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": [
+        "a"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_cdata_any",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "a"
+       ],
+       "to": "a",
+       "cdata": "x"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_prefix_any",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "a"
+       ],
+       "to": "a",
+       "prefix": 5
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1c8726c14d0576915418dffa34a604be526c498e2dd3aab450b91a7dc37eabce",
+  "rust": "OK"
+ },
+ {
+  "name": "b_minimal",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_toml_cap_and_mapping",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ],
+     "mappings": {
+      "toml": {
+       "rules": [
+        {
+         "key": [
+          "a"
+         ],
+         "to": "a"
+        }
+       ]
+      }
+     }
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_toml_cap_missing",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ],
+     "mappings": {
+      "toml": {}
+     }
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json"
+   ]
+  },
+  "ruby": "ERR capability_missing",
+  "rust": "ERR capability_missing"
+ },
+ {
+  "name": "b_roots_unsorted",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default",
+    "A@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_roots_dangling",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Nope@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR dangling_reference",
+  "rust": "ERR dangling_reference"
+ },
+ {
+  "name": "b_caps_unsorted",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "xml",
+    "json"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_caps_duplicate",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "json"
+   ]
+  },
+  "ruby": "ERR duplicate_id",
+  "rust": "ERR duplicate_id"
+ },
+ {
+  "name": "b_provenance_nonobject",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ],
+   "provenance": 5
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_provenance_object",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ],
+   "provenance": {
+    "a": 1
+   }
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_unknown_key",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ],
+   "zzz": 1
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_value_type_ok",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {}
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_value_type_unknown_facet",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {
+      "zzz": 1
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust validates value-type facet names, kinds and ranges (Ruby accepts any facets hash)"
+ },
+ {
+  "name": "b_value_type_camel_facet",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "decimal",
+     "facets": {
+      "minInclusive": "0"
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust validates value-type facet names, kinds and ranges (Ruby accepts any facets hash)"
+ },
+ {
+  "name": "b_value_type_snake_facet",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "decimal",
+     "facets": {
+      "min_inclusive": "0"
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_value_type_facet_nonexact",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "decimal",
+     "facets": {
+      "min_inclusive": 5
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates value-type facet names, kinds and ranges (Ruby accepts any facets hash)"
+ },
+ {
+  "name": "b_value_type_facet_dot5",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "decimal",
+     "facets": {
+      "min_inclusive": ".5"
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_value_type_bad_base",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "nope",
+     "facets": {}
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR unknown_type",
+  "rust": "ERR unknown_type"
+ },
+ {
+  "name": "b_value_type_double",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "double",
+     "facets": {}
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR unsupported_type",
+  "rust": "ERR unsupported_type"
+ },
+ {
+  "name": "b_value_type_no_facets",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string"
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_value_type_enumeration_nonarray",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {
+      "enumeration": 5
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates value-type facet names, kinds and ranges (Ruby accepts any facets hash)"
+ },
+ {
+  "name": "b_value_type_total_digits_neg",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "decimal",
+     "facets": {
+      "total_digits": -1
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates value-type facet names, kinds and ranges (Ruby accepts any facets hash)"
+ },
+ {
+  "name": "b_value_type_min_gt_max_length",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {
+      "min_length": 5,
+      "max_length": 2
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates value-type facet names, kinds and ranges (Ruby accepts any facets hash)"
+ },
+ {
+  "name": "b_attr_value_ref_dangling",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "value",
+        "id": "V"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR dangling_reference",
+  "rust": "ERR dangling_reference"
+ },
+ {
+  "name": "b_attr_value_ref_ok",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "value",
+        "id": "V"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {}
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_attr_value_default_wrong",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "value",
+        "id": "V"
+       },
+       "default": {
+        "present": true,
+        "value": 5
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {}
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR non_serializable_default",
+  "divergence": "Rust type-checks defaults and values members against the attribute type (Ruby leaves them declarative)"
+ },
+ {
+  "name": "b_attr_model_ref_dangling",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "model",
+        "id": "Nope@default"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR dangling_reference",
+  "rust": "ERR dangling_reference"
+ },
+ {
+  "name": "b_attr_model_self_default",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "default": {
+        "present": true,
+        "value": {
+         "zzz": 1
+        }
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR non_serializable_default",
+  "divergence": "Rust type-checks defaults and values members against the attribute type (Ruby leaves them declarative)"
+ },
+ {
+  "name": "b_attr_model_default_nonobject",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "default": {
+        "present": true,
+        "value": "x"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR non_serializable_default",
+  "divergence": "Rust type-checks defaults and values members against the attribute type (Ruby leaves them declarative)"
+ },
+ {
+  "name": "b_model_key_mismatch",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Bar@default"
+   ],
+   "models": {
+    "Bar@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR duplicate_id"
+ },
+ {
+  "name": "b_model_version_1",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 1,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR unsupported_version",
+  "rust": "ERR unsupported_version"
+ },
+ {
+  "name": "b_model_lowercase",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "foo@default"
+   ],
+   "models": {
+    "foo@default": {
+     "lml": 2,
+     "model": "foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust requires portable CamelCase model names (Ruby accepts any non-empty string)"
+ },
+ {
+  "name": "b_models_nonobject",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": [],
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_disc_ok",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "k",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "p",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "discriminator": {
+        "attribute": "k",
+        "cases": {
+         "x": "Foo@default"
+        }
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_disc_attr_missing_on_case",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "p",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "discriminator": {
+        "attribute": "k",
+        "cases": {
+         "x": "Foo@default"
+        }
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR unknown_discriminator",
+  "rust": "ERR unknown_discriminator"
+ },
+ {
+  "name": "b_disc_case_dangling",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "k",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "p",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "discriminator": {
+        "attribute": "k",
+        "cases": {
+         "x": "Nope@default"
+        }
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR dangling_reference",
+  "rust": "ERR dangling_reference"
+ },
+ {
+  "name": "b_disc_rule_ok",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "k",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "p",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       }
+      }
+     ],
+     "mappings": {
+      "json": {
+       "rules": [
+        {
+         "key": [
+          "p"
+         ],
+         "to": "p",
+         "discriminator": {
+          "attribute": "k",
+          "cases": {
+           "x": "Foo@default"
+          }
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_disc_rule_dangling",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "k",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "p",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       }
+      }
+     ],
+     "mappings": {
+      "json": {
+       "rules": [
+        {
+         "key": [
+          "p"
+         ],
+         "to": "p",
+         "discriminator": {
+          "attribute": "k",
+          "cases": {
+           "x": "Nope@default"
+          }
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR dangling_reference",
+  "rust": "ERR dangling_reference"
+ },
+ {
+  "name": "b_disc_empty_wire_key",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "k",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "p",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "discriminator": {
+        "attribute": "k",
+        "cases": {
+         "": "Foo@default"
+        }
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR unknown_discriminator",
+  "divergence": "Rust refuses an empty discriminator wire key (Ruby accepts)"
+ },
+ {
+  "name": "b_disc_target_nonstring",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "k",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "p",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "discriminator": {
+        "attribute": "k",
+        "cases": {
+         "x": 5
+        }
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_float_json_number_structural",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       },
+       "collection": {
+        "min": 0,
+        "max": 1.5
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_bigint_structural",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       },
+       "collection": {
+        "min": 0,
+        "max": 1152921504606846976
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_choice_key_valid_shape",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "choice": {
+      "kind": "choice",
+      "min": 0,
+      "max": 1,
+      "members": [
+       "a"
+      ]
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_sequence_legacy_object",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": {
+      "kind": "sequence",
+      "min": 0,
+      "max": null,
+      "members": [
+       "a"
+      ]
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_sequence_group_string_members",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": [
+        "a"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_sequence_nested_choice_ok",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": [
+        {
+         "kind": "choice",
+         "min": 0,
+         "max": 2,
+         "members": [
+          {
+           "kind": "element",
+           "name": [
+            "a"
+           ],
+           "to": "a"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:375fb954f0c1b22bfda432f4e91d7147020aa47f5ac9f6ffeec3b40aed5c9cfb",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_sequence_group_kind_bad",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "zzz",
+       "members": []
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_sequence_member_nonobject",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": [
+        5
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_group_members_not_array",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": "a"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_group_bounds_max_lt_min",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "min": 2,
+       "max": 1,
+       "members": []
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:554a84e3e787e2eabed2bd1254eed8c44885a7fd19050c400260d29bde0c1216",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_group_bounds_float",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "min": 0.5,
+       "members": []
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rule_members_on_element",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "a"
+       ],
+       "to": "a",
+       "members": 5
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:adf8ac9091613d3d71c594e0dda3ccc7ffbf68973276ab8a2710ca7138dfaec3",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_group_to_undeclared_member",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": [
+        {
+         "kind": "element",
+         "name": [
+          "z"
+         ],
+         "to": "z"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:45f519f716aa22e7c560cdd2c2fb0c4357994c3094936965a35cb037b6bd6b08",
+  "rust": "ERR dangling_reference",
+  "divergence": "Rust validates rule to/name/key against declared attributes and non-empty unique strings (Ruby accepts)"
+ },
+ {
+  "name": "v2_map_ns_extra_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "x": 1
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_ns_inherit_with_uri",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "uri": "u"
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_rule_ns_bad",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "a"
+       ],
+       "to": "a",
+       "namespace": {
+        "mode": "q"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_map_flags_json_ordered",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "ordered": true,
+     "mixed_content": false
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:0d15aaec3fa1a318c61961329e0a8e8b24540ff76c9b305a08ad0a483c241a40",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_json_root_object",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "root": {
+      "a": 1
+     }
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:171be86ca730e1e5facaaed261a79df17fd0cea00da1ba233dd39b608d136ffa",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_map_rule_polymorphic_nonobject",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "polymorphic_map": []
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rule_disc_malformed",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "discriminator": {
+        "attribute": "k"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_map_rule_render_nonobject",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "key": [
+        "a"
+       ],
+       "to": "a",
+       "render": "x"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_attr_name_whitespace",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a b",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_discriminator_extra_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "discriminator": {
+      "attribute": "k",
+      "cases": {
+       "x": "Foo@default"
+      },
+      "z": 1
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_discriminator_case_target_nonstring",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "discriminator": {
+      "attribute": "k",
+      "cases": {
+       "x": 5
+      }
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_collection_class_empty",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 0,
+      "max": null,
+      "class": ""
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_collection_min_float",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 0.5,
+      "max": null
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_collection_missing_max",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "collection": {
+      "min": 0
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_default_value_float_number",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "default": {
+      "present": true,
+      "value": 1.5
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_default_value_bigint",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "default": {
+      "present": true,
+      "value": 1152921504606846976
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_initialize_empty_nonbool",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "initialize_empty": 1
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_attr_values_float_member",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     },
+     "values": [
+      1.5
+     ]
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_ordered_content_extra_key",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "ordered_content": {
+    "member": "__lml_content",
+    "version": 1,
+    "x": 1
+   }
+  },
+  "ruby": "ERR invalid_ordered_content",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_ordered_content_version_2",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "ordered_content": {
+    "member": "__lml_content",
+    "version": 2
+   }
+  },
+  "ruby": "ERR invalid_ordered_content",
+  "rust": "ERR invalid_ordered_content"
+ },
+ {
+  "name": "v2_imperative_element_order",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "imperative_element_order": true
+  },
+  "ruby": "ERR imperative_element_order",
+  "rust": "ERR imperative_element_order"
+ },
+ {
+  "name": "v2_lml_version_3",
+  "kind": "document",
+  "doc": {
+   "lml": 3,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR unsupported_version",
+  "rust": "ERR unsupported_version"
+ },
+ {
+  "name": "v2_toplevel_array",
+  "kind": "document",
+  "doc": [],
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_toplevel_string",
+  "kind": "document",
+  "doc": "x",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_toplevel_array",
+  "kind": "bundle",
+  "doc": [],
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_roots_not_array",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": "x",
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_roots_empty_string_elem",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    ""
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_roots_duplicate",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default",
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR duplicate_id",
+  "rust": "ERR duplicate_id"
+ },
+ {
+  "name": "b_roots_empty",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_models_empty",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [],
+   "models": {},
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_version_2",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 2,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR unsupported_version",
+  "rust": "ERR unsupported_version"
+ },
+ {
+  "name": "b_version_float",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1.0,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_missing_value_types",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_missing_capabilities",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {}
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_cap_unknown_format_string",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "csv",
+    "json"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_value_type_nonobject",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": 5
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_value_type_extra_key",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {},
+     "x": 1
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_value_type_facets_nonobject",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": []
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_value_type_base_nonstring",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": 5,
+     "facets": {}
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR unknown_type",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "b_value_type_pattern_nonstring",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {
+    "V": {
+     "base": "string",
+     "facets": {
+      "pattern": 5
+     }
+    }
+   },
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "ERR invalid_document",
+  "divergence": "Rust validates value-type facet names, kinds and ranges (Ruby accepts any facets hash)"
+ },
+ {
+  "name": "b_model_nested_model_default_ok",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "s",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "m",
+       "type": {
+        "kind": "model",
+        "id": "Foo@default"
+       },
+       "default": {
+        "present": true,
+        "value": {
+         "s": "x"
+        }
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "b_model_mapping_format_not_in_caps_xml",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ],
+     "mappings": {
+      "xml": {}
+     }
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json"
+   ]
+  },
+  "ruby": "ERR capability_missing",
+  "rust": "ERR capability_missing"
+ },
+ {
+  "name": "b_model_attr_dup_across",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR duplicate_id",
+  "rust": "ERR duplicate_id"
+ },
+ {
+  "name": "b_model_register_mismatch_key",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@other"
+   ],
+   "models": {
+    "Foo@other": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "a",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      }
+     ]
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "toml",
+    "xml",
+    "yaml"
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR duplicate_id"
+ },
+ {
+  "name": "r2_attr_name_foo?",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "foo?",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_attr_name_1a",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "1a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_attr_name_Abc",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "Abc",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_attr_name_a-b",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a-b",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_attr_name_aé",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "aé",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_attr_name_empty",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_attr_name_xml_ns_prefixes",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "xml_ns_prefixes",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR reserved_member",
+  "rust": "ERR reserved_member"
+ },
+ {
+  "name": "r2_attr_name_to_json",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "to_json",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR reserved_member",
+  "rust": "ERR reserved_member"
+ },
+ {
+  "name": "r2_attr_name_initialize",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "initialize",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR reserved_member",
+  "rust": "ERR reserved_member"
+ },
+ {
+  "name": "r2_attr_name___id__",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "__id__",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "ERR reserved_member",
+  "rust": "ERR reserved_member"
+ },
+ {
+  "name": "r2_attr_name_display",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "display",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:8c92a8872eefd69f42ca6b743e3c35cb49fb15123dac4d7a26697ffab46c01b2",
+  "rust": "OK"
+ },
+ {
+  "name": "r2_attr_name_send",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "send",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:72854d3549aec2c1b62f4e30222c612e3b41c57aae47388199d8cf186949e0e1",
+  "rust": "OK"
+ },
+ {
+  "name": "r2_attr_name__x9",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "_x9",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ]
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:b7733602d924a852db29ee1d41a1ec46531376bc1d94f4556834fa160ee9ac20",
+  "rust": "OK"
+ },
+ {
+  "name": "r2_root_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": "foo"
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_root_null_json",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "root": null
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_root_element_empty",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": {
+      "element": ""
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_root_element_int",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": {
+      "element": 5
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_root_mixed_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": {
+      "element": "a",
+      "mixed": "yes"
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "r2_json_root_mixed_int",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "root": {
+      "mixed": 1
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "r2_json_root_ok",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "root": {
+      "element": "a",
+      "mixed": true
+     }
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:ba35ff8ee79cbe1e890f2c6fa92bed333822b920567abc2eadc82e4ab5cb4582",
+  "rust": "OK"
+ },
+ {
+  "name": "r2_rule_cdata_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "content",
+       "to": "a",
+       "cdata": "true"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_rule_cdata_null",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "content",
+       "to": "a",
+       "cdata": null
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_rule_child_mappings_null",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "a"
+       ],
+       "to": "a",
+       "child_mappings": null
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_mapping_root_mappings_array",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root_mappings": []
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_\"1a\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": "1a"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_inherit_\"1a\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": "1a"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_\"\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": ""
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_inherit_\"\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": ""
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_\"a b\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": "a b"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_inherit_\"a b\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": "a b"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_\"a:b\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": "a:b"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_inherit_\"a:b\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": "a:b"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_5",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": 5
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_inherit_5",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": 5
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_null",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": null
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_inherit_null",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": null
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_prefix_\"a.b-c_d\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": "a.b-c_d"
+     }
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:de18bd5fd63aea82c1782e6b323c24aeb4bee15c68c1cd244d273664a5d0fe19",
+  "rust": "OK"
+ },
+ {
+  "name": "r2_prefix_inherit_\"a.b-c_d\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": "a.b-c_d"
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "r2_prefix_\"_a\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "uri",
+      "uri": "u",
+      "prefix": "_a"
+     }
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:5243cd9292fe3abf64e2e61d2dfd714d60df58571130bfcb95db0c48307871a0",
+  "rust": "OK"
+ },
+ {
+  "name": "r2_prefix_inherit_\"_a\"",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "namespace": {
+      "mode": "inherit",
+      "prefix": "_a"
+     }
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "r2_depth_json_text_ok",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"x\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:c7fc2ac5837cae040ec605af58e7b707372c17cba2f8c81cc0cbce7ed99959e0",
+  "rust": "OK"
+ },
+ {
+  "name": "r2_depth_json_text_deep",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"x\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}],\"mappings\":{}}",
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "r2_dup_key_v1_text",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"model\":\"Bar\",\"attributes\":[],\"mappings\":{}}",
+  "ruby": "RUBYEXC JSON::ParserError",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v1_json_number_1_5",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.5}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:d82ad6caa39e4ab1b48f168bf0e91e083aebbf54309633f345731f08fa82a780",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_1_50",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.50}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:d82ad6caa39e4ab1b48f168bf0e91e083aebbf54309633f345731f08fa82a780",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1_0",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.0}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:a8a4dc102e4a4f6b650e9493ad7d25487c29efaaeffb40e2d5ef62b7db7a6693",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_1e2",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1e2}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:56b87f30b85d7db233920cbf2422c09502a243842e59f8db9dbccfd69fbb0046",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1E2",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1E2}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:56b87f30b85d7db233920cbf2422c09502a243842e59f8db9dbccfd69fbb0046",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1_5e0",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.5e0}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:d82ad6caa39e4ab1b48f168bf0e91e083aebbf54309633f345731f08fa82a780",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_neg_zero",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":-0.0}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:9e840cd7963b080196c213bf126635b7fcc54e44c4c65c6db9b932879ac717be",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_0_0001",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":0.0001}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:58af0435f90d40a40b34bbd12b09da24733d4f448ac141d132d88ef8e09b2651",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_1e_5",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1e-5}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:8ce7e3c4b614804c60333869ecd6c3d8660f2e049a2a8de498ecbad63309db0b",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1_0e_5",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.0e-5}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:8ce7e3c4b614804c60333869ecd6c3d8660f2e049a2a8de498ecbad63309db0b",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_0_00001",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":0.00001}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:8ce7e3c4b614804c60333869ecd6c3d8660f2e049a2a8de498ecbad63309db0b",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1e20",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1e20}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1bd40d8c0c0a02c7770e7ef6a3f91f856c6453c00aa6bd6106d1f0cf0b056a3b",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1_0e_plus20",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.0e+20}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1bd40d8c0c0a02c7770e7ef6a3f91f856c6453c00aa6bd6106d1f0cf0b056a3b",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1e999",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1e999}],\"mappings\":{}}",
+  "ruby": "OK",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_100_0",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":100.0}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:56b87f30b85d7db233920cbf2422c09502a243842e59f8db9dbccfd69fbb0046",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_1e15",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1e15}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1b58a01995e3161ba4db6ba4b91e96c733d44b97e1276bf8cb57031a04d863a5",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_1_0e15",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":1.0e15}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1b58a01995e3161ba4db6ba4b91e96c733d44b97e1276bf8cb57031a04d863a5",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_999999999999999_9",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":999999999999999.9}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:e492497764cb4bd4bf4807da588d8af2ff101aa0cd8ca6d3c9c0a51e08cdf5e3",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_0_10",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":0.10}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:e2c4b16ce312963c58e80d7f2b1a64264645736dd485febfc37712aa39036bf5",
+  "rust": "ERR unsupported_type",
+  "divergence": "Rust refuses v1 JSON floats whose spelling is not the fixed-notation canonical wire (Ruby checksum varies by json library version)"
+ },
+ {
+  "name": "v1_json_number_123_456",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":123.456}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:fb5006de000da8043b1377d2c8409adca99b73ea5023496e5b334d8176fce6ae",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_neg_1_25",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":-1.25}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:dfecbced62cea928df0a7f37fc44c1a0b80bcb1d94bb3c25768153de025ef70e",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_int_neg_zero",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":-0}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:f02e48aa4b71e4e7cc4c3ed7ae14c699ad88d220a523069e9111aa928dc28671",
+  "rust": "OK"
+ },
+ {
+  "name": "v1_json_number_int_big",
+  "kind": "document",
+  "raw": "{\"lml\":1,\"model\":\"Foo\",\"register\":\"default\",\"attributes\":[{\"name\":\"n\",\"default\":123456789012345678901234567890}],\"mappings\":{}}",
+  "ruby": "OK",
+  "ruby_checksum": "sha256:e20448ed120a8892178c2b482fa151874152d60e9e1472ed72aa17ea670f63ba",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_valid",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "attribute",
+       "name": [
+        "id"
+       ],
+       "to": "id"
+      },
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1c3be03dca191a79901751e797135c1ab7acbac973035e4d1cae748d9ca4e58f",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_alone",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:ec20defe4c8e01ea3d60669c0e83d0f531a6376279030d596f3debc8231e0778",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_not_last",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      },
+      {
+       "kind": "attribute",
+       "name": [
+        "id"
+       ],
+       "to": "id"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:0018c98840cd791e7cd37890c419a1807100b3efd1e63da83c79d9b880e9ede6",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_two",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      },
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_extra_key_name",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other",
+       "name": [
+        "x"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_extra_key_namespace",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other",
+       "namespace": {
+        "mode": "inherit"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_extra_key_unknown",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other",
+       "zzz": 1
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_to_missing",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_any_attr_to_undeclared",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "nope"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR dangling_reference",
+  "rust": "ERR dangling_reference"
+ },
+ {
+  "name": "v2_any_attr_to_non_string",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": 5
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_any_attr_to_empty",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": ""
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_any_attr_to_string_attr",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "id"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_to_collection_true",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     },
+     "collection": true
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_any_attr_to_collection_bounds_class",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     },
+     "collection": {
+      "min": 1,
+      "max": null,
+      "class": "Array"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_to_collection_false",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     },
+     "collection": false
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:55b4a8189c0c85f628f388f1bfdfa21516180bc30e1d1176233a61de5b4161f5",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_to_collection_bounds",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     },
+     "collection": {
+      "min": 0,
+      "max": null
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_to_custom_type",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "other",
+     "type": {
+      "kind": "model",
+      "id": "Foo@default"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_json_mapping",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "json": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_yaml_mapping",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "yaml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_toml_mapping",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "toml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_in_sequence_member",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [],
+     "sequence": [
+      {
+       "kind": "sequence",
+       "members": [
+        {
+         "kind": "any_attribute",
+         "to": "other"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_in_choice_member",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [],
+     "sequence": [
+      {
+       "kind": "choice",
+       "members": [
+        {
+         "kind": "element",
+         "name": [
+          "id"
+         ],
+         "to": "id"
+        },
+        {
+         "kind": "any_attribute",
+         "to": "other"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_as_sequence_group",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [],
+     "sequence": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_rules_nested_in_rule",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "element",
+       "name": [
+        "id"
+       ],
+       "to": "id",
+       "members": [
+        {
+         "kind": "any_attribute",
+         "to": "other"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:2164746b2bee7ba8279133a5eb55109adebe873227df0a0ba52799f31f783739",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_kind_case",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "Any_Attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ },
+ {
+  "name": "v2_any_attr_with_ordered_and_root",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "root": {
+      "element": "n"
+     },
+     "ordered": true,
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:795547f6c2ca8dcc6f0a84af65243c9df356e807087703cc88fbc85fdda09761",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_hash_alias_name",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "Hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "other"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "ERR unknown_type",
+  "rust": "ERR unknown_type"
+ },
+ {
+  "name": "v2_any_attr_two_attrs_one_hash",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "a",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "b",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": [
+      {
+       "kind": "any_attribute",
+       "to": "b"
+      }
+     ]
+    }
+   }
+  },
+  "ruby": "OK",
+  "ruby_checksum": "sha256:1d00086df7b7a40c431de28f6d1a27f2808e5d3e96cd09fd3346cda8771bf660",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_rules_not_array",
+  "kind": "document",
+  "doc": {
+   "lml": 2,
+   "model": "Foo",
+   "register": "default",
+   "attributes": [
+    {
+     "name": "id",
+     "type": {
+      "kind": "builtin",
+      "name": "string"
+     }
+    },
+    {
+     "name": "other",
+     "type": {
+      "kind": "builtin",
+      "name": "hash"
+     }
+    }
+   ],
+   "mappings": {
+    "xml": {
+     "rules": {
+      "kind": "any_attribute",
+      "to": "other"
+     }
+    }
+   }
+  },
+  "ruby": "ERR invalid_document",
+  "rust": "ERR invalid_document"
+ },
+ {
+  "name": "v2_any_attr_bundle_valid",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "id",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "other",
+       "type": {
+        "kind": "builtin",
+        "name": "hash"
+       }
+      }
+     ],
+     "mappings": {
+      "xml": {
+       "rules": [
+        {
+         "kind": "any_attribute",
+         "to": "other"
+        }
+       ]
+      }
+     }
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "xml"
+   ]
+  },
+  "ruby": "OK",
+  "rust": "OK"
+ },
+ {
+  "name": "v2_any_attr_bundle_two",
+  "kind": "bundle",
+  "doc": {
+   "lml_bundle": 1,
+   "roots": [
+    "Foo@default"
+   ],
+   "models": {
+    "Foo@default": {
+     "lml": 2,
+     "model": "Foo",
+     "register": "default",
+     "attributes": [
+      {
+       "name": "id",
+       "type": {
+        "kind": "builtin",
+        "name": "string"
+       }
+      },
+      {
+       "name": "other",
+       "type": {
+        "kind": "builtin",
+        "name": "hash"
+       }
+      }
+     ],
+     "mappings": {
+      "xml": {
+       "rules": [
+        {
+         "kind": "any_attribute",
+         "to": "other"
+        },
+        {
+         "kind": "any_attribute",
+         "to": "other"
+        }
+       ]
+      }
+     }
+    }
+   },
+   "value_types": {},
+   "capabilities": [
+    "json",
+    "xml"
+   ]
+  },
+  "ruby": "ERR unsupported_mapping",
+  "rust": "ERR unsupported_mapping"
+ }
+]

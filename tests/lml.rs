@@ -1,8 +1,11 @@
+mod values {
+    pub use lutaml_rs::values::*;
+}
 #[path = "../src/lml/mod.rs"]
 mod lml;
 use lml::*;
-use lutaml_model::contracts;
-use lutaml_model::*;
+use lutaml_rs::contracts;
+use lutaml_rs::*;
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 
@@ -146,7 +149,7 @@ fn refuses_bad_versions_and_duplicate_json_or_yaml_keys() {
         InputFormat::Json,
     )
     .unwrap_err();
-    assert_eq!(duplicate.reason, ErrorReason::DuplicateId);
+    assert_eq!(duplicate.reason, ErrorReason::InvalidDocument);
     assert_eq!(duplicate.location, "/models/X@default");
     for wire in [
         "lml: 1\nmodel: A\nmodel: B\n",
@@ -193,7 +196,14 @@ fn validates_exact_default_presence_and_structural_bounds_without_float_fallback
         ErrorReason::InvalidDocument,
         &format!("{at}/default/value"),
     );
-    for value in [json!(1.25), json!(true), json!("1/3"), json!("NaN")] {
+    // decimal is shape-checked only (a JSON string), as in Ruby and TS: the
+    // exporter passes a user's string through verbatim.
+    for value in [json!("1/3"), json!("NaN"), json!("abc")] {
+        let mut v = bundle();
+        v["models"]["Example::Node@custom"]["attributes"][0]["default"]["value"] = value;
+        parsed(&v);
+    }
+    for value in [json!(1.25), json!(true)] {
         let mut v = bundle();
         v["models"]["Example::Node@custom"]["attributes"][0]["default"]["value"] = value;
         let error = load(&bytes(&v), InputFormat::Json).unwrap_err();
@@ -257,11 +267,40 @@ fn graph_identity_register_context_and_discriminator_targets_are_checked() {
 #[test]
 fn rejects_unknown_features_and_preserves_declared_enum_alias_order() {
     let mut v = bundle();
-    v["models"]["Example::Node@custom"]["attributes"][0]["type"]["name"] = json!("float");
+    v["models"]["Example::Node@custom"]["attributes"][0]["type"]["name"] = json!("double");
     refused(
         &v,
         ErrorReason::UnsupportedType,
         "/models/Example::Node@custom/attributes/0/type/name",
+    );
+    v = bundle();
+    v["models"]["Example::Node@custom"]["attributes"][0]["type"]["name"] = json!("float");
+    for good in ["0.71", "1.0e-5", "-0.0", "1.0e20", "9.999999999999998e15"] {
+        v["models"]["Example::Node@custom"]["attributes"][0]["default"]["value"] = json!(good);
+        parsed(&v);
+    }
+    for bad in [
+        json!("1.0e-05"),
+        json!("+0.71"),
+        json!(".71"),
+        json!("1e-5"),
+        json!("NaN"),
+        json!("Infinity"),
+        json!(1),
+    ] {
+        v["models"]["Example::Node@custom"]["attributes"][0]["default"]["value"] = bad;
+        refused(
+            &v,
+            ErrorReason::NonSerializableDefault,
+            "/models/Example::Node@custom/attributes/0/default/value",
+        );
+    }
+    // JSON-number defaults are refused before type checking.
+    v["models"]["Example::Node@custom"]["attributes"][0]["default"]["value"] = json!(0.71);
+    refused(
+        &v,
+        ErrorReason::InvalidDocument,
+        "/models/Example::Node@custom/attributes/0/default/value",
     );
     v = bundle();
     v["capabilities"] = json!([]);
@@ -349,7 +388,7 @@ fn validates_per_instance_mixed_order_and_all_member_occurrences() {
     m["ordered_content"] = json!({"member":"__lml_content","version":1});
     m["attributes"][0]["collection"] = json!({"min":0,"max":null});
     m["attributes"][0]["default"] = json!({"present":false});
-    m["mappings"] = json!({"xml":{"root":null,"namespace":{"mode":"unqualified"},"rules":[{"kind":"element","name":["amount"],"to":"amount","namespace":{"mode":"uri","uri":"urn:example"}}]}});
+    m["mappings"] = json!({"xml":{"namespace":{"mode":"unqualified"},"rules":[{"kind":"element","name":["amount"],"to":"amount","namespace":{"mode":"uri","uri":"urn:example"}}]}});
     let m: ModelDocument = serde_json::from_value(m).unwrap();
     let data = BTreeMap::from([(
         "amount".into(),
@@ -415,9 +454,9 @@ fn xml_compositors_namespace_resets_and_render_policies_are_validated() {
     let mut v = bundle();
     v["capabilities"] = json!(["xml"]);
     v["models"]["Example::Node@custom"]["mappings"] = json!({"xml":{
-        "root":null,"namespace":{"mode":"unqualified"},
+        "namespace":{"mode":"unqualified"},
         "rules":[{"kind":"element","name":["amount","alternate"],"to":"amount","namespace":{"mode":"uri","uri":"urn:amount","prefix":"a"},"render":{"nil":"omit","empty":"as_blank","default":false}}],
-        "sequence":{"kind":"sequence","members":["amount",{"kind":"choice","members":["amount"],"min":0,"max":1}],"min":0,"max":null}}});
+        "sequence":[{"kind":"sequence","members":[{"kind":"element","name":["amount"],"to":"amount"},{"kind":"choice","min":0,"max":1,"members":[{"kind":"element","name":["amount"],"to":"amount"}]}],"min":0,"max":null}]}});
     let graph = parsed(&v).bundle().unwrap();
     let xml = graph.models["Example::Node@custom"]
         .mappings
@@ -432,14 +471,20 @@ fn xml_compositors_namespace_resets_and_render_policies_are_validated() {
     );
     v["models"]["Example::Node@custom"]["mappings"]["xml"]["rules"][0]["render"]["nil"] =
         json!("execute");
-    let err = refused(
-        &v,
-        ErrorReason::UnsupportedMapping,
-        "/models/Example::Node@custom/mappings/xml/rules/0/render/nil",
+    let graph = parsed(&v).bundle().unwrap();
+    assert_eq!(
+        graph.models["Example::Node@custom"]
+            .mappings
+            .xml
+            .as_ref()
+            .unwrap()
+            .rules[0]
+            .render
+            .as_ref()
+            .unwrap()
+            .nil,
+        RenderAction::Other("execute".into())
     );
-    assert_eq!(err.format.as_deref(), Some("xml"));
-    assert_eq!(err.rule.as_deref(), Some("0"));
-    assert_eq!(err.attribute.as_deref(), Some("amount"));
 }
 
 #[test]
@@ -506,12 +551,12 @@ attributes:
         InputFormat::Yaml,
     )
     .unwrap_err();
-    assert_eq!(duplicate.reason, ErrorReason::DuplicateId);
+    assert_eq!(duplicate.reason, ErrorReason::InvalidDocument);
     assert_eq!(duplicate.location, "/models/A@default");
 }
 
 #[test]
-fn boolean_render_policies_normalize_only_the_detached_typed_view() {
+fn boolean_render_policies_preserve_the_original_declared_wire_kind() {
     let mut v = bundle();
     v["models"]["Example::Node@custom"]["mappings"]["json"]["rules"][0]["render"] =
         json!({"nil":true,"empty":true,"default":false});
@@ -526,13 +571,13 @@ fn boolean_render_policies_normalize_only_the_detached_typed_view() {
         .render
         .as_ref()
         .unwrap();
-    assert_eq!(policy.nil, RenderAction::Nil);
-    assert_eq!(policy.empty, RenderAction::Blank);
+    assert_eq!(policy.nil, RenderAction::Boolean(true));
+    assert_eq!(policy.empty, RenderAction::Boolean(true));
     assert!(snapshot.canonical_json().contains(r#""empty":true"#));
     let mut lexical = v.clone();
     lexical["models"]["Example::Node@custom"]["mappings"]["json"]["rules"][0]["render"] =
         json!({"nil":"nil","empty":"blank","default":false});
-    assert_eq!(graph, parsed(&lexical).bundle().unwrap());
+    assert_ne!(graph, parsed(&lexical).bundle().unwrap());
     assert_ne!(snapshot.checksum(), parsed(&lexical).checksum());
     v["models"]["Example::Node@custom"]["mappings"]["json"]["rules"][0]["render"] =
         json!({"nil":false,"empty":false,"default":false});
@@ -546,8 +591,8 @@ fn boolean_render_policies_normalize_only_the_detached_typed_view() {
         .render
         .as_ref()
         .unwrap();
-    assert_eq!(policy.nil, RenderAction::Omit);
-    assert_eq!(policy.empty, RenderAction::Omit);
+    assert_eq!(policy.nil, RenderAction::Boolean(false));
+    assert_eq!(policy.empty, RenderAction::Boolean(false));
 }
 
 #[test]
@@ -560,7 +605,7 @@ fn legacy_yaml_float_checksum_ambiguity_refuses_with_actionable_context() {
     assert_eq!(error.klass.as_deref(), Some("Legacy"));
     assert_eq!(error.format.as_deref(), Some("yaml"));
     assert!(error.detail.unwrap().contains("producer-canonical v1 JSON"));
-    let canonical = r#"{"lml":1,"model":"Legacy","attributes":[{"name":"amount","type":"float","default":1e+15}],"mappings":{}}"#;
+    let canonical = r#"{"lml":1,"model":"Legacy","attributes":[{"name":"amount","type":"float","default":0.25}],"mappings":{}}"#;
     assert_eq!(
         load(canonical.as_bytes(), InputFormat::Json)
             .unwrap()
@@ -574,4 +619,555 @@ fn legacy_yaml_float_checksum_ambiguity_refuses_with_actionable_context() {
         InputFormat::Yaml
     )
     .is_ok());
+}
+
+#[test]
+fn canonical_values_rule_metadata_and_recursive_02d_groups_are_lossless() {
+    let mut v = bundle();
+    let id = "Example::Node@custom";
+    v["capabilities"] = json!(["json", "xml"]);
+    v["models"][id]["attributes"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"name":"kind","type":{"kind":"builtin","name":"string"},"values":["node"]}));
+    let leaf = json!({"kind":"element","name":["amount"],"to":"amount","child_mappings":{"id":"key"},"root_mappings":{"id":"key"},"polymorphic_map":{"Example::Node":"node"},"discriminator":{"attribute":"kind","cases":{"node":id}},"render":{"nil":"empty","empty":true,"default":"explicit"}});
+    v["models"][id]["mappings"]["xml"] = json!({"root":{"element":"node","mixed":true},"ordered":true,"mixed_content":true,"rules":[leaf.clone()],"sequence":[{"kind":"sequence","members":[{"kind":"choice","min":0,"max":2,"members":[leaf.clone()]}]}]});
+    v["models"][id]["mappings"]["json"]["rules"][0]["child_mappings"] =
+        json!({"id":"key","name":["body","name"]});
+    v["models"][id]["mappings"]["json"]["rules"][0]["discriminator"] =
+        leaf["discriminator"].clone();
+    v["models"][id]["ordered_content"] = json!({"member":"__lml_content","version":1});
+    let snapshot = parsed(&v);
+    let checksum = snapshot.checksum().to_owned();
+    let graph = snapshot.bundle().unwrap();
+    let m = &graph.models[id];
+    let xml = m.mappings.xml.as_ref().unwrap();
+    assert_eq!(xml.ordered, Some(true));
+    assert_eq!(xml.mixed_content, Some(true));
+    assert_eq!(xml.root.as_ref().unwrap().mixed, Some(true));
+    let choice = &xml.sequence.as_ref().unwrap()[0].members.as_ref().unwrap()[0];
+    assert_eq!(choice.kind, XmlRuleKind::Choice);
+    assert_eq!(choice.min, Some(NeutralValue::Signed(0)));
+    assert_eq!(choice.max, Some(NeutralValue::Signed(2)));
+    let actual = &choice.members.as_ref().unwrap()[0];
+    assert_eq!(
+        serde_json::to_value(actual).unwrap()["child_mappings"],
+        leaf["child_mappings"]
+    );
+    assert_eq!(
+        actual.polymorphic_map.as_ref().unwrap()["Example::Node"],
+        "node"
+    );
+    assert_eq!(actual.discriminator.as_ref().unwrap().cases["node"], id);
+    assert_eq!(
+        actual.render.as_ref().unwrap().nil,
+        RenderAction::Other("empty".into())
+    );
+    assert_eq!(
+        actual.render.as_ref().unwrap().default,
+        RenderAction::Other("explicit".into())
+    );
+    let wire = serde_json::to_value(&graph).unwrap();
+    assert_eq!(
+        wire["models"][id]["attributes"][1]["values"],
+        json!(["node"])
+    );
+    assert!(wire["models"][id]["attributes"][1].get("enum").is_none());
+    assert_eq!(
+        wire["models"][id]["mappings"]["xml"]["sequence"][0]["members"][0]["members"][0]
+            ["root_mappings"],
+        leaf["root_mappings"]
+    );
+    assert_eq!(snapshot.checksum(), checksum);
+    let neutral: NeutralValue = serde_json::from_value(v.clone()).unwrap();
+    let yaml = serde_yaml::to_string(&neutral).unwrap();
+    let from_yaml = load(yaml.as_bytes(), InputFormat::Yaml).unwrap();
+    assert_eq!(from_yaml.checksum(), snapshot.checksum());
+    assert_eq!(from_yaml.bundle().unwrap(), graph);
+    let mut dangling = v.clone();
+    dangling["models"][id]["mappings"]["xml"]["sequence"][0]["members"][0]["members"][0]
+        ["discriminator"]["cases"]["node"] = json!("Missing@default");
+    assert_eq!(
+        load(&bytes(&dangling), InputFormat::Json)
+            .unwrap_err()
+            .reason,
+        ErrorReason::DanglingReference
+    );
+}
+#[test]
+fn canonical_optional_attributes_and_values_preserve_source_identity() {
+    let v = json!({"lml_bundle":1,"roots":["Minimal@default"],"models":{"Minimal@default":{"lml":2,"model":"Minimal","register":"default","attributes":[{"name":"kind","type":{"kind":"builtin","name":"string"},"values":["a","b"]}]}},"value_types":{},"capabilities":[]});
+    let snapshot = parsed(&v);
+    let graph = snapshot.bundle().unwrap();
+    assert!(!graph.models["Minimal@default"].attributes[0].required);
+    assert!(matches!(
+        graph.models["Minimal@default"].attributes[0].default,
+        DefaultValue::Absent
+    ));
+    assert!(snapshot.canonical_json().contains("\"values\""));
+    let wire = serde_json::to_value(graph).unwrap();
+    assert_eq!(
+        wire["models"]["Minimal@default"]["attributes"][0]["values"],
+        json!(["a", "b"])
+    );
+    assert!(wire["models"]["Minimal@default"]["attributes"][0]
+        .get("enum")
+        .is_none());
+}
+#[test]
+fn malformed_02d_flags_groups_and_policies_refuse_without_floating_conversion() {
+    let mut v = bundle();
+    let id = "Example::Node@custom";
+    v["models"][id]["mappings"]["json"]["ordered"] = json!("true");
+    assert_eq!(
+        load(&bytes(&v), InputFormat::Json).unwrap_err().reason,
+        ErrorReason::UnsupportedMapping
+    );
+    v = bundle();
+    v["capabilities"] = json!(["xml"]);
+    v["models"][id]["mappings"] = json!({"xml":{"sequence":[1]}});
+    assert!(load(&bytes(&v), InputFormat::Json).is_err());
+    v = bundle();
+    v["models"][id]["mappings"]["json"]["rules"][0]["render"] = json!({"empty":1.25});
+    assert_eq!(
+        load(&bytes(&v), InputFormat::Json).unwrap_err().reason,
+        ErrorReason::InvalidDocument
+    );
+    v = bundle();
+    v["models"][id]["mappings"]["toml"] = json!({"rules":[]});
+    assert_eq!(
+        load(&bytes(&v), InputFormat::Json).unwrap_err().reason,
+        ErrorReason::CapabilityMissing
+    );
+}
+#[test]
+fn actual_04b_preservation_schema_json_yaml_loads_with_pinned_identity() {
+    use sha2::{Digest, Sha256};
+    let json = include_bytes!("../src/lml/fixtures/02d-preservation.schema.json");
+    let yaml = include_bytes!("../src/lml/fixtures/02d-preservation.schema.yaml");
+    assert_eq!(
+        format!("{:x}", Sha256::digest(json)),
+        "66b86b75d36568c1c353a2d5cf32d0e6562e21e7dfea0004a757d0f774761264"
+    );
+    assert_eq!(
+        format!("{:x}", Sha256::digest(yaml)),
+        "cf40d46e901e4a8e7bb4b7f7ad4365ffec687bef81832663dc136626b3963c3d"
+    );
+    let a = load(json, InputFormat::Json).unwrap();
+    let b = load(yaml, InputFormat::Yaml).unwrap();
+    assert_eq!(
+        a.checksum(),
+        "sha256:81eaac6230a81d4285fb4ea743f202234ef3f3c48482ca60ce9e9b642a5622e5"
+    );
+    assert_eq!(a.checksum(), b.checksum());
+    assert_eq!(a.bundle().unwrap(), b.bundle().unwrap());
+    let graph = a.bundle().unwrap();
+    assert_eq!(graph.models.len(), 8);
+    assert!(graph.models["LmlPreservation::Mixed@default"]
+        .ordered_content
+        .is_some());
+    let states = &graph.models["LmlPreservation::States@default"]
+        .mappings
+        .json
+        .as_ref()
+        .unwrap()
+        .rules;
+    assert!(states
+        .iter()
+        .any(|r| r.render.as_ref().is_some_and(
+            |p| p.empty == RenderAction::Boolean(true) && p.nil == RenderAction::Boolean(true)
+        )));
+}
+
+#[test]
+fn exact_integer_defaults_compare_to_typed_numeric_enum_metadata() {
+    let mut schema: Value = serde_json::from_slice(include_bytes!(
+        "../src/lml/fixtures/02d-preservation.schema.json"
+    ))
+    .unwrap();
+    schema["models"]["LmlPreservation::TypedEnum@default"]["attributes"][0]["default"] =
+        json!({"present":true,"value":1});
+    let snapshot = parsed(&schema);
+    let graph = snapshot.bundle().unwrap();
+    assert_eq!(
+        graph.models["LmlPreservation::TypedEnum@default"].attributes[0].enumeration,
+        Some(vec![NeutralValue::Signed(1), NeutralValue::Signed(2)])
+    );
+    assert!(snapshot.canonical_json().contains("\"values\":[1,2]"));
+}
+
+/// Case -> Ruby verdict -> Rust verdict. `ruby` was measured with
+/// `tests/fixtures/ruby_parity_measure.rb` against
+/// lutaml-model 7e23cd7 `DocumentValidator`; `rust` is pinned here. Where
+/// the accept/reject outcomes differ the row must carry a `divergence` note
+/// (Rust deliberately stricter); an unexplained divergence fails the test.
+#[test]
+fn ruby_document_validator_parity_table() {
+    let table: Vec<Value> =
+        serde_json::from_str(include_str!("fixtures/ruby-parity.json")).unwrap();
+    let mut dump = BTreeMap::new();
+    let mut failures = Vec::new();
+    for row in &table {
+        let name = row["name"].as_str().unwrap();
+        let input = match row.get("raw") {
+            Some(raw) => raw.as_str().unwrap().as_bytes().to_vec(),
+            None => bytes(&row["doc"]),
+        };
+        let (rust, checksum) = match load(&input, InputFormat::Json) {
+            Ok(snapshot) => ("OK".to_string(), Some(snapshot.checksum().to_string())),
+            Err(e) => (
+                format!(
+                    "ERR {}",
+                    serde_json::to_value(&e.reason).unwrap().as_str().unwrap()
+                ),
+                None,
+            ),
+        };
+        dump.insert(
+            name.to_string(),
+            json!({"verdict": rust, "checksum": checksum}),
+        );
+        if std::env::var_os("PARITY_DUMP").is_some() {
+            continue;
+        }
+        let ruby = row["ruby"].as_str().unwrap();
+        if rust != row["rust"].as_str().unwrap() {
+            failures.push(format!(
+                "{name}: pinned rust {} but got {rust}",
+                row["rust"]
+            ));
+        }
+        let same_outcome = (ruby == "OK") == (rust == "OK");
+        let noted = row
+            .get("divergence")
+            .and_then(Value::as_str)
+            .is_some_and(|n| !n.is_empty());
+        if same_outcome && noted {
+            failures.push(format!("{name}: stale divergence note"));
+        }
+        if !same_outcome && !noted {
+            failures.push(format!(
+                "{name}: ruby {ruby} vs rust {rust} without divergence note"
+            ));
+        }
+        if let (Some(expected), Some(actual)) =
+            (row.get("ruby_checksum").and_then(Value::as_str), &checksum)
+        {
+            if expected != actual {
+                failures.push(format!("{name}: checksum {actual} != ruby {expected}"));
+            }
+        }
+    }
+    if let Some(path) = std::env::var_os("PARITY_DUMP") {
+        std::fs::write(path, serde_json::to_string_pretty(&dump).unwrap()).unwrap();
+        return;
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+fn v1_json(default: &str) -> String {
+    format!(
+        r#"{{"lml":1,"model":"Legacy","attributes":[{{"name":"amount","default":{default}}}],"mappings":{{}}}}"#
+    )
+}
+
+/// M3: a v1 JSON float is admitted only in the spelling every Ruby JSON
+/// generator prints, so the checksum is Ruby's. Expected digests were measured
+/// with `Lutaml::Model::Lml::Document.from_hash(h).checksum` (also pinned by the
+/// parity table); the refused spellings re-render differently in Ruby.
+#[test]
+fn v1_json_floats_keep_ruby_checksums_or_refuse() {
+    for good in [
+        "1.5",
+        "1.0",
+        "100.0",
+        "-0.0",
+        "0.0001",
+        "123.456",
+        "-1.25",
+        "999999999999999.9",
+    ] {
+        let snapshot = load(v1_json(good).as_bytes(), InputFormat::Json).unwrap();
+        assert!(
+            snapshot
+                .canonical_json()
+                .contains(&format!("\"default\":{good}")),
+            "{good}"
+        );
+    }
+    for bad in [
+        "1.50", "0.10", "1e2", "1E2", "1.5e0", "1e-5", "1.0e-5", "1e20", "1.0e+20", "1e15",
+        "1e999", "0.00001", "9.999e-5",
+    ] {
+        let error = load(v1_json(bad).as_bytes(), InputFormat::Json).expect_err(bad);
+        assert_eq!(error.reason, ErrorReason::UnsupportedType, "{bad}");
+        assert_eq!(error.location, "/attributes/0/default", "{bad}");
+        assert_eq!(error.format.as_deref(), Some("json"), "{bad}");
+        assert_eq!(error.attribute.as_deref(), Some("amount"), "{bad}");
+    }
+    // Ruby parses -0 as the integer 0, and keeps big integers exact.
+    let negative_zero = load(v1_json("-0").as_bytes(), InputFormat::Json).unwrap();
+    assert!(negative_zero.canonical_json().contains("\"default\":0}"));
+    load(
+        v1_json("123456789012345678901234567890").as_bytes(),
+        InputFormat::Json,
+    )
+    .unwrap();
+}
+
+/// L1: object-key and enum duplicate scans are linear, and a YAML integer
+/// scalar is never run through a quadratic BigInt parse.
+#[test]
+fn large_documents_load_in_bounded_time() {
+    use std::time::{Duration, Instant};
+    // Wall-clock limits flake on a loaded machine, so the scans are checked by
+    // how they scale: 4x the entries must cost well under 16x the time (what a
+    // quadratic scan costs). A linear scan measures about 4x.
+    let limit = Duration::from_secs(20);
+    let within = |label: &str, limit: Duration, run: &dyn Fn()| {
+        let started = Instant::now();
+        run();
+        assert!(
+            started.elapsed() < limit,
+            "{label} took {:?}",
+            started.elapsed()
+        );
+    };
+    let timed = |text: &str, format: InputFormat| {
+        let started = Instant::now();
+        load(text.as_bytes(), format).unwrap();
+        started.elapsed().as_secs_f64()
+    };
+    let scales_linearly = |label: &str, format: InputFormat, build: &dyn Fn(usize) -> String| {
+        let (small, large) = (build(20_000), build(80_000));
+        timed(&small, format); // warm up allocator and code paths
+        let ratio = timed(&large, format) / timed(&small, format).max(1e-3);
+        assert!(
+            ratio < 10.0,
+            "{label}: 4x entries took {ratio:.1}x the time"
+        );
+    };
+    let json_types = |n: usize| {
+        let types: String = (0..n)
+            .map(|i| format!(r#""v{i}":{{"base":"string","facets":{{}}}}"#))
+            .collect::<Vec<_>>()
+            .join(",");
+        format!(
+            r#"{{"lml_bundle":1,"roots":[],"models":{{}},"value_types":{{{types}}},"capabilities":[]}}"#
+        )
+    };
+    scales_linearly("JSON keys", InputFormat::Json, &json_types);
+    let yaml_types = |n: usize| {
+        let yaml = (0..n).fold(String::new(), |mut out, i| {
+            out.push_str(&format!("  v{i}: {{base: string, facets: {{}}}}\n"));
+            out
+        });
+        format!("lml_bundle: 1\nroots: []\nmodels: {{}}\ncapabilities: []\nvalue_types:\n{yaml}")
+    };
+    scales_linearly("YAML keys", InputFormat::Yaml, &yaml_types);
+    let enum_doc = |n: usize| {
+        let values: Vec<String> = (0..n).map(|i| format!("\"e{i}\"")).collect();
+        format!(
+            r#"{{"lml":2,"model":"Foo","register":"default","attributes":[{{"name":"a","type":{{"kind":"builtin","name":"string"}},"values":[{}]}}]}}"#,
+            values.join(",")
+        )
+    };
+    scales_linearly("enum values", InputFormat::Json, &enum_doc);
+    let attr = enum_doc(20_000);
+    let duplicate = attr.replace("\"e7\"", "\"e8\"");
+    assert_eq!(
+        load(duplicate.as_bytes(), InputFormat::Json)
+            .unwrap_err()
+            .reason,
+        ErrorReason::InvalidDocument
+    );
+    let digits = "9".repeat(800_000);
+    let big = format!("lml: 1\nmodel: X\nattributes: [{{name: n, default: {digits}}}]\n");
+    within("800k-digit YAML integer", limit, &|| {
+        load(big.as_bytes(), InputFormat::Yaml).unwrap();
+    });
+    let hex = format!(
+        "lml: 1\nmodel: X\nattributes: [{{name: n, default: 0x{}}}]\n",
+        "f".repeat(5000)
+    );
+    within("oversized radix integer", limit, &|| {
+        assert_eq!(
+            load(hex.as_bytes(), InputFormat::Yaml).unwrap_err().reason,
+            ErrorReason::InvalidDocument
+        );
+    });
+}
+
+/// L3: YAML 1.2 floats need a digit; dot/sign/exponent fragments stay strings.
+#[test]
+fn yaml_plain_scalars_without_digits_are_strings() {
+    for text in [
+        ".", "-.", "+.", ".e5", "-.e5", ".E-3", "e5", "-e5", "1e", "1e+", "..", "1.2.3",
+    ] {
+        let yaml = format!("lml: 1\nmodel: X\nattributes: [{{name: n, default: {text}}}]\n");
+        let snapshot = load(yaml.as_bytes(), InputFormat::Yaml).unwrap();
+        assert_eq!(
+            snapshot.tree().get("attributes").unwrap().array().unwrap()[0].get("default"),
+            Some(&Node::String(text.to_string())),
+            "{text}"
+        );
+    }
+    // A genuine float is still a float, which a v1 YAML identity refuses.
+    for text in [".5", "5.", "-.5", "1e5", "5.e3"] {
+        let yaml = format!("lml: 1\nmodel: X\nattributes: [{{name: n, default: {text}}}]\n");
+        let error = load(yaml.as_bytes(), InputFormat::Yaml).unwrap_err();
+        assert_eq!(error.reason, ErrorReason::UnsupportedType, "{text}");
+    }
+}
+
+/// M2: `mappings.toml` validates like json/yaml; the typed view then refuses it
+/// by name rather than dropping it.
+#[test]
+fn toml_mapping_validates_and_the_typed_view_refuses_it_by_name() {
+    let mut v = bundle();
+    v["capabilities"] = json!(["json", "toml"]);
+    v["models"]["Example::Node@custom"]["mappings"]["toml"] =
+        json!({"rules":[{"key":["amount"],"to":"amount"}]});
+    let snapshot = parsed(&v);
+    let error = snapshot.bundle().unwrap_err();
+    assert_eq!(error.reason, ErrorReason::UnsupportedFormat);
+    assert_eq!(error.location, "/models/Example::Node@custom/mappings/toml");
+    assert_eq!(error.format.as_deref(), Some("toml"));
+    v["models"]["Example::Node@custom"]["mappings"]["toml"]["rules"][0]["to"] = json!("missing");
+    refused(
+        &v,
+        ErrorReason::DanglingReference,
+        "/models/Example::Node@custom/mappings/toml/rules/0/to",
+    );
+}
+
+/// 02g: the `any_attribute` XML rule is accepted exactly where Ruby accepts it
+/// (parity rows `v2_any_attr_*`) and the typed view carries it as a rule kind.
+#[test]
+fn any_attribute_rule_is_validated_like_ruby_and_typed() {
+    let rule = json!({"kind":"any_attribute","to":"other"});
+    let mut v = bundle();
+    v["capabilities"] = json!(["json", "xml"]);
+    let model = &mut v["models"]["Example::Node@custom"];
+    model["attributes"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"name":"other","type":{"kind":"builtin","name":"hash"}}));
+    model["mappings"]["xml"] = json!({"rules":[rule]});
+    let at = "/models/Example::Node@custom/mappings/xml/rules";
+    let typed = parsed(&v).bundle().unwrap();
+    let rules = &typed.models["Example::Node@custom"]
+        .mappings
+        .xml
+        .as_ref()
+        .unwrap()
+        .rules;
+    assert_eq!(rules[0].kind, XmlRuleKind::AnyAttribute);
+    assert_eq!(rules[0].to, "other");
+    let rules =
+        |v: &mut Value| v["models"]["Example::Node@custom"]["mappings"]["xml"]["rules"].take();
+    let mut w = v.clone();
+    w["models"]["Example::Node@custom"]["mappings"]["xml"]["rules"] = json!([rule, rule]);
+    refused(&w, ErrorReason::UnsupportedMapping, &format!("{at}/1"));
+    let mut w = v.clone();
+    w["models"]["Example::Node@custom"]["mappings"]["xml"]["rules"][0]["to"] = json!("amount");
+    refused(&w, ErrorReason::UnsupportedMapping, &format!("{at}/0/to"));
+    let mut w = v.clone();
+    w["models"]["Example::Node@custom"]["mappings"]["xml"]["rules"][0]["name"] = json!(["x"]);
+    refused(&w, ErrorReason::UnsupportedMapping, &format!("{at}/0/name"));
+    let mut w = v.clone();
+    w["models"]["Example::Node@custom"]["mappings"]["xml"]["rules"][0]["to"] = json!("missing");
+    refused(&w, ErrorReason::DanglingReference, &format!("{at}/0/to"));
+    let mut w = v.clone();
+    let moved = rules(&mut w);
+    w["models"]["Example::Node@custom"]["mappings"]["json"] = json!({"rules":moved});
+    refused(
+        &w,
+        ErrorReason::UnsupportedMapping,
+        "/models/Example::Node@custom/mappings/json/rules/0",
+    );
+    let mut w = v.clone();
+    let moved = rules(&mut w);
+    w["models"]["Example::Node@custom"]["mappings"]["xml"] =
+        json!({"sequence":[{"kind":"sequence","members":moved}]});
+    refused(
+        &w,
+        ErrorReason::UnsupportedMapping,
+        "/models/Example::Node@custom/mappings/xml/sequence/0/members/0/kind",
+    );
+}
+
+/// Ruby review-R2 rules (attribute names, reserved members, nesting depth,
+/// mapping scalars, duplicate keys): 178 Ruby-generated cases with the expected
+/// reason and, where Ruby reports one, location (bundle text errors have none).
+#[test]
+fn ruby_r2_refusal_cases_match_ruby() {
+    let cases: Vec<Value> =
+        serde_json::from_str(include_str!("fixtures/r2_refusals.json")).unwrap();
+    assert_eq!(cases.len(), 178);
+    for ty in [
+        "string",
+        "token",
+        "uri",
+        "email",
+        "hostname",
+        "ip",
+        "boolean",
+        "integer",
+        "decimal",
+        "float",
+        "rational",
+        "date",
+        "time",
+        "date_time",
+        "time_without_date",
+        "duration",
+        "qname",
+        "base64_binary",
+        "hex_binary",
+        "symbol",
+        "hash",
+        "email_address",
+        "ip_v4_address",
+        "ip_v6_address",
+        "uuid",
+        "reference",
+        "uri_reference",
+        "date_with_timezone",
+        "date_time_with_timezone",
+        "day_time_duration",
+        "year_month_duration",
+        "positive_integer",
+        "non_negative_integer",
+    ] {
+        for kind in ["ok", "refused"] {
+            let name = format!("typed_default_{kind}_{ty}");
+            assert!(cases.iter().any(|c| c["name"] == name), "{name} missing");
+        }
+    }
+    let mut failures = Vec::new();
+    for case in &cases {
+        let name = case["name"].as_str().unwrap();
+        let input = case["input"].as_str().unwrap().as_bytes();
+        match (load(input, InputFormat::Json), case["expect"].as_object()) {
+            (Ok(_), None) => {}
+            (Ok(_), Some(_)) => failures.push(format!("{name}: accepted, Ruby refuses")),
+            (Err(e), None) => failures.push(format!(
+                "{name}: refused {:?} at {}, Ruby accepts",
+                e.reason, e.location
+            )),
+            (Err(e), Some(expect)) => {
+                let reason = serde_json::to_value(&e.reason).unwrap();
+                if reason != expect["reason"] {
+                    failures.push(format!("{name}: reason {reason} != {}", expect["reason"]));
+                }
+                if let Some(location) = expect["location"].as_str() {
+                    if e.location != location {
+                        failures.push(format!("{name}: location {} != {location}", e.location));
+                    }
+                }
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
