@@ -54,7 +54,8 @@ export async function replay(options, native) {
     const again = attempt(() => wasm.read_xml(test.set, test.model_id, write.ok));
     assert(again.ok !== undefined, `${test.id}: written XML unreadable ${JSON.stringify(again.err)}`);
   }
-  assert(errors >= 6 && trees === 2, `unexpected case mix: ${errors} errors, ${trees} tree comparisons`);
+  // para-comment-refused reads since comments became tokens, so 5 error cases remain.
+  assert(errors >= 5 && trees === 2, `unexpected case mix: ${errors} errors, ${trees} tree comparisons`);
   // Unavailable capabilities, uninitialized and mis-pinned sessions fail loudly.
   const call = (set, model) => () => wasm.read_xml(set, model, '<x/>');
   await rejects(call('oracle', 'XmlOracle::Missing@default'), 'capability_missing', 'unknown-model');
