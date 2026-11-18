@@ -252,6 +252,23 @@ pub enum ContentToken {
         #[serde(flatten)]
         source: TextSource,
     },
+    /// An XML comment, kept where it was read. `literal` is the comment body.
+    Comment {
+        literal: String,
+    },
+    /// An XML processing instruction, kept where it was read.
+    ProcessingInstruction {
+        target: String,
+        data: String,
+    },
+    /// Input attribute order. A reader records one token per present XML
+    /// attribute, in input order, only when that order differs from the
+    /// declaration order. A writer emits the listed attributes first, in token
+    /// order, then the others in declaration order. `index` is always 0.
+    Attribute {
+        attribute: String,
+        index: u64,
+    },
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "mode", rename_all = "snake_case")]

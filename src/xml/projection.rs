@@ -606,6 +606,16 @@ pub fn validate_order<'a>(
             | ContentToken::Cdata {
                 source: TextSource::Member { attribute, index },
             } => (attribute, index, false),
+            ContentToken::Attribute { attribute, index } => {
+                let declared = projection.operations.iter().any(|op| {
+                    matches!(op, Operation::Field(f)
+                        if f.member == *attribute && f.kind == XmlRuleKind::Attribute)
+                });
+                if *index != 0 || !declared || !seen.insert((attribute, index)) {
+                    return Err(fail(position, attribute));
+                }
+                continue;
+            }
             _ => continue,
         };
         let field = projection

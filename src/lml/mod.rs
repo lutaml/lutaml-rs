@@ -253,8 +253,13 @@ pub fn validate_ordered_content(
     }
     let mut expected = BTreeSet::new();
     let mut kinds = std::collections::BTreeMap::new();
+    let mut attributes = BTreeSet::new();
+    let mut seen_attributes = BTreeSet::new();
     if let Some(xml) = &model.mappings.xml {
         for rule in &xml.rules {
+            if rule.kind == XmlRuleKind::Attribute {
+                attributes.insert(rule.to.as_str());
+            }
             if matches!(
                 rule.kind,
                 XmlRuleKind::Attribute | XmlRuleKind::AnyAttribute
@@ -290,7 +295,29 @@ pub fn validate_ordered_content(
             }
             | ContentToken::Cdata {
                 source: TextSource::Literal { .. },
-            } => continue,
+            }
+            | ContentToken::Comment { .. }
+            | ContentToken::ProcessingInstruction { .. } => continue,
+            ContentToken::Attribute { attribute, index } => {
+                let present = data
+                    .get(attribute)
+                    .is_some_and(|v| !matches!(v, NeutralValue::Null));
+                if *index != 0
+                    || !present
+                    || !attributes.contains(attribute.as_str())
+                    || !seen_attributes.insert(attribute.as_str())
+                {
+                    let mut err = failure(
+                        ErrorReason::InvalidOrderedContent,
+                        &at,
+                        "attribute order token names an absent, repeated or non-attribute member",
+                    );
+                    err.model_id = Some(format!("{}@{}", model.model, model.register));
+                    err.attribute = Some(attribute.clone());
+                    return Err(err);
+                }
+                continue;
+            }
         };
         let member = (attribute, slot);
         if !expected.contains(&member)
