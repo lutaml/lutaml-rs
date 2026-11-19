@@ -846,7 +846,9 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
     )
     .unwrap();
     if !validation_entries.is_empty() {
-        writeln!(output, "const FIELDS: &[fn(&{name}, bool)->Result<(),ValidationError>] = &[{}];\nfor field in FIELDS {{ field(self, choices)?; }}", validation_entries.join(", ")).unwrap();
+        // Leading underscores keep these fn-local names out of the model
+        // namespace; the alias keeps clippy's type_complexity quiet.
+        writeln!(output, "type __LmlFieldCheck = fn(&{name}, bool)->Result<(),ValidationError>;\nconst __LML_FIELDS: &[__LmlFieldCheck] = &[{}];\nfor field in __LML_FIELDS {{ field(self, choices)?; }}", validation_entries.join(", ")).unwrap();
     }
     if model.ordered_content {
         let err = format!(
