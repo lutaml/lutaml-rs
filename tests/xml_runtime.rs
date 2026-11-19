@@ -326,6 +326,34 @@ fn emitter_output_is_deterministic_and_single_file() {
     assert!(!text.contains("unsafe") && !text.contains("eval"));
 }
 
+/// Deep documents recurse through `read_*_el`, `write_*_el` and `validate_phase`.
+/// Each field goes through its own non-inlined helper so those frames stay small
+/// in unoptimised builds (mathml over-under-019 overflowed a 2 MiB test thread
+/// when the field bodies were inlined).
+#[test]
+fn recursive_frames_delegate_fields_to_non_inlined_helpers() {
+    let bundle = full_bundle();
+    let codecs = RustXmlEmitter
+        .generate_xml_codecs(&bundle, &TypeBindings::new())
+        .unwrap();
+    let text = &codecs["xml_codecs.rs"];
+    let names = model_names(&bundle).unwrap();
+    let n = &names["XmlOracle::Kennel@default"];
+    assert!(text.contains("#[inline(never)]\nfn boxed_default<T: Default>()"));
+    assert!(text.contains(&format!("let mut m = boxed_default::<{n}>();")));
+    assert!(text.contains(&format!(
+        "#[inline(never)]\nfn __lml_xml_read_{n}_0(m: &mut {n}, doc: &rt::Doc, hit: &rt::ElemHit)"
+    )));
+    assert!(text.contains(&format!(
+        "#[inline(never)]\nfn __lml_xml_write_{n}_0(v: &{n}, values: &mut rt::Values)"
+    )));
+    assert!(!text.contains("match hit.rule"));
+    let models = RustEmitter
+        .generate_models(&bundle, &TypeBindings::new())
+        .unwrap();
+    assert!(models["models.rs"].contains("#[inline(never)]\nfn __lml_validate_field_"));
+}
+
 /// Ruby (wave1 worktree, `bundle exec ruby`) reads `<pet><name>Tom</name></pet>` as
 /// the base class with `kind` nil, and writes it back with no kind attribute and no
 /// kind member. The generated union must not invent the base tag on the way out.

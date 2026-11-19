@@ -312,10 +312,8 @@ Ok(()) }
 pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}
 pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}
 fn validate_phase(&self, choices:bool)->Result<(),ValidationError>{
-if matches!(self.title,Presence::Absent|Presence::Null) { return Err(invalid("Node@default", "title", "invalid_document")); }
-if let Presence::Value(v)=&self.tags { if (v.len() as u64) < 1u64 || (v.len() as u64) > 2u64 { return Err(invalid("Node@default", "tags", "invalid_document")); } }
-if let Presence::Value(v)=&self.child { v.validate_phase(choices)?; }
-if let Presence::Value(v)=&self.item { v.validate_phase(choices)?; }
+const FIELDS: &[fn(&Node, bool)->Result<(),ValidationError>] = &[Node::__lml_validate_field_0, Node::__lml_validate_field_2, Node::__lml_validate_field_3, Node::__lml_validate_field_5];
+for field in FIELDS { field(self, choices)?; }
 if matches!(self.__lml_content,Presence::Null) { return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")); }
 if let Presence::Value(tokens)=&self.__lml_content { let mut seen=std::collections::BTreeSet::new(); for token in tokens { if let Some((member,index))=token.reference() { let count=match member {
 "title" => match &self.title { Presence::Value(_)=>1, _=>0 },
@@ -325,5 +323,21 @@ if let Presence::Value(tokens)=&self.__lml_content { let mut seen=std::collectio
 "amount" => match &self.amount { Presence::Value(_)=>1, _=>0 },
 "item" => match &self.item { Presence::Value(_)=>1, _=>0 },
 _ => return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")), }; if index>=count || !seen.insert((member,index)) { return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")); } } } }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_0(&self, _choices:bool)->Result<(),ValidationError>{
+if matches!(self.title,Presence::Absent|Presence::Null) { return Err(invalid("Node@default", "title", "invalid_document")); }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_2(&self, _choices:bool)->Result<(),ValidationError>{
+if let Presence::Value(v)=&self.tags { if (v.len() as u64) < 1u64 || (v.len() as u64) > 2u64 { return Err(invalid("Node@default", "tags", "invalid_document")); } }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_3(&self, choices:bool)->Result<(),ValidationError>{
+if let Presence::Value(v)=&self.child { v.validate_phase(choices)?; }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_5(&self, choices:bool)->Result<(),ValidationError>{
+if let Presence::Value(v)=&self.item { v.validate_phase(choices)?; }
 Ok(()) }
 }

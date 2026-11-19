@@ -41,6 +41,9 @@ impl XmlCodecEmitter for RustXmlEmitter {
         let names = model_names(bundle)?;
         let mut out = String::from(HEADER);
         out.push_str(include_str!("token_bridge.rs.txt"));
+        // A non-inlined constructor builds each model on the heap without a
+        // full-size temporary in the recursive reader frame.
+        out.push_str("#[inline(never)]\nfn boxed_default<T: Default>() -> Box<T> { Box::new(T::default()) }\n");
         for (id, model) in &bundle.models {
             if model.mappings.xml.is_none() {
                 continue;

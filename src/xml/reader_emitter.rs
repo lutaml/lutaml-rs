@@ -607,6 +607,9 @@ fn push(ident: &str, value: &str) -> String {
 
 /// The reader for one model: a `const` rule table and a typed element reader.
 pub(super) fn emit_reader(out: &mut String, p: &Plan) {
+    // Each element rule reads through its own non-inlined helper, so the
+    // recursive `read_*_el` frame stays small in unoptimised builds.
+    let mut field_helpers = String::new();
     let (id, name) = (q(&p.id), &p.name);
     let attrs: String = p
         .attrs
@@ -649,7 +652,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     .unwrap();
     writeln!(
         out,
-        "fn read_{name}_el(doc: &rt::Doc, ord: usize, loc: &str) -> ContractResult<Box<{name}>> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = Box::new({name}::default());"
+        "fn read_{name}_el(doc: &rt::Doc, ord: usize, loc: &str) -> ContractResult<Box<{name}>> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = boxed_default::<{name}>();"
     )
     .unwrap();
     for (i, a) in p.attrs.iter().enumerate() {
@@ -660,7 +663,11 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             q(&a.member), a.ident).unwrap();
     }
     if !p.elems.is_empty() {
-        out.push_str(" for hit in &s.elems {\n  match hit.rule {\n");
+        let entries = (0..p.elems.len())
+            .map(|index| format!("__lml_xml_read_{name}_{index}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        writeln!(out, " const READ_FIELDS: &[fn(&mut {name}, &rt::Doc, &rt::ElemHit) -> ContractResult<()>] = &[{entries}];\n for hit in &s.elems {{ if let Some(read) = READ_FIELDS.get(hit.rule) {{ read(m.as_mut(), doc, hit)?; }} }}").unwrap();
         for (i, e) in p.elems.iter().enumerate() {
             let first = q(&e.names[0]);
             let at = format!(
@@ -723,9 +730,8 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                 (true, true) => format!("if let Some(v) = {value} {{ {} }}", push(&e.ident, "v")),
                 (true, false) => format!("let v = {value}; {}", push(&e.ident, "v")),
             };
-            writeln!(out, "   {i} => {{ {prelude} {body} }}").unwrap();
+            writeln!(field_helpers, "#[inline(never)]\nfn __lml_xml_read_{name}_{i}(m: &mut {name}, doc: &rt::Doc, hit: &rt::ElemHit) -> ContractResult<()> {{\n {prelude} {body}\n Ok(())\n}}").unwrap();
         }
-        out.push_str("   _ => {}\n  }\n }\n");
     }
     for e in p.elems.iter().filter(|e| e.absent_list) {
         let field = &e.ident;
@@ -756,6 +762,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         .unwrap();
     }
     out.push_str(" Ok(m)\n}\n");
+    out.push_str(&field_helpers);
     let root = p
         .root
         .as_ref()
