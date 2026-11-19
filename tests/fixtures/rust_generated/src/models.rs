@@ -298,8 +298,9 @@ Ok(()) }
 pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}
 pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}
 fn validate_phase(&self, choices:bool)->Result<(),ValidationError>{
-const FIELDS: &[fn(&Node, bool)->Result<(),ValidationError>] = &[Node::__lml_validate_field_0, Node::__lml_validate_field_2, Node::__lml_validate_field_3, Node::__lml_validate_field_5];
-for field in FIELDS { field(self, choices)?; }
+type __LmlFieldCheck = fn(&Node, bool)->Result<(),ValidationError>;
+const __LML_FIELDS: &[__LmlFieldCheck] = &[Node::__lml_validate_field_0, Node::__lml_validate_field_2, Node::__lml_validate_field_3, Node::__lml_validate_field_5];
+for field in __LML_FIELDS { field(self, choices)?; }
 if matches!(self.__lml_content,Presence::Null) { return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")); }
 if let Presence::Value(tokens)=&self.__lml_content { let mut seen=std::collections::BTreeSet::new(); for token in tokens { if let Some((member,index))=token.reference() { let count=match member {
 "title" => match &self.title { Presence::Value(_)=>1, _=>0 },
