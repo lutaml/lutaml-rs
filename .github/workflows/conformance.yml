@@ -92,6 +92,7 @@ jobs:
                   ['cargo', 'fetch', '--locked'],
                   ['cargo', 'clippy', '--locked', '--all-targets', '--features', 'xml', '--', '-D', 'warnings', '-A', 'clippy::derivable_impls'],
                   ['cargo', 'test', '--locked', '--features', 'xml', '--test', 'xml_runtime', '--', '--nocapture'],
+                  ['cargo', 'test', '--locked', '--features', 'xml', '--test', 'model_choices', '--test', 'named_enums', '--', '--nocapture'],
               ]
               for command in commands:
                   print('$', ' '.join(command), flush=True)

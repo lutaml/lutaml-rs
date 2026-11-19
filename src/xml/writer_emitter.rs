@@ -7,6 +7,9 @@ use std::fmt::Write;
 const EL: &str = "rt::moxml::document::ElementSpec";
 
 pub(super) fn emit_writer(out: &mut String, p: &Plan) {
+    // Each element rule writes through its own non-inlined helper, so the
+    // recursive `write_*_el` frame stays small in unoptimised builds.
+    let mut field_helpers = String::new();
     let (id, name) = (q(&p.id), &p.name);
     let refusal = if p.writer_refusals.is_empty() {
         "None".to_string()
@@ -81,10 +84,9 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
     for a in &p.attrs {
         writeln!(
             out,
-            " values.attrs.push(match &v.{} {{ Presence::Value(x) => Some(rt::encode(x, {}, {id}, {})?), _ => None }});",
+            " values.attrs.push(match &v.{} {{ Presence::Value(x) => Some({}), _ => None }});",
             a.ident,
-            a.kind.path(),
-            q(&a.member)
+            a.kind.encode(&id, &q(&a.member))
         )
         .unwrap();
     }
@@ -92,31 +94,33 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
         let nm = format!("WS_{name}.elems[{i}].name");
         let ns = format!("WS_{name}.elems[{i}].ns.as_ref()");
         let one = match &e.child {
-            Child::Scalar(k) => format!(
-                "rt::Item::Text(rt::encode(x, {}, {id}, {})?)",
-                k.path(),
-                q(&e.member)
-            ),
+            Child::Scalar(k) => format!("rt::Item::Text({})", k.encode(&id, &q(&e.member))),
             Child::Model(n) => format!("rt::Item::Child(write_{n}_el(x, {nm}, {ns}, None)?)"),
             Child::Poly { .. } => {
                 format!("rt::Item::Child(write_{name}_{i}_poly(x, {nm}, {ns})?)")
             }
         };
         let arm = if e.collection {
-            format!("Presence::Value(l) => {{ let mut items = Vec::new(); for x in l {{ items.push({one}); }} Some(items) }}")
+            let guard = if e.skip_empty_collection {
+                " if !l.is_empty()"
+            } else {
+                ""
+            };
+            format!("Presence::Value(l){guard} => {{ let mut items = Vec::new(); for x in l {{ items.push({one}); }} Some(items) }}")
         } else {
             format!("Presence::Value(x) => Some(vec![{one}])")
         };
-        writeln!(
-            out,
-            " values.elems.push(match &v.{} {{ {arm}, _ => None }});",
-            e.ident
-        )
-        .unwrap();
+        writeln!(field_helpers, "#[inline(never)]\nfn __lml_xml_write_{name}_{i}(v: &{name}, values: &mut rt::Values) -> ContractResult<()> {{\n values.elems.push(match &v.{} {{ {arm}, _ => None }});\n Ok(())\n}}", e.ident).unwrap();
+    }
+    if !p.elems.is_empty() {
+        let entries = (0..p.elems.len())
+            .map(|index| format!("__lml_xml_write_{name}_{index}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        writeln!(out, " const WRITE_FIELDS: &[fn(&{name}, &mut rt::Values) -> ContractResult<()>] = &[{entries}];\n for write in WRITE_FIELDS {{ write(v, &mut values)?; }}").unwrap();
     }
     if let Some(c) = &p.content {
-        let k = c.kind.path();
-        let enc = format!("rt::encode(x, {k}, {id}, {})?", q(&c.member));
+        let enc = c.kind.encode(&id, &q(&c.member));
         if c.collection {
             writeln!(out, " if let Presence::Value(l) = &v.{} {{ for x in l {{ values.content.push({enc}); }} }}", c.ident).unwrap();
         } else {
@@ -137,11 +141,12 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
         .unwrap();
     }
     if p.tokens {
-        writeln!(out, " let at = rt::Where {{ id: {id}, attribute: \"__lml_content\", rule: \"\", loc: \"/__lml_content\" }};\n values.tokens = match order {{ Some(t) => Some(t.to_vec()), None => match &v.__lml_content {{ Presence::Value(t) => Some(rt::retype(t, &at)?), _ => None }} }};").unwrap();
+        writeln!(out, " values.tokens = match order {{ Some(t) => Some(t.to_vec()), None => match &v.__lml_content {{ Presence::Value(t) => Some(contract_tokens(t)), _ => None }} }};").unwrap();
     } else {
         writeln!(out, " if order.is_some() {{ return Err(rt::fail(ErrorReason::InvalidOrderedContent, {id}, None, None, \"/order\", \"the model carries no ordered content\")); }}").unwrap();
     }
     writeln!(out, " rt::assemble(&WS_{name}, name, ns, values)\n}}").unwrap();
+    out.push_str(&field_helpers);
 
     let root = match &p.root {
         Some(r) => format!(
@@ -155,7 +160,7 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
     };
     writeln!(
         out,
-        "fn write_{name}_root(v: &{name}, order: Option<&[super::contracts::ContentToken]>) -> ContractResult<String> {{\n v.validate().map_err(|e| rt::fail(ErrorReason::NotSerializable, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/output\", e.reason))?;\n let el = {{ {root} }}?;\n rt::to_xml({id}, el)\n}}\npub fn write_{name}_xml(v: &{name}) -> ContractResult<String> {{\n write_{name}_root(v, None)\n}}"
+        "fn write_{name}_root(v: &{name}, order: Option<&[super::contracts::ContentToken]>) -> ContractResult<String> {{\n v.validate_shape().map_err(|e| rt::fail(ErrorReason::NotSerializable, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/output\", e.reason))?;\n let el = {{ {root} }}?;\n rt::to_xml({id}, el)\n}}\npub fn write_{name}_xml(v: &{name}) -> ContractResult<String> {{\n write_{name}_root(v, None)\n}}"
     )
     .unwrap();
     writeln!(

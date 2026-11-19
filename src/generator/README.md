@@ -23,7 +23,13 @@ floating-point conversion. A rational's wire boundary is a terminating decimal;
 exact arithmetic/rendering is the separate values module's responsibility.
 
 Named value types require caller-trusted `TypeBindings`; their serde implementation
-must enforce the declared base/facets. Builtins needing lexical codecs, custom
+must enforce the declared base/facets. A binding can additionally name
+`codec: "xml:crate::my_module"` to preserve the source lexical boundary.
+The module exports `parse(&str) -> Result<Option<T>, E>` (receiving the raw
+text, with `None` representing nil) and `format(&T) -> Result<String, E>`;
+errors must implement `ToString`. JSON continues using the type's serde
+representation. Unsupported lexical builtins accept the same binding under a
+key such as `builtin:date_time`. Only caller-supplied module paths can select these functions. Builtins needing lexical codecs, custom
 collection classes and nonliteral structured defaults currently refuse with named
 contract errors. No unchecked JSON field substitutes for an unsupported type.
 

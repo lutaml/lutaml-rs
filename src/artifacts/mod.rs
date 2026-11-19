@@ -87,6 +87,8 @@ impl Artifacts {
                         include_bytes!("../xml/writer_emitter.rs").as_slice(),
                         #[cfg(feature = "xml")]
                         include_bytes!("../xml/projection.rs").as_slice(),
+                        #[cfg(feature = "xml")]
+                        include_bytes!("../xml/moxml_binding.rs").as_slice(),
                     ]
                     .concat()
                 )
