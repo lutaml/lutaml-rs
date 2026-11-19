@@ -780,22 +780,13 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
         }
     }
     output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}\npub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}\n");
-    let choice_parameter = if model.choice_checks.is_empty()
-        && !model
-            .attrs
-            .iter()
-            .any(|attribute| attribute.nested_validate)
-    {
-        "_choices"
-    } else {
-        "choices"
-    };
-    writeln!(
-        output,
-        "fn validate_phase(&self, {choice_parameter}:bool)->Result<(),ValidationError>{{"
-    )
-    .unwrap();
-    for a in &model.attrs {
+    // Each attribute's checks live in their own non-inlined helper, so the
+    // recursive `validate_phase` frame stays small in unoptimised builds.
+    let mut validation_helpers = String::new();
+    let mut validation_entries = Vec::new();
+    for (index, a) in model.attrs.iter().enumerate() {
+        let mut output = String::new();
+        let output = &mut output;
         let field = &a.field;
         let err = format!(
             "invalid({}, {}, \"invalid_document\")",
@@ -833,6 +824,29 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
                 .unwrap();
             }
         }
+        if !output.is_empty() {
+            let helper = format!("__lml_validate_field_{index}");
+            let parameter = if a.nested_validate {
+                "choices"
+            } else {
+                "_choices"
+            };
+            writeln!(validation_helpers, "#[inline(never)]\nfn {helper}(&self, {parameter}:bool)->Result<(),ValidationError>{{\n{output}Ok(()) }}").unwrap();
+            validation_entries.push(format!("{name}::{helper}"));
+        }
+    }
+    let choice_parameter = if model.choice_checks.is_empty() && validation_entries.is_empty() {
+        "_choices"
+    } else {
+        "choices"
+    };
+    writeln!(
+        output,
+        "fn validate_phase(&self, {choice_parameter}:bool)->Result<(),ValidationError>{{"
+    )
+    .unwrap();
+    if !validation_entries.is_empty() {
+        writeln!(output, "const FIELDS: &[fn(&{name}, bool)->Result<(),ValidationError>] = &[{}];\nfor field in FIELDS {{ field(self, choices)?; }}", validation_entries.join(", ")).unwrap();
     }
     if model.ordered_content {
         let err = format!(
@@ -864,7 +878,9 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
     if !model.choice_checks.is_empty() {
         writeln!(output, "if choices {{ {} }}", model.choice_checks).unwrap();
     }
-    output.push_str("Ok(()) }\n}\n");
+    output.push_str("Ok(()) }\n");
+    output.push_str(&validation_helpers);
+    output.push_str("}\n");
 }
 /// Validate one polymorphic attribute's cases and capture what emission needs.
 fn plan_union(

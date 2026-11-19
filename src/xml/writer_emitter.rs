@@ -7,6 +7,9 @@ use std::fmt::Write;
 const EL: &str = "rt::moxml::document::ElementSpec";
 
 pub(super) fn emit_writer(out: &mut String, p: &Plan) {
+    // Each element rule writes through its own non-inlined helper, so the
+    // recursive `write_*_el` frame stays small in unoptimised builds.
+    let mut field_helpers = String::new();
     let (id, name) = (q(&p.id), &p.name);
     let refusal = if p.writer_refusals.is_empty() {
         "None".to_string()
@@ -107,12 +110,14 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
         } else {
             format!("Presence::Value(x) => Some(vec![{one}])")
         };
-        writeln!(
-            out,
-            " values.elems.push(match &v.{} {{ {arm}, _ => None }});",
-            e.ident
-        )
-        .unwrap();
+        writeln!(field_helpers, "#[inline(never)]\nfn __lml_xml_write_{name}_{i}(v: &{name}, values: &mut rt::Values) -> ContractResult<()> {{\n values.elems.push(match &v.{} {{ {arm}, _ => None }});\n Ok(())\n}}", e.ident).unwrap();
+    }
+    if !p.elems.is_empty() {
+        let entries = (0..p.elems.len())
+            .map(|index| format!("__lml_xml_write_{name}_{index}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        writeln!(out, " const WRITE_FIELDS: &[fn(&{name}, &mut rt::Values) -> ContractResult<()>] = &[{entries}];\n for write in WRITE_FIELDS {{ write(v, &mut values)?; }}").unwrap();
     }
     if let Some(c) = &p.content {
         let enc = c.kind.encode(&id, &q(&c.member));
@@ -141,6 +146,7 @@ pub(super) fn emit_writer(out: &mut String, p: &Plan) {
         writeln!(out, " if order.is_some() {{ return Err(rt::fail(ErrorReason::InvalidOrderedContent, {id}, None, None, \"/order\", \"the model carries no ordered content\")); }}").unwrap();
     }
     writeln!(out, " rt::assemble(&WS_{name}, name, ns, values)\n}}").unwrap();
+    out.push_str(&field_helpers);
 
     let root = match &p.root {
         Some(r) => format!(
