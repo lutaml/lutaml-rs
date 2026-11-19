@@ -7,12 +7,20 @@ export const OVERRIDES = {
   'person-wrong-namespace': { error: 'invalid_document' },
   'person-bad-integer': { error: 'invalid_document', attribute: 'age' },
   'kennel-poly-unknown-kind': { error: 'unknown_discriminator' },
+  // Ruby's LML export rejects a comment in ordered content; the native reader keeps it as a token.
+  'para-comment-refused': {
+    text: ['a'], b: ['x'], i: null,
+    __lml_content: [
+      { kind: 'text', attribute: 'text', index: 0 },
+      { kind: 'comment', literal: 'c' },
+      { kind: 'element', attribute: 'b', index: 0 },
+    ],
+  },
 };
 
 // Error reasons of the Ruby-error cases that have no override, measured on the native codecs.
 export const ERROR_REASONS = {
   'person-malformed': 'invalid_document',
-  'para-comment-refused': 'invalid_ordered_content',
 };
 // Bytes the generated Rust writer emits for the mml mi-mixed cases (prefixed form). The Ruby
 // bytes use a default namespace; both resolve to the same tree, which is the contracted comparison.

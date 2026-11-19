@@ -38,11 +38,12 @@ const mml = JSON.parse(await readFile(`${root}fixtures/mml-oracle.json`, 'utf8')
 const cases = [];
 for (const c of oracle.cases) {
   const o = OVERRIDES[c.id];
-  const error = c.expected_error ?? o?.error;
+  // An override replaces the Ruby expectation, including a Ruby error the native reader does not share.
+  const error = o === undefined ? c.expected_error : o.error;
   if (error && !(o?.error ?? ERROR_REASONS[c.id])) throw Error(`no pinned error reason for ${c.id}`);
   cases.push({ id: c.id, set: 'oracle', model_id: c.model_id, format: 'xml', comparison: 'data', input: c.input,
     ...(error ? { expected_error: o?.error ?? ERROR_REASONS[c.id], ruby_error: c.expected_error, ...(o?.attribute && { expected_attribute: o.attribute }) }
-      : { expected_data: o ?? c.expected_data }) });
+      : { expected_data: o ?? c.expected_data, ...(c.expected_error && { ruby_error: c.expected_error }) }) });
 }
 for (const c of mml.cases) {
   const set = c.register;

@@ -6,6 +6,12 @@ mod values {
 }
 #[path = "../src/codecs/mod.rs"]
 mod codecs;
+// This JSON harness imports private reserved-name metadata from the emitter;
+// its XML entrypoint is exercised by tests/generator.rs instead.
+#[expect(
+    dead_code,
+    reason = "the copied emitter is used only for JSON generation"
+)]
 #[path = "../src/generator/mod.rs"]
 mod generator;
 use codecs::RustJsonEmitter;
@@ -44,6 +50,7 @@ fn model(name: &str, attributes: Vec<Attribute>, rules: Vec<KeyRule>) -> ModelDo
             ..Default::default()
         },
         ordered_content: None,
+        choices: None,
     }
 }
 fn rule(
@@ -696,6 +703,9 @@ const UNRESERVED_LOOKALIKES: &[&str] = &[
     "Text",
     "Element",
     "Cdata",
+    "Comment",
+    "ProcessingInstruction",
+    "Attribute",
     "Member",
     "Literal",
     "Absent",
@@ -773,6 +783,9 @@ fn every_capitalized_name_in_emitted_code_is_reserved_or_known_to_be_scoped() {
         "Element",
         "Text",
         "Cdata",
+        "Comment",
+        "ProcessingInstruction",
+        "Attribute",
         "Unique",
         "Visitor",
         "Ok",

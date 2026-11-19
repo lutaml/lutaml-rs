@@ -252,6 +252,23 @@ pub enum ContentToken {
         #[serde(flatten)]
         source: TextSource,
     },
+    /// An XML comment, kept where it was read. `literal` is the comment body.
+    Comment {
+        literal: String,
+    },
+    /// An XML processing instruction, kept where it was read.
+    ProcessingInstruction {
+        target: String,
+        data: String,
+    },
+    /// Input attribute order. A reader records one token per present XML
+    /// attribute, in input order, only when that order differs from the
+    /// declaration order. A writer emits the listed attributes first, in token
+    /// order, then the others in declaration order. `index` is always 0.
+    Attribute {
+        attribute: String,
+        index: u64,
+    },
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "mode", rename_all = "snake_case")]
@@ -551,6 +568,28 @@ pub struct ModelDocument {
     pub mappings: Mappings,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ordered_content: Option<OrderedContent>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choices: Option<ModelChoices>,
+}
+/// Versioned class-level choice validation, deliberately deferred until validate().
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ModelChoices {
+    pub version: u32,
+    pub validation: String,
+    pub groups: Vec<ModelChoiceGroup>,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ModelChoiceGroup {
+    pub min: u64,
+    pub max: Option<u64>,
+    pub format: Option<String>,
+    pub members: Vec<ModelChoiceMember>,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ModelChoiceMember {
+    Attribute { attribute: String },
+    Choice { choice: Box<ModelChoiceGroup> },
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Bundle {
@@ -649,7 +688,26 @@ pub struct Manifest {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TypeBinding {
     pub rust_type: String,
+    /// Optional trusted `xml:<Rust module path>` for XML lexical conversion.
+    /// The module exports parse(&str) -> Result<Option<T>, E> and
+    /// format(&T) -> Result<String, E>; E implements ToString.
     pub codec: Option<String>,
+}
+impl TypeBinding {
+    pub fn xml_codec_module(&self) -> Option<&str> {
+        let path = self.codec.as_deref()?.strip_prefix("xml:")?;
+        path.strip_prefix("::")
+            .unwrap_or(path)
+            .split("::")
+            .all(|segment| {
+                let mut chars = segment.bytes();
+                chars
+                    .next()
+                    .is_some_and(|c| c.is_ascii_alphabetic() || c == b'_')
+                    && chars.all(|c| c.is_ascii_alphanumeric() || c == b'_')
+            })
+            .then_some(path)
+    }
 }
 pub type TypeBindings = BTreeMap<ValueTypeId, TypeBinding>;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

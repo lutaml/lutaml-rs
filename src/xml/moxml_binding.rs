@@ -272,6 +272,26 @@ fn unclaimed(row: &ElementRow, spec: &ModelSpec) -> Vec<(String, String)> {
     out
 }
 
+/// The attribute rules claimed by an element, in input order. A rule claims the
+/// first attribute it accepts (as `Doc::attribute` reads it).
+fn attribute_order(doc: &Doc, ord: usize, spec: &ModelSpec) -> Vec<usize> {
+    let mut order = Vec::new();
+    for a in &doc.rows[ord].attributes {
+        let ns = a.name.namespace.as_deref().unwrap_or("");
+        let Some(rule) = spec
+            .attrs
+            .iter()
+            .position(|r| r.names.contains(&a.name.local.as_str()) && accepts(r.ns, ns))
+        else {
+            continue;
+        };
+        if !order.contains(&rule) {
+            order.push(rule);
+        }
+    }
+    order
+}
+
 /// One pass over an element row: attributes, accepted children, text and the
 /// ordered-content token list. Typing is left to generated code.
 pub fn scan(doc: &Doc, ord: usize, spec: &ModelSpec, loc: &str) -> ContractResult<Scan> {
@@ -370,18 +390,30 @@ pub fn scan(doc: &Doc, ord: usize, spec: &ModelSpec, loc: &str) -> ContractResul
                     });
                 }
             }
-            ContentRow::Comment(_) | ContentRow::ProcessingInstruction { .. } => {
+            ContentRow::Comment(t) => {
                 if spec.tokens {
-                    return Err(fail(
-                        ErrorReason::InvalidOrderedContent,
-                        spec.id,
-                        None,
-                        None,
-                        loc,
-                        "comments and processing instructions have no ordered-content token",
-                    ));
+                    out.tokens
+                        .push(ContentToken::Comment { literal: t.clone() });
                 }
             }
+            ContentRow::ProcessingInstruction { target, data } => {
+                if spec.tokens {
+                    out.tokens.push(ContentToken::ProcessingInstruction {
+                        target: target.clone(),
+                        data: data.clone(),
+                    });
+                }
+            }
+        }
+    }
+    if spec.tokens {
+        let order = attribute_order(doc, ord, spec);
+        if order.windows(2).any(|w| w[0] > w[1]) {
+            let tokens = order.iter().map(|&rule| ContentToken::Attribute {
+                attribute: spec.attrs[rule].to.into(),
+                index: 0,
+            });
+            out.tokens.splice(0..0, tokens);
         }
     }
     out.content_list = if positional {
@@ -463,6 +495,15 @@ pub fn decode<T: DeserializeOwned>(
         .map_err(|e| at.fail(ErrorReason::InvalidDocument, e))
 }
 
+/// Decodes an unmodified lexical value with a caller-trusted target binding.
+pub fn decode_bound<T, E: ToString>(
+    text: &str,
+    at: &Where<'_>,
+    parse: impl FnOnce(&str) -> Result<Option<T>, E>,
+) -> ContractResult<Option<T>> {
+    parse(text).map_err(|error| at.fail(ErrorReason::InvalidDocument, error))
+}
+
 /// A discriminator selector: the attribute on the child element, if present.
 pub fn discriminator(doc: &Doc, ord: usize, names: &[&str], ns: &[&str]) -> Option<String> {
     doc.attribute(ord, names, ns).map(String::from)
@@ -500,7 +541,9 @@ pub enum Policy {
     Omit,
     /// Write `xsi:nil="true"`.
     AsNil,
-    /// Write an empty value.
+    /// Write an empty element; nil XML attributes remain omitted.
+    AsEmpty,
+    /// Write an empty value, including a nil XML attribute.
     AsBlank,
 }
 
@@ -621,6 +664,35 @@ fn write_nil(el: &mut ElementSpec, rule: &WElem, policy: Policy) {
     el.content.push(ContentSpec::Element(leaf));
 }
 
+/// Attribute rule indexes in write order: those named by `attribute` tokens, in
+/// token order, then the rest in declaration order.
+fn attribute_write_order(spec: &WSpec, tokens: &[ContentToken]) -> ContractResult<Vec<usize>> {
+    let mut order = Vec::new();
+    for (position, token) in tokens.iter().enumerate() {
+        let ContentToken::Attribute { attribute, index } = token else {
+            continue;
+        };
+        match spec.attrs.iter().position(|r| r.to == attribute) {
+            Some(rule) if *index == 0 && !order.contains(&rule) => order.push(rule),
+            _ => {
+                return Err(fail(
+                    ErrorReason::InvalidOrderedContent,
+                    spec.id,
+                    Some(attribute),
+                    None,
+                    &format!("/__lml_content/{position}"),
+                    "attribute token names an unmapped, repeated or indexed member",
+                ))
+            }
+        }
+    }
+    let rest: Vec<usize> = (0..spec.attrs.len())
+        .filter(|i| !order.contains(i))
+        .collect();
+    order.extend(rest);
+    Ok(order)
+}
+
 /// Builds one element from encoded values: attributes first, then either the
 /// ordered-content tokens (never regrouped) or the element rules in mapping
 /// order. A mapped value that the token list omits is an error, never dropped.
@@ -638,7 +710,14 @@ pub fn assemble(
         ));
     }
     let mut el = ElementSpec::new(named(name, ns));
-    for (rule, raw) in spec.attrs.iter().zip(&values.attrs) {
+    let order = match (spec.ordered, &values.tokens) {
+        (true, Some(tokens)) => attribute_write_order(spec, tokens)?,
+        _ => (0..spec.attrs.len()).collect(),
+    };
+    for i in order {
+        let (rule, Some(raw)) = (&spec.attrs[i], values.attrs.get(i)) else {
+            continue;
+        };
         let qn = named(rule.name, rule.ns.as_ref());
         match raw {
             None => {
@@ -678,6 +757,16 @@ pub fn assemble(
                 )
             };
             match token {
+                ContentToken::Attribute { .. } => {}
+                ContentToken::Comment { literal } => {
+                    el.content.push(ContentSpec::Comment(literal.clone()))
+                }
+                ContentToken::ProcessingInstruction { target, data } => {
+                    el.content.push(ContentSpec::ProcessingInstruction {
+                        target: target.clone(),
+                        data: data.clone(),
+                    })
+                }
                 ContentToken::Text {
                     source: TextSource::Literal { literal },
                 } => el.content.push(ContentSpec::Text(literal.clone())),
@@ -744,6 +833,25 @@ pub fn assemble(
         el.content.push(text_node(text, content_cdata));
     }
     Ok(el)
+}
+
+/// Encodes one typed member with a caller-trusted target binding.
+pub fn encode_bound<T, E: ToString>(
+    value: &T,
+    id: &str,
+    member: &str,
+    format: impl FnOnce(&T) -> Result<String, E>,
+) -> ContractResult<String> {
+    format(value).map_err(|error| {
+        fail(
+            ErrorReason::NotSerializable,
+            id,
+            Some(member),
+            None,
+            "/output",
+            error.to_string(),
+        )
+    })
 }
 
 /// Encodes one typed member to XML text.

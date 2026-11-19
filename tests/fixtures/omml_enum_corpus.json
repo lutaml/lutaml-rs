@@ -1,0 +1,421 @@
+{
+  "registry": {
+    "version": 1,
+    "types": {
+      "Omml::Models::STBrClear": {
+        "base": "string",
+        "facets": {
+          "enumeration": [
+            "none",
+            "left",
+            "right",
+            "all"
+          ]
+        }
+      },
+      "Omml::Models::STBrType": {
+        "base": "string",
+        "facets": {
+          "enumeration": [
+            "page",
+            "column",
+            "textWrapping"
+          ]
+        }
+      }
+    }
+  },
+  "source_writer_options": {
+    "use_prefix": true
+  },
+  "equivalence": "expanded QName plus attribute values and ordered children; prefixes and attribute order insignificant",
+  "rows": [
+    {
+      "id": "br-0",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [],
+        "children": []
+      },
+      "values": {}
+    },
+    {
+      "id": "br-1",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"page\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"page\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "page"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "page"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "type": "page"
+      }
+    },
+    {
+      "id": "br-2",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"column\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"column\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "column"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "column"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "type": "column"
+      }
+    },
+    {
+      "id": "br-3",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"textWrapping\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"textWrapping\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "textWrapping"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "textWrapping"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "type": "textWrapping"
+      }
+    },
+    {
+      "id": "br-4",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"none\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"none\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "none"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "none"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "clear": "none"
+      }
+    },
+    {
+      "id": "br-5",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"left\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"left\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "left"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "left"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "clear": "left"
+      }
+    },
+    {
+      "id": "br-6",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"right\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"right\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "right"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "right"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "clear": "right"
+      }
+    },
+    {
+      "id": "br-7",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"all\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"all\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "all"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "all"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "clear": "all"
+      }
+    },
+    {
+      "id": "br-8",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"page\" w:clear=\"all\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"page\" w:clear=\"all\"/>",
+      "expected_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "all"
+          ],
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "page"
+          ]
+        ],
+        "children": []
+      },
+      "imported_tree": {
+        "name": [
+          "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+          "CT_Br"
+        ],
+        "attributes": [
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "clear"
+            ],
+            "all"
+          ],
+          [
+            [
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "type"
+            ],
+            "page"
+          ]
+        ],
+        "children": []
+      },
+      "values": {
+        "type": "page",
+        "clear": "all"
+      }
+    },
+    {
+      "id": "type-empty",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"/>",
+      "values": {
+        "type": ""
+      },
+      "reread_values": {}
+    },
+    {
+      "id": "clear-empty",
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"\"/>",
+      "expected": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"/>",
+      "values": {
+        "clear": ""
+      },
+      "reread_values": {}
+    }
+  ],
+  "refusals": [
+    {
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:type=\"unknown\"/>",
+      "error": "Lutaml::Model::Type::InvalidValueError",
+      "attribute": "type"
+    },
+    {
+      "input": "<w:CT_Br xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" w:clear=\"unknown\"/>",
+      "error": "Lutaml::Model::Type::InvalidValueError",
+      "attribute": "clear"
+    }
+  ]
+}

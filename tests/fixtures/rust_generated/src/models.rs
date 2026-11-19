@@ -179,16 +179,26 @@ pub enum ContentToken {
  Element { attribute: String, index: u64 },
  Text { #[serde(flatten)] source: TextSource },
  Cdata { #[serde(flatten)] source: TextSource },
+ Comment { literal: String },
+ ProcessingInstruction { target: String, data: String },
+ Attribute { attribute: String, index: u64 },
 }
 // serde cannot combine deny_unknown_fields with flatten, so tokens are read
 // through one closed wire shape and then checked against the token kind.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct ContentTokenWire { kind: String, attribute: Option<String>, index: Option<u64>, literal: Option<String> }
+struct ContentTokenWire { kind: String, attribute: Option<String>, index: Option<u64>, literal: Option<String>, target: Option<String>, data: Option<String> }
 impl<'de> Deserialize<'de> for ContentToken {
  fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
   let w = ContentTokenWire::deserialize(d)?;
   let bad = |m: &str| serde::de::Error::custom(m);
+  if w.kind == "processing_instruction" {
+   return match (w.attribute, w.index, w.literal, w.target, w.data) {
+    (None, None, None, Some(target), Some(data)) => Ok(Self::ProcessingInstruction { target, data }),
+    _ => Err(bad("processing_instruction token needs target and data only")),
+   };
+  }
+  if w.target.is_some() || w.data.is_some() { return Err(bad("only processing_instruction tokens carry target and data")); }
   let source = match (w.attribute, w.index, w.literal) {
    (Some(attribute), Some(index), None) => TextSource::Member { attribute, index },
    (None, None, Some(literal)) => TextSource::Literal { literal },
@@ -199,13 +209,17 @@ impl<'de> Deserialize<'de> for ContentToken {
    ("element", _) => Err(bad("element token needs attribute and index only")),
    ("text", source) => Ok(Self::Text { source }),
    ("cdata", source) => Ok(Self::Cdata { source }),
+   ("comment", TextSource::Literal { literal }) => Ok(Self::Comment { literal }),
+   ("comment", _) => Err(bad("comment token needs literal only")),
+   ("attribute", TextSource::Member { attribute, index: 0 }) => Ok(Self::Attribute { attribute, index: 0 }),
+   ("attribute", _) => Err(bad("attribute token needs attribute and index 0 only")),
    _ => Err(bad("unknown content token kind")),
   }
  }
 }
 impl ContentToken {
  pub fn reference(&self) -> Option<(&str,u64)> { match self {
- Self::Element { attribute,index } | Self::Text { source: TextSource::Member { attribute,index } } | Self::Cdata { source: TextSource::Member { attribute,index } } => Some((attribute,*index)),
+ Self::Element { attribute,index } | Self::Attribute { attribute,index } | Self::Text { source: TextSource::Member { attribute,index } } | Self::Cdata { source: TextSource::Member { attribute,index } } => Some((attribute,*index)),
  _ => None,
  } }
 }
@@ -225,7 +239,9 @@ kind: Presence::Absent,
 impl Leaf {
 pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
 Ok(()) }
-pub fn validate(&self)->Result<(),ValidationError>{
+pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}
+pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}
+fn validate_phase(&self, _choices:bool)->Result<(),ValidationError>{
 Ok(()) }
 }
 #[allow(non_camel_case_types)]
@@ -257,9 +273,9 @@ Some("leaf") => { Ok(Self::Case0(Box::new(serde_json::from_value(serde_json::Val
 Some("node") => { payload.remove("kind"); Ok(Self::Case1(Box::new(serde_json::from_value(serde_json::Value::Object(payload)).map_err(serde::de::Error::custom)?))) },
 None => { Ok(Self::Case0(Box::new(serde_json::from_value(serde_json::Value::Object(payload)).map_err(serde::de::Error::custom)?))) },
 _ => Err(serde::de::Error::custom("unknown discriminator")), } } }
-impl Node_item_Union { pub fn validate(&self)->Result<(),ValidationError>{ match self {
-Self::Case0(v) => { v.validate()?; if let Presence::Value(t)=&v.kind { if t!="leaf" { return Err(invalid("Node@default", "item", "unknown_discriminator")); } } Ok(()) },
-Self::Case1(v) => { v.validate()?; Ok(()) },
+impl Node_item_Union { pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)} pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)} fn validate_phase(&self,choices:bool)->Result<(),ValidationError>{ match self {
+Self::Case0(v) => { v.validate_phase(choices)?; if let Presence::Value(t)=&v.kind { if t!="leaf" { return Err(invalid("Node@default", "item", "unknown_discriminator")); } } Ok(()) },
+Self::Case1(v) => { v.validate_phase(choices)?; Ok(()) },
 } } }
 #[allow(non_camel_case_types, non_snake_case)]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -293,11 +309,12 @@ impl Node {
 pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
 if self.enabled.is_absent() { self.enabled=serde_json::from_str::<Presence<Node_enabled_Enum>>("false").map_err(|_|invalid("Node@default", "enabled", "non_serializable_default"))?; }
 Ok(()) }
-pub fn validate(&self)->Result<(),ValidationError>{
-if matches!(self.title,Presence::Absent|Presence::Null) { return Err(invalid("Node@default", "title", "invalid_document")); }
-if let Presence::Value(v)=&self.tags { if (v.len() as u64) < 1u64 || (v.len() as u64) > 2u64 { return Err(invalid("Node@default", "tags", "invalid_document")); } }
-if let Presence::Value(v)=&self.child { v.validate()?; }
-if let Presence::Value(v)=&self.item { v.validate()?; }
+pub fn validate(&self)->Result<(),ValidationError>{self.validate_phase(true)}
+pub fn validate_shape(&self)->Result<(),ValidationError>{self.validate_phase(false)}
+fn validate_phase(&self, choices:bool)->Result<(),ValidationError>{
+type __LmlFieldCheck = fn(&Node, bool)->Result<(),ValidationError>;
+const __LML_FIELDS: &[__LmlFieldCheck] = &[Node::__lml_validate_field_0, Node::__lml_validate_field_2, Node::__lml_validate_field_3, Node::__lml_validate_field_5];
+for field in __LML_FIELDS { field(self, choices)?; }
 if matches!(self.__lml_content,Presence::Null) { return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")); }
 if let Presence::Value(tokens)=&self.__lml_content { let mut seen=std::collections::BTreeSet::new(); for token in tokens { if let Some((member,index))=token.reference() { let count=match member {
 "title" => match &self.title { Presence::Value(_)=>1, _=>0 },
@@ -307,5 +324,21 @@ if let Presence::Value(tokens)=&self.__lml_content { let mut seen=std::collectio
 "amount" => match &self.amount { Presence::Value(_)=>1, _=>0 },
 "item" => match &self.item { Presence::Value(_)=>1, _=>0 },
 _ => return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")), }; if index>=count || !seen.insert((member,index)) { return Err(invalid("Node@default", "__lml_content", "invalid_ordered_content")); } } } }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_0(&self, _choices:bool)->Result<(),ValidationError>{
+if matches!(self.title,Presence::Absent|Presence::Null) { return Err(invalid("Node@default", "title", "invalid_document")); }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_2(&self, _choices:bool)->Result<(),ValidationError>{
+if let Presence::Value(v)=&self.tags { if (v.len() as u64) < 1u64 || (v.len() as u64) > 2u64 { return Err(invalid("Node@default", "tags", "invalid_document")); } }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_3(&self, choices:bool)->Result<(),ValidationError>{
+if let Presence::Value(v)=&self.child { v.validate_phase(choices)?; }
+Ok(()) }
+#[inline(never)]
+fn __lml_validate_field_5(&self, choices:bool)->Result<(),ValidationError>{
+if let Presence::Value(v)=&self.item { v.validate_phase(choices)?; }
 Ok(()) }
 }
