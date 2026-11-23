@@ -50,3 +50,12 @@ discriminators, polymorphic maps) refuse explicitly instead of dropping metadata
 
 Model names come directly from `generator::model_names`; normalization is shared
 with actual structs, enums and PARG constructors.
+
+## Custom serialization hooks
+
+A json/yaml rule may carry `custom: {to?, from?}` (names only). For a model with hooks the generated
+`json_codecs.rs` has a `<Model>Hooks<S>` trait whose methods default to stubs failing with
+`custom_serialization`: READ `(model, value, state)` for `from`, WRITE `(model, document, state)` for `to`.
+Install handwritten implementations with `read_<Model>_json_with` / `write_<Model>_json_with(.., &hooks, &mut state)`;
+`read_<Model>_json` / `write_<Model>_json` use the no-hook stubs. `S` is the explicit store for values that live only in hooks.
+A hooked model may only be a root: a model holding one as a member is refused (`unsupported_mapping`).

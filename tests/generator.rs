@@ -38,7 +38,16 @@ fn model(name: &str, attributes: Vec<Attribute>) -> ModelDocument {
         attributes,
         mappings: Mappings::default(),
         ordered_content: None,
+        custom_initialize: false,
     }
+}
+/// A `custom_initialize` model: declared data plus a handwritten-initializer stub.
+fn money() -> ModelDocument {
+    let mut currency = string("currency");
+    currency.required = true;
+    let mut money = model("Money", vec![currency, string("note")]);
+    money.custom_initialize = true;
+    money
 }
 fn bundle() -> Bundle {
     let mut title = string("title");
@@ -95,6 +104,7 @@ fn bundle() -> Bundle {
         roots: vec!["Node@default".into()],
         models: BTreeMap::from([
             ("Node@default".into(), node),
+            ("Money@default".into(), money()),
             (
                 "Leaf@default".into(),
                 model("Leaf", vec![string("text"), string("kind")]),
@@ -606,4 +616,96 @@ fn ruby_builtin_names_map_to_target_types() {
             name: BuiltinType::IpV4Address
         }
     );
+}
+
+#[test]
+fn custom_initialize_emits_a_named_failing_stub_and_leaves_other_models_unchanged() {
+    let marked = RustEmitter
+        .generate_models(&bundle(), &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    for needed in [
+        "pub const CUSTOM_INITIALIZE: bool = true;",
+        "pub fn initialize_stub<A>(_args: A) -> Result<Money, ValidationError>",
+        "invalid(\"Money@default\", \"\", \"custom_initialize\")",
+        "pub fn construct<A>(args: A)",
+        "pub fn construct_with<A, F: FnOnce(A) -> Result<Money, ValidationError>>",
+    ] {
+        assert!(marked.contains(needed), "missing {needed}");
+    }
+    // Only the marked model gets the integration point.
+    assert_eq!(marked.matches("CUSTOM_INITIALIZE").count(), 1);
+    // Without the marker the output is exactly the marked output minus that one block.
+    let mut plain = bundle();
+    plain
+        .models
+        .get_mut("Money@default")
+        .unwrap()
+        .custom_initialize = false;
+    let plain = RustEmitter
+        .generate_models(&plain, &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    assert!(!plain.contains("CUSTOM_INITIALIZE"));
+    let start = marked
+        .find("impl Money {\n/// The source model has a handwritten")
+        .unwrap();
+    let tail = "Ok(value) }\n}\n";
+    let end = start + marked[start..].find(tail).unwrap() + tail.len();
+    assert_eq!(format!("{}{}", &marked[..start], &marked[end..]), plain);
+}
+
+#[test]
+fn a_named_value_type_default_is_a_literal_of_its_base_type() {
+    let mut b = bundle();
+    b.value_types.insert(
+        "Lang".into(),
+        ValueType {
+            base: BuiltinType::String,
+            facets: BTreeMap::new(),
+        },
+    );
+    let leaf = b.models.get_mut("Leaf@default").unwrap();
+    leaf.attributes[0].value_type = TypeRef::Value { id: "Lang".into() };
+    leaf.attributes[0].default = DefaultValue::Present(NeutralValue::String("en".into()));
+    let bindings = TypeBindings::from([(
+        "Lang".to_string(),
+        TypeBinding {
+            rust_type: "String".into(),
+            codec: None,
+        },
+    )]);
+    let models = RustEmitter.generate_models(&b, &bindings).unwrap();
+    assert!(models["models.rs"].contains(r#"\"en\""#));
+    // A literal of the wrong base type is still refused.
+    b.models.get_mut("Leaf@default").unwrap().attributes[0].default =
+        DefaultValue::Present(NeutralValue::Boolean(true));
+    assert_eq!(
+        RustEmitter
+            .generate_models(&b, &bindings)
+            .unwrap_err()
+            .reason,
+        ErrorReason::NonSerializableDefault
+    );
+}
+
+#[test]
+fn a_source_attribute_named_like_the_provenance_member_is_refused_by_name() {
+    let mut b = bundle();
+    b.models.get_mut("Leaf@default").unwrap().attributes[0].name = "__lml_applied".into();
+    let error = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap_err();
+    assert_eq!(error.reason, ErrorReason::ReservedMember);
+    assert_eq!(error.attribute.as_deref(), Some("__lml_applied"));
+}
+
+#[test]
+fn unions_and_nested_models_recurse_in_apply_defaults() {
+    let text = RustEmitter
+        .generate_models(&bundle(), &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    assert!(text.contains("_Union { pub fn apply_defaults(&mut self)"));
+    assert!(text.contains("v.apply_defaults()?"));
 }

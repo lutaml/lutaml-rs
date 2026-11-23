@@ -65,6 +65,10 @@ pub fn member_identifier(s: &str) -> String {
 pub const RESERVED_NAMES: &[&str] = &[
     // Defined by generator/runtime.rs.txt.
     "Presence",
+    // Default provenance runtime (emitted when some member declares a default).
+    "AppliedDefaults",
+    "ProvenanceWire",
+    "PROVENANCE_WIRE",
     "ValidationError",
     "ContentToken",
     "TextSource",
@@ -342,6 +346,9 @@ struct ModelPlan {
     id: String,
     name: String,
     ordered_content: bool,
+    custom_initialize: bool,
+    /// Some member has a declared default: the model records which defaults `apply_defaults` supplied.
+    tracks_defaults: bool,
     attrs: Vec<AttrPlan>,
 }
 struct AttrPlan {
@@ -414,6 +421,14 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
                     id,
                     &a.name,
                     "reserved ordered-content member",
+                ));
+            }
+            if a.name == "__lml_applied" {
+                return Err(error(
+                    ErrorReason::ReservedMember,
+                    id,
+                    &a.name,
+                    "reserved default-provenance member",
                 ));
             }
             if !fields.insert(member_identifier(&a.name)) {
@@ -551,6 +566,8 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
             id: id.clone(),
             name: name.clone(),
             ordered_content: m.ordered_content.is_some(),
+            custom_initialize: m.custom_initialize,
+            tracks_defaults: attrs.iter().any(|a| a.default_wire.is_some()),
             attrs,
         });
     }
@@ -613,9 +630,33 @@ fn validate_ordered_content(id: &str, m: &ModelDocument) -> ContractResult<()> {
     }
     Ok(())
 }
+/// Default provenance: which defaulted members got their value from `apply_defaults` rather than from the
+/// caller. Plain serde never sees it; the JSON codecs switch it on (`ProvenanceWire`) to learn which
+/// default-equal values may be suppressed by a `render default: false` policy.
+const PROVENANCE_RUNTIME: &str = r#"#[derive(Clone, Debug, Default)]
+pub struct AppliedDefaults(Vec<String>);
+impl PartialEq for AppliedDefaults { fn eq(&self, _other: &Self) -> bool { true } }
+impl Eq for AppliedDefaults {}
+impl AppliedDefaults {
+ pub fn contains(&self, member: &str) -> bool { self.0.iter().any(|m| m == member) }
+ pub fn mark(&mut self, member: &str) { if !self.contains(member) { self.0.push(member.into()); } }
+ pub fn clear(&mut self, member: &str) { self.0.retain(|m| m != member); }
+ pub fn members(&self) -> &[String] { &self.0 }
+ fn hidden(&self) -> bool { self.0.is_empty() || !PROVENANCE_WIRE.with(|c| c.get()) }
+}
+impl Serialize for AppliedDefaults { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> { self.0.serialize(s) } }
+thread_local! { static PROVENANCE_WIRE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) }; }
+/// While alive, serializing a model also emits its `__lml_applied` list (used by the generated codecs only).
+pub struct ProvenanceWire(bool);
+impl ProvenanceWire { pub fn enter() -> Self { Self(PROVENANCE_WIRE.with(|c| c.replace(true))) } }
+impl std::ops::Drop for ProvenanceWire { fn drop(&mut self) { PROVENANCE_WIRE.with(|c| c.set(self.0)); } }
+"#;
 /// Pure emission: a function of the plan only, with no decisions or errors.
 fn emit_models(plan: &Plan) -> String {
     let mut output = include_str!("runtime.rs.txt").to_owned();
+    if plan.models.iter().any(|m| m.tracks_defaults) {
+        output.push_str(PROVENANCE_RUNTIME);
+    }
     if plan.needs_same_integer {
         output.push_str("fn same_integer(a:&ExactInteger,b:&ExactInteger)->bool { fn parts(s:&str)->(bool,&str) { let negative=s.starts_with('-'); let digits=s.trim_start_matches(['-','+']).trim_start_matches('0'); (negative&&!digits.is_empty(),digits) } parts(a.as_str())==parts(b.as_str()) }\n");
     }
@@ -664,6 +705,9 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
     if model.ordered_content {
         output.push_str("#[serde(default, skip_serializing_if = \"Presence::is_absent\")]\npub __lml_content: Presence<Vec<ContentToken>>,\n");
     }
+    if model.tracks_defaults {
+        output.push_str("#[serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\")]\npub __lml_applied: AppliedDefaults,\n");
+    }
     output.push_str("}\n");
     writeln!(
         output,
@@ -676,6 +720,9 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
     if model.ordered_content {
         output.push_str("__lml_content: Presence::Absent,\n");
     }
+    if model.tracks_defaults {
+        output.push_str("__lml_applied: AppliedDefaults::default(),\n");
+    }
     output.push_str("} } }\n");
     writeln!(
         output,
@@ -685,13 +732,28 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
     for a in &model.attrs {
         let field = &a.field;
         if let Some(wire) = &a.default_wire {
-            writeln!(output,"if self.{field}.is_absent() {{ self.{field}=serde_json::from_str::<Presence<{}>>({}).map_err(|_|invalid({}, {}, \"non_serializable_default\"))?; }}",a.shaped_ty,quote(wire),quote(id),quote(&a.name)).unwrap();
+            writeln!(output,"if self.{field}.is_absent() {{ self.{field}=serde_json::from_str::<Presence<{}>>({}).map_err(|_|invalid({}, {}, \"non_serializable_default\"))?; self.__lml_applied.mark({}); }}",a.shaped_ty,quote(wire),quote(id),quote(&a.name),quote(&a.name)).unwrap();
         } else if a.initialize_empty {
             writeln!(
                 output,
                 "if self.{field}.is_absent() {{ self.{field}=Presence::Value(Vec::new()); }}"
             )
             .unwrap();
+        }
+    }
+    // Defaults reach nested models, collections and unions that are present (never creating absent ones).
+    for a in &model.attrs {
+        if a.nested_validate {
+            let field = &a.field;
+            if a.bounded {
+                writeln!(output,"if let Presence::Value(list)=&mut self.{field} {{ for v in list {{ v.apply_defaults()?; }} }}").unwrap();
+            } else {
+                writeln!(
+                    output,
+                    "if let Presence::Value(v)=&mut self.{field} {{ v.apply_defaults()?; }}"
+                )
+                .unwrap();
+            }
         }
     }
     output.push_str("Ok(()) }\npub fn validate(&self)->Result<(),ValidationError>{\n");
@@ -762,6 +824,21 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
         writeln!(output,"_ => return Err({err}), }}; if index>=count || !seen.insert((member,index)) {{ return Err({err}); }} }} }} }}").unwrap();
     }
     output.push_str("Ok(()) }\n}\n");
+    if model.custom_initialize {
+        emit_custom_initialize(output, model);
+    }
+}
+/// Handwritten-initializer integration point for a `custom_initialize` model.
+/// Serde reconstruction above stays data-only; nothing here evaluates a body
+/// from the document, and the default stub fails with the named error.
+fn emit_custom_initialize(output: &mut String, model: &ModelPlan) {
+    let (id, name) = (&model.id, &model.name);
+    writeln!(
+        output,
+        "impl {name} {{\n/// The source model has a handwritten initializer; serde reconstruction takes declared data only.\npub const CUSTOM_INITIALIZE: bool = true;\n/// Default stub: fails with the `custom_initialize` error until a handwritten initializer is supplied.\npub fn initialize_stub<A>(_args: A) -> Result<{name}, ValidationError> {{ Err(invalid({}, \"\", \"custom_initialize\")) }}\n/// Application construction through the stub: always the named failure.\npub fn construct<A>(args: A) -> Result<{name}, ValidationError> {{ Self::construct_with(args, Self::initialize_stub) }}\n/// Application construction through a consumer-provided initializer; its result still passes defaults and validation.\npub fn construct_with<A, F: FnOnce(A) -> Result<{name}, ValidationError>>(args: A, initializer: F) -> Result<{name}, ValidationError> {{ let mut value = initializer(args)?; value.apply_defaults()?; value.validate()?; Ok(value) }}\n}}",
+        quote(id)
+    )
+    .unwrap();
 }
 /// Validate one polymorphic attribute's cases and capture what emission needs.
 fn plan_union(
@@ -897,6 +974,15 @@ fn emit_union(output: &mut String, union: &UnionPlan, id: &str) {
         output.push_str("Ok(()) },\n");
     }
     output.push_str("} } }\n");
+    writeln!(
+        output,
+        "impl {ty} {{ pub fn apply_defaults(&mut self)->Result<(),ValidationError>{{ match self {{"
+    )
+    .unwrap();
+    for index in 0..cases.len() {
+        writeln!(output, "Self::Case{index}(v) => v.apply_defaults(),").unwrap();
+    }
+    output.push_str("} } }\n");
 }
 fn same_enum_literal(a: &Attribute, left: &NeutralValue, right: &NeutralValue) -> bool {
     let left = enum_literal(a, left);
@@ -933,8 +1019,25 @@ fn validate_literal(
     a: &Attribute,
     v: &NeutralValue,
     id: &str,
-    _bundle: &Bundle,
+    bundle: &Bundle,
 ) -> ContractResult<()> {
+    // A named value type's default is a literal of its base type (Ruby `xml:lang` defaults to "en").
+    let resolved;
+    let a = match &a.value_type {
+        TypeRef::Value { id: target } => match bundle.value_types.get(target) {
+            Some(spec) => {
+                resolved = Attribute {
+                    value_type: TypeRef::Builtin {
+                        name: spec.base.clone(),
+                    },
+                    ..a.clone()
+                };
+                &resolved
+            }
+            None => a,
+        },
+        _ => a,
+    };
     let valid = match (&a.value_type, v) {
         (
             TypeRef::Builtin {
@@ -1128,7 +1231,13 @@ impl PargBindingEmitter for RustEmitter {
                 .unwrap();
             }
             let model_name = &names[&binding.model_id];
-            if assignments.len() < model.attributes.len() || model.ordered_content.is_some() {
+            if assignments.len() < model.attributes.len()
+                || model.ordered_content.is_some()
+                || model
+                    .attributes
+                    .iter()
+                    .any(|a| matches!(a.default, DefaultValue::Present(_)))
+            {
                 assignments.push("..Default::default()".into());
             }
             writeln!(output,"pub fn {function}({})->Result<{model_name},ValidationError>{{ let mut value={model_name}{{ {} }}; value.apply_defaults()?; value.validate()?; Ok(value) }}",args.join(", "),assignments.join(", ")).unwrap();

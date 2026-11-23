@@ -4,7 +4,7 @@ use super::{models::*,json_codecs::*};
 use serde_json::json;
 #[test] fn aliases_presence_and_typed_false_default() {
  let mut model=read_Record_json(r#"{"old_label":"hello","enabled":false,"items":[]}"#).unwrap();assert!(matches!(model.amount,Presence::Absent));assert_eq!(serde_json::to_value(&model).unwrap()["enabled"],false);
- assert_eq!(serde_json::from_str::<serde_json::Value>(&write_Record_json(&model).unwrap()).unwrap(),json!({"label":"hello"}));
+ assert_eq!(serde_json::from_str::<serde_json::Value>(&write_Record_json(&model).unwrap()).unwrap(),json!({"label":"hello","enabled":false}),"an explicit default-equal value is rendered (Ruby using_default? is false once given)");
  model.enabled=Presence::Absent;let absent=write_Record_json(&model).unwrap();assert!(!absent.contains("enabled"));
  let null=read_Record_json(r#"{"label":null,"amount":null}"#).unwrap();assert!(matches!(null.title,Presence::Null));assert!(matches!(null.amount,Presence::Null));assert_eq!(serde_json::from_str::<serde_json::Value>(&write_Record_json(&null).unwrap()).unwrap(),json!({"label":null,"amount":null}));
 }
@@ -83,7 +83,8 @@ use serde_json::json;
  model.apply_defaults().unwrap();
  assert!(matches!(&model.count,Presence::Value(v) if v.as_str()=="5"));
  let explicit=read_IntDefault_json(r#"{"count":"7"}"#).unwrap();assert_eq!(write_IntDefault_json(&explicit).unwrap(),r#"{"count":"7"}"#);
- let same=read_IntDefault_json(r#"{"count":"5"}"#).unwrap();assert_eq!(write_IntDefault_json(&same).unwrap(),"{}","a value equal to the numeric default is omitted like any default");
+ let same=read_IntDefault_json(r#"{"count":"5"}"#).unwrap();assert_eq!(write_IntDefault_json(&same).unwrap(),r#"{"count":"5"}"#,"an explicit value equal to the default is rendered");
+ assert_eq!(write_IntDefault_json(&model).unwrap(),"{}","a default supplied by apply_defaults is suppressed");
 }
 #[test] fn generated_rust_literals_preserve_control_text() {
  let control_text="\0\u{8}\u{c}\u{2028}";

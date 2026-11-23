@@ -45,7 +45,7 @@ mod graph;
 mod mapping;
 use defaults::{attribute, validate_member, value_type};
 use graph::{bundle, discriminator, validate_refs};
-use mapping::{key_mapping, xml};
+use mapping::{hook_directions, key_mapping, xml};
 fn invalid(at: &str, detail: impl Into<String>) -> Box<crate::contracts::ContractError> {
     failure(ErrorReason::InvalidDocument, at, detail)
 }
@@ -192,15 +192,14 @@ fn register(s: &str) -> bool {
 }
 fn neutral(n: &Node, at: &str) -> ContractResult<()> {
     match n {
-        Node::Number(num) => {
+        Node::Number(num)
             if num.as_u64().is_none_or(|v| v > MAX_INTEGER)
-                && num.as_i64().is_none_or(|v| v.unsigned_abs() > MAX_INTEGER)
-            {
-                return Err(invalid(
-                    at,
-                    "structural number must be a bounded integer; exact values require strings",
-                ));
-            }
+                && num.as_i64().is_none_or(|v| v.unsigned_abs() > MAX_INTEGER) =>
+        {
+            return Err(invalid(
+                at,
+                "structural number must be a bounded integer; exact values require strings",
+            ));
         }
         Node::Array(v) => {
             for (i, n) in v.iter().enumerate() {
@@ -285,9 +284,18 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
             "attributes",
             "mappings",
             "ordered_content",
+            "custom_initialize",
         ],
         at,
     )?;
+    if let Some(marker) = n.get("custom_initialize") {
+        if marker != &Node::Bool(true) {
+            return Err(invalid(
+                &pointer(at, "custom_initialize"),
+                "custom_initialize must be true when present",
+            ));
+        }
+    }
     if field(n, "lml", at)?.integer() != Some(2) {
         return Err(failure(
             ErrorReason::UnsupportedVersion,
@@ -388,5 +396,9 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
             e
         })?;
     }
+    hook_directions(mappings, at).map_err(|mut e| {
+        e.model_id = Some(format!("{name}@{reg}"));
+        e
+    })?;
     Ok(())
 }
