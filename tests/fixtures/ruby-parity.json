@@ -1431,7 +1431,8 @@
    "custom_initialize": true
   },
   "ruby": "ERR custom_initialize",
-  "rust": "ERR custom_initialize"
+  "rust": "OK",
+  "divergence": "Rust and TS accept the optional custom_initialize:true marker (handwritten-initializer stub); Ruby still rejects it until the Ruby producer lands the marker"
  },
  {
   "name": "v2_map_json_rules",

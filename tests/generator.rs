@@ -38,7 +38,16 @@ fn model(name: &str, attributes: Vec<Attribute>) -> ModelDocument {
         attributes,
         mappings: Mappings::default(),
         ordered_content: None,
+        custom_initialize: false,
     }
+}
+/// A `custom_initialize` model: declared data plus a handwritten-initializer stub.
+fn money() -> ModelDocument {
+    let mut currency = string("currency");
+    currency.required = true;
+    let mut money = model("Money", vec![currency, string("note")]);
+    money.custom_initialize = true;
+    money
 }
 fn bundle() -> Bundle {
     let mut title = string("title");
@@ -95,6 +104,7 @@ fn bundle() -> Bundle {
         roots: vec!["Node@default".into()],
         models: BTreeMap::from([
             ("Node@default".into(), node),
+            ("Money@default".into(), money()),
             (
                 "Leaf@default".into(),
                 model("Leaf", vec![string("text"), string("kind")]),
@@ -606,4 +616,41 @@ fn ruby_builtin_names_map_to_target_types() {
             name: BuiltinType::IpV4Address
         }
     );
+}
+
+#[test]
+fn custom_initialize_emits_a_named_failing_stub_and_leaves_other_models_unchanged() {
+    let marked = RustEmitter
+        .generate_models(&bundle(), &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    for needed in [
+        "pub const CUSTOM_INITIALIZE: bool = true;",
+        "pub fn initialize_stub<A>(_args: A) -> Result<Money, ValidationError>",
+        "invalid(\"Money@default\", \"\", \"custom_initialize\")",
+        "pub fn construct<A>(args: A)",
+        "pub fn construct_with<A, F: FnOnce(A) -> Result<Money, ValidationError>>",
+    ] {
+        assert!(marked.contains(needed), "missing {needed}");
+    }
+    // Only the marked model gets the integration point.
+    assert_eq!(marked.matches("CUSTOM_INITIALIZE").count(), 1);
+    // Without the marker the output is exactly the marked output minus that one block.
+    let mut plain = bundle();
+    plain
+        .models
+        .get_mut("Money@default")
+        .unwrap()
+        .custom_initialize = false;
+    let plain = RustEmitter
+        .generate_models(&plain, &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    assert!(!plain.contains("CUSTOM_INITIALIZE"));
+    let start = marked
+        .find("impl Money {\n/// The source model has a handwritten")
+        .unwrap();
+    let tail = "Ok(value) }\n}\n";
+    let end = start + marked[start..].find(tail).unwrap() + tail.len();
+    assert_eq!(format!("{}{}", &marked[..start], &marked[end..]), plain);
 }

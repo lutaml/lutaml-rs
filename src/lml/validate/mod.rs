@@ -285,9 +285,18 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
             "attributes",
             "mappings",
             "ordered_content",
+            "custom_initialize",
         ],
         at,
     )?;
+    if let Some(marker) = n.get("custom_initialize") {
+        if marker != &Node::Bool(true) {
+            return Err(invalid(
+                &pointer(at, "custom_initialize"),
+                "custom_initialize must be true when present",
+            ));
+        }
+    }
     if field(n, "lml", at)?.integer() != Some(2) {
         return Err(failure(
             ErrorReason::UnsupportedVersion,

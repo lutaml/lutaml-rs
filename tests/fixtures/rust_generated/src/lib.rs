@@ -145,4 +145,31 @@ mod tests {
             serde_json::from_str::<serde_json::Value>(r#"{"item":{"kind":"leaf","text":"ok"}}"#).unwrap()
         );
     }
+    #[test]
+    fn custom_initialize_separates_data_reconstruction_from_application_construction() {
+        // Declared-data path (serde): unchanged and data-only.
+        let data: Money = serde_json::from_str(r#"{"currency":"USD"}"#).unwrap();
+        data.validate().unwrap();
+        assert!(Money::CUSTOM_INITIALIZE);
+        // Application construction with no handwritten implementation: the named stub failure.
+        let error = Money::construct(5u32).unwrap_err();
+        assert_eq!(error.reason, "custom_initialize");
+        assert_eq!(error.model_id, "Money@default");
+        assert_eq!(
+            Money::initialize_stub(()).unwrap_err().reason,
+            "custom_initialize"
+        );
+        // An explicit handwritten initializer succeeds.
+        let built = Money::construct_with(250u32, |cents| {
+            let mut money = Money::default();
+            money.currency = Presence::Value(format!("{cents}c"));
+            Ok(money)
+        })
+        .unwrap();
+        assert_eq!(built.currency, Presence::Value("250c".to_string()));
+        // Its result still passes validation.
+        let invalid = Money::construct_with((), |_| Ok(Money::default())).unwrap_err();
+        assert_eq!(invalid.reason, "invalid_document");
+        assert_eq!(invalid.attribute, "currency");
+    }
 }

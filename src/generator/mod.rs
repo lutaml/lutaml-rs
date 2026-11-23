@@ -342,6 +342,7 @@ struct ModelPlan {
     id: String,
     name: String,
     ordered_content: bool,
+    custom_initialize: bool,
     attrs: Vec<AttrPlan>,
 }
 struct AttrPlan {
@@ -551,6 +552,7 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
             id: id.clone(),
             name: name.clone(),
             ordered_content: m.ordered_content.is_some(),
+            custom_initialize: m.custom_initialize,
             attrs,
         });
     }
@@ -762,6 +764,21 @@ fn emit_model(output: &mut String, model: &ModelPlan) {
         writeln!(output,"_ => return Err({err}), }}; if index>=count || !seen.insert((member,index)) {{ return Err({err}); }} }} }} }}").unwrap();
     }
     output.push_str("Ok(()) }\n}\n");
+    if model.custom_initialize {
+        emit_custom_initialize(output, model);
+    }
+}
+/// Handwritten-initializer integration point for a `custom_initialize` model.
+/// Serde reconstruction above stays data-only; nothing here evaluates a body
+/// from the document, and the default stub fails with the named error.
+fn emit_custom_initialize(output: &mut String, model: &ModelPlan) {
+    let (id, name) = (&model.id, &model.name);
+    writeln!(
+        output,
+        "impl {name} {{\n/// The source model has a handwritten initializer; serde reconstruction takes declared data only.\npub const CUSTOM_INITIALIZE: bool = true;\n/// Default stub: fails with the `custom_initialize` error until a handwritten initializer is supplied.\npub fn initialize_stub<A>(_args: A) -> Result<{name}, ValidationError> {{ Err(invalid({}, \"\", \"custom_initialize\")) }}\n/// Application construction through the stub: always the named failure.\npub fn construct<A>(args: A) -> Result<{name}, ValidationError> {{ Self::construct_with(args, Self::initialize_stub) }}\n/// Application construction through a consumer-provided initializer; its result still passes defaults and validation.\npub fn construct_with<A, F: FnOnce(A) -> Result<{name}, ValidationError>>(args: A, initializer: F) -> Result<{name}, ValidationError> {{ let mut value = initializer(args)?; value.apply_defaults()?; value.validate()?; Ok(value) }}\n}}",
+        quote(id)
+    )
+    .unwrap();
 }
 /// Validate one polymorphic attribute's cases and capture what emission needs.
 fn plan_union(
