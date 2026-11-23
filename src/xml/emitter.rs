@@ -14,6 +14,25 @@ use super::models::*;\n\
 use super::xml_rt::contract::{Projection, XmlReader, XmlWriter};\n\
 use super::xml_rt::moxml_binding as rt;\n";
 
+/// The per-call hook context threaded through the generated functions of a bundle with XML hooks.
+const HOOK_CONTEXT: &str = "/// Trusted handwritten hooks plus the explicit application state, for one read or write call.\npub struct XmlCx<'a, S, H: ?Sized> { pub hooks: &'a H, pub state: &'a mut S }\n";
+
+/// `XmlHooks<S>`: every hooked model's trait at once, and `NoXmlHooks`, the all-stubs implementation.
+fn hook_aggregate(models: &[String]) -> String {
+    let bound = models
+        .iter()
+        .map(|m| format!("{m}XmlHooks<S>"))
+        .collect::<Vec<_>>()
+        .join(" + ");
+    let mut text = format!(
+        "pub trait XmlHooks<S>: {bound} {{}}\nimpl<S, T: {bound}> XmlHooks<S> for T {{}}\n/// No hooks installed: every attempted hook direction fails with `custom_serialization`.\npub struct NoXmlHooks;\n"
+    );
+    for m in models {
+        text.push_str(&format!("impl<S> {m}XmlHooks<S> for NoXmlHooks {{}}\n"));
+    }
+    text
+}
+
 #[derive(Default)]
 pub struct RustXmlEmitter;
 
@@ -34,13 +53,30 @@ impl XmlCodecEmitter for RustXmlEmitter {
         }
         let names = model_names(bundle)?;
         let mut out = String::from(HEADER);
+        let mut hooked_models = Vec::new();
+        let mut context_emitted = false;
         for (id, model) in &bundle.models {
             if model.mappings.xml.is_none() {
                 continue;
             }
             let plan = plan(bundle, &names, id)?;
+            if plan.hooked && !context_emitted {
+                out.push_str(HOOK_CONTEXT);
+                context_emitted = true;
+            }
+            if model
+                .mappings
+                .xml
+                .as_ref()
+                .is_some_and(|x| x.rules.iter().any(|r| r.custom.is_some()))
+            {
+                hooked_models.push(plan.name.clone());
+            }
             emit_reader(&mut out, &plan);
             emit_writer(&mut out, &plan);
+        }
+        if !hooked_models.is_empty() {
+            out.push_str(&hook_aggregate(&hooked_models));
         }
         Ok(SourceMap::from([("xml_codecs.rs".into(), out)]))
     }

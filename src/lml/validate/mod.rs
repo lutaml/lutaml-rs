@@ -45,7 +45,7 @@ mod graph;
 mod mapping;
 use defaults::{attribute, validate_member, value_type};
 use graph::{bundle, discriminator, validate_refs};
-use mapping::{key_mapping, xml};
+use mapping::{hook_directions, key_mapping, xml};
 fn invalid(at: &str, detail: impl Into<String>) -> Box<crate::contracts::ContractError> {
     failure(ErrorReason::InvalidDocument, at, detail)
 }
@@ -397,5 +397,9 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
             e
         })?;
     }
+    hook_directions(mappings, at).map_err(|mut e| {
+        e.model_id = Some(format!("{name}@{reg}"));
+        e
+    })?;
     Ok(())
 }

@@ -172,4 +172,16 @@ mod tests {
         assert_eq!(invalid.reason, "invalid_document");
         assert_eq!(invalid.attribute, "currency");
     }
+    #[test]
+    fn apply_defaults_reaches_present_children_only() {
+        let mut node: Node = serde_json::from_str(r#"{"title":"root","child":{"title":"child"}}"#).unwrap();
+        node.apply_defaults().unwrap();
+        let Presence::Value(child) = &node.child else { panic!("child") };
+        assert!(!child.enabled.is_absent());
+        assert!(child.__lml_applied.contains("enabled"));
+        let mut bare: Node = serde_json::from_str(r#"{"title":"root"}"#).unwrap();
+        bare.apply_defaults().unwrap();
+        assert!(bare.child.is_absent());
+        assert!(serde_json::from_str::<Node>(r#"{"title":"r","__lml_applied":["enabled"]}"#).is_err());
+    }
 }

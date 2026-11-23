@@ -654,3 +654,58 @@ fn custom_initialize_emits_a_named_failing_stub_and_leaves_other_models_unchange
     let end = start + marked[start..].find(tail).unwrap() + tail.len();
     assert_eq!(format!("{}{}", &marked[..start], &marked[end..]), plain);
 }
+
+#[test]
+fn a_named_value_type_default_is_a_literal_of_its_base_type() {
+    let mut b = bundle();
+    b.value_types.insert(
+        "Lang".into(),
+        ValueType {
+            base: BuiltinType::String,
+            facets: BTreeMap::new(),
+        },
+    );
+    let leaf = b.models.get_mut("Leaf@default").unwrap();
+    leaf.attributes[0].value_type = TypeRef::Value { id: "Lang".into() };
+    leaf.attributes[0].default = DefaultValue::Present(NeutralValue::String("en".into()));
+    let bindings = TypeBindings::from([(
+        "Lang".to_string(),
+        TypeBinding {
+            rust_type: "String".into(),
+            codec: None,
+        },
+    )]);
+    let models = RustEmitter.generate_models(&b, &bindings).unwrap();
+    assert!(models["models.rs"].contains(r#"\"en\""#));
+    // A literal of the wrong base type is still refused.
+    b.models.get_mut("Leaf@default").unwrap().attributes[0].default =
+        DefaultValue::Present(NeutralValue::Boolean(true));
+    assert_eq!(
+        RustEmitter
+            .generate_models(&b, &bindings)
+            .unwrap_err()
+            .reason,
+        ErrorReason::NonSerializableDefault
+    );
+}
+
+#[test]
+fn a_source_attribute_named_like_the_provenance_member_is_refused_by_name() {
+    let mut b = bundle();
+    b.models.get_mut("Leaf@default").unwrap().attributes[0].name = "__lml_applied".into();
+    let error = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap_err();
+    assert_eq!(error.reason, ErrorReason::ReservedMember);
+    assert_eq!(error.attribute.as_deref(), Some("__lml_applied"));
+}
+
+#[test]
+fn unions_and_nested_models_recurse_in_apply_defaults() {
+    let text = RustEmitter
+        .generate_models(&bundle(), &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    assert!(text.contains("_Union { pub fn apply_defaults(&mut self)"));
+    assert!(text.contains("v.apply_defaults()?"));
+}

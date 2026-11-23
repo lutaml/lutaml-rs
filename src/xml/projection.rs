@@ -193,6 +193,7 @@ fn lower_group(id: &str, group: &XmlRule, at: &str) -> ContractResult<Compositor
         || group.root_mappings.is_some()
         || group.child_mappings.is_some()
         || group.polymorphic_map.is_some()
+        || group.custom.is_some()
     {
         return Err(error(
             id,
@@ -351,6 +352,10 @@ pub fn compile_projection(bundle: &Bundle, id: &str) -> ContractResult<Projectio
         groups.extend(sequence.iter().cloned());
     }
     for (index, rule) in rules.iter().enumerate() {
+        // A hook-only rule (custom, no `to`) maps no declared attribute.
+        if rule.to.is_empty() && rule.custom.is_some() {
+            continue;
+        }
         if !attributes.contains_key(rule.to.as_str()) {
             return Err(error(
                 id,
@@ -404,7 +409,8 @@ pub fn compile_projection(bundle: &Bundle, id: &str) -> ContractResult<Projectio
                 }
             ) && matches!(attribute.collection, Collection::Scalar(_))
                 && attribute.reference.is_none();
-            let bare = rule.name.is_none()
+            let bare = rule.custom.is_none()
+                && rule.name.is_none()
                 && rule.prefix.is_none()
                 && rule.cdata.is_none()
                 && rule.render.is_none()
@@ -426,18 +432,37 @@ pub fn compile_projection(bundle: &Bundle, id: &str) -> ContractResult<Projectio
                 cdata: false,
                 render: None,
                 discriminator: None,
+                custom: None,
             })));
             continue;
         }
-        let attribute = attributes.get(rule.to.as_str()).ok_or_else(|| {
-            error(
-                id,
-                ErrorReason::UnsupportedMapping,
-                &format!("{location}/to"),
-                &rule.to,
-            )
-        })?;
-        if !mapped.insert(rule.to.as_str()) {
+        let hook_only = rule.to.is_empty() && rule.custom.is_some();
+        let placeholder = Attribute {
+            name: String::new(),
+            value_type: TypeRef::Builtin {
+                name: BuiltinType::String,
+            },
+            required: false,
+            collection: Collection::default(),
+            default: DefaultValue::Absent,
+            initialize_empty: false,
+            discriminator: None,
+            reference: None,
+            enumeration: None,
+        };
+        let attribute = if hook_only {
+            &&placeholder
+        } else {
+            attributes.get(rule.to.as_str()).ok_or_else(|| {
+                error(
+                    id,
+                    ErrorReason::UnsupportedMapping,
+                    &format!("{location}/to"),
+                    &rule.to,
+                )
+            })?
+        };
+        if !hook_only && !mapped.insert(rule.to.as_str()) {
             return Err(error(
                 id,
                 ErrorReason::UnsupportedMapping,
@@ -511,7 +536,7 @@ pub fn compile_projection(bundle: &Bundle, id: &str) -> ContractResult<Projectio
         if let Some(value) = selected {
             discriminator(bundle, id, value, &format!("{location}/discriminator"))?;
         }
-        if rule.kind == XmlRuleKind::Element {
+        if rule.kind == XmlRuleKind::Element && !hook_only {
             element_members.insert(rule.to.as_str());
         }
         operations.push(Operation::Field(Box::new(Field {
@@ -525,6 +550,7 @@ pub fn compile_projection(bundle: &Bundle, id: &str) -> ContractResult<Projectio
             cdata: rule.cdata.unwrap_or(false),
             render: rule.render.clone(),
             discriminator: selected.cloned(),
+            custom: rule.custom.clone(),
         })));
     }
     for (index, group) in groups.iter().enumerate() {

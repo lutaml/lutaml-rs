@@ -195,6 +195,43 @@ fn keyed<'a>(
         paths,
     }))
 }
+/// A rule with no declared attribute: handled entirely by handwritten hooks.
+fn hook_only(rule: &KeyRule) -> bool {
+    rule.to.is_empty()
+}
+/// The attribute-backed direction is skipped when a handwritten hook owns it.
+fn read_by_hook(rule: &KeyRule) -> bool {
+    rule.custom.as_ref().is_some_and(|c| c.from.is_some()) || hook_only(rule)
+}
+fn write_by_hook(rule: &KeyRule) -> bool {
+    rule.custom.as_ref().is_some_and(|c| c.to.is_some()) || hook_only(rule)
+}
+pub(crate) const RUST_KEYWORDS: &[&str] = &[
+    "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn", "for",
+    "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
+    "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe", "use", "where",
+    "while", "async", "await", "dyn", "abstract", "become", "box", "do", "final", "macro",
+    "override", "priv", "typeof", "unsized", "virtual", "yield", "try", "gen",
+];
+/// Hook method names of one model, in rule order: (name, is_read, wire key).
+fn hook_methods(rules: &[KeyRule]) -> Vec<(String, bool, String)> {
+    let mut out: Vec<(String, bool, String)> = Vec::new();
+    for rule in rules {
+        let Some(custom) = &rule.custom else { continue };
+        for (name, read) in [(&custom.from, true), (&custom.to, false)] {
+            if let Some(name) = name {
+                if !out.iter().any(|(n, _, _)| n == name) {
+                    out.push((
+                        name.clone(),
+                        read,
+                        rule.key.first().cloned().unwrap_or_default(),
+                    ));
+                }
+            }
+        }
+    }
+    out
+}
 fn aliases(model: &ModelDocument, id: &str) -> ContractResult<Vec<KeyRule>> {
     let rules = rules(model);
     let mut keys = BTreeSet::new();
@@ -207,8 +244,10 @@ fn aliases(model: &ModelDocument, id: &str) -> ContractResult<Vec<KeyRule>> {
                 .json
                 .as_ref()
                 .is_none_or(|m| m.root_mappings.is_none()))
-            || !members.insert(rule.to.clone())
-            || !model.attributes.iter().any(|a| a.name == rule.to)
+            || !hook_only(rule)
+                && (!members.insert(rule.to.clone())
+                    || !model.attributes.iter().any(|a| a.name == rule.to))
+            || hook_only(rule) && rule.custom.is_none()
         {
             return Err(fail(id, &rule.to, "invalid or duplicate mapped member"));
         }
@@ -329,6 +368,17 @@ fn check_rule(rule: &KeyRule, id: &str) -> ContractResult<()> {
     }
     Ok(())
 }
+/// Whether `policy` emits a line that reads `applied` for this member.
+fn reads_applied(rule: &KeyRule, a: &Attribute) -> bool {
+    let renders_default = matches!(
+        rule.render.as_ref().map(|p| &p.default),
+        Some(RenderAction::Boolean(true))
+    );
+    !renders_default && matches!(a.default, DefaultValue::Present(_))
+}
+/// A value equal to its declared default is suppressed (`render default: false`) only when `apply_defaults`
+/// supplied it: the model records that in `__lml_applied`, which `encode_*` reads as `applied`. A value the
+/// caller provided (decoded, assigned or constructed) is always rendered, like Ruby's `using_default?`.
 fn policy(out: &mut String, rule: &KeyRule, a: &Attribute) {
     let default = RenderPolicy {
         nil: RenderAction::Omit,
@@ -336,9 +386,9 @@ fn policy(out: &mut String, rule: &KeyRule, a: &Attribute) {
         default: false.into(),
     };
     let p = rule.render.as_ref().unwrap_or(&default);
-    if !matches!(p.default, RenderAction::Boolean(true)) {
+    if reads_applied(rule, a) {
         if let DefaultValue::Present(v) = &a.default {
-            writeln!(out,"if v==serde_json::from_str::<Value>({}).expect(\"generated literal\") {{ continue; }}",q(&serde_json::to_string(&crate::generator::wire_default(a, v)).unwrap())).unwrap();
+            writeln!(out,"if applied.iter().any(|m|m=={}) && v==serde_json::from_str::<Value>({}).expect(\"generated literal\") {{ continue; }}",q(&a.name),q(&serde_json::to_string(&crate::generator::wire_default(a, v)).unwrap())).unwrap();
         }
     }
     match resolved(&p.nil, RenderAction::Nil) {
@@ -399,6 +449,11 @@ impl JsonCodecEmitter for RustJsonEmitter {
         // never prefix one another, so model names cannot alias across roles;
         // this check proves it for the emitted set instead of assuming it.
         let mut functions = BTreeSet::new();
+        let hooked_ids = hooked_models(bundle);
+        refuse_nested_hooks(bundle, &hooked_ids, &names)?;
+        if !hooked_ids.is_empty() {
+            out.push_str(HOOK_SUPPORT);
+        }
         for (id, model) in &bundle.models {
             let name = &names[id];
             for function in [
@@ -412,6 +467,18 @@ impl JsonCodecEmitter for RustJsonEmitter {
             ] {
                 if !functions.insert(function) {
                     return Err(fail(id, "", "emitted function name collision"));
+                }
+            }
+            if hooked_ids.contains(id) {
+                for item in [
+                    format!("read_{name}_json_with"),
+                    format!("write_{name}_json_with"),
+                    format!("{name}Hooks"),
+                    format!("{name}NoHooks"),
+                ] {
+                    if names.values().any(|n| *n == item) || !functions.insert(item) {
+                        return Err(fail(id, "", "emitted hook name collision"));
+                    }
                 }
             }
             if model
@@ -432,6 +499,21 @@ impl JsonCodecEmitter for RustJsonEmitter {
             }
 
             let keyed = keyed(model, bundle, id)?;
+            let guard = provenance_guard(bundle);
+            let methods = hook_methods(&rules);
+            if !methods.is_empty() && keyed.is_some() {
+                return Err(fail(
+                    id,
+                    "",
+                    "hooks on a keyed-collection mapping are not supported",
+                ));
+            }
+            if let Some((bad, _, key)) = methods
+                .iter()
+                .find(|(n, _, _)| RUST_KEYWORDS.contains(&n.as_str()))
+            {
+                return Err(fail(id, key, &format!("hook name {bad} is a Rust keyword")));
+            }
             let (ordered, strict) = if has_hash {
                 (
                     format!("ordered_maps({})?;", q(id)),
@@ -440,8 +522,17 @@ impl JsonCodecEmitter for RustJsonEmitter {
             } else {
                 (String::new(), String::new())
             };
-            writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{{ordered}let data=decode_{name}(parse_json(input,{})?)?;{strict} let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
-            writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{{ordered}model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;serde_json::to_string(&encode_{name}(data)?).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id),q(id)).unwrap();
+            if methods.is_empty() {
+                writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{{ordered}let data=decode_{name}(parse_json(input,{})?)?;{strict} let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
+                writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{{ordered}model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;{guard}let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;serde_json::to_string(&encode_{name}(data)?).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id),q(id)).unwrap();
+            } else {
+                let pre = Prelude {
+                    ordered: ordered.clone(),
+                    strict: strict.clone(),
+                    guard: guard.to_string(),
+                };
+                emit_hooked_entry_points(&mut out, id, name, &rules, &methods, &pre);
+            }
             if has_hash {
                 emit_strict(&mut out, id, name, model, &names)?;
             }
@@ -453,7 +544,7 @@ impl JsonCodecEmitter for RustJsonEmitter {
                 let k = keyed.as_ref().unwrap();
                 writeln!(out,"data.insert({}.into(), unkey_{name}(Value::Object(std::mem::take(&mut wire)))?);",q(&k.attribute.name)).unwrap();
             } else {
-                for rule in &rules {
+                for rule in rules.iter().filter(|r| !read_by_hook(r)) {
                     out.push_str("{ let mut selected=None;\n");
                     for key in &rule.key {
                         writeln!(out,"if let Some(v)=wire.remove({}) {{ if selected.is_some() {{ return Err(failure(ErrorReason::InvalidDocument,{}, {}, \"/input\", \"multiple aliases for member\")); }} selected=Some(v); }}",q(key),q(id),q(&rule.to)).unwrap();
@@ -493,11 +584,26 @@ impl JsonCodecEmitter for RustJsonEmitter {
             }
             out.push_str("Ok(Value::Object(data))}\n");
             writeln!(out,"#[allow(non_snake_case)]\nfn encode_{name}(input:Value)->ContractResult<Value>{{let mut data=object(input,{})?;let mut wire=Map::new();",q(id)).unwrap();
+            let root_keyed = keyed.as_ref().is_some_and(|k| k.root);
+            let reads = !root_keyed
+                && rules.iter().filter(|r| !write_by_hook(r)).any(|r| {
+                    model
+                        .attributes
+                        .iter()
+                        .find(|a| a.name == r.to)
+                        .is_some_and(|a| reads_applied(r, a))
+                });
+            if tracks_defaults(model) && !reads {
+                // The provenance list is consumed here (it is never wire output) but nothing reads it.
+                out.push_str("data.remove(\"__lml_applied\");\n");
+            } else if tracks_defaults(model) {
+                out.push_str("let applied:Vec<String>=match data.remove(\"__lml_applied\"){Some(Value::Array(a))=>a.into_iter().filter_map(|v|v.as_str().map(str::to_owned)).collect(),_=>Vec::new()};\n");
+            }
             if keyed.as_ref().is_some_and(|k| k.root) {
                 let k = keyed.as_ref().unwrap();
                 writeln!(out,"if let Some(v)=data.remove({}){{return key_{name}(v);}}Ok(Value::Object(wire))}}",q(&k.attribute.name)).unwrap();
             } else {
-                for rule in &rules {
+                for rule in rules.iter().filter(|r| !write_by_hook(r)) {
                     let a = model.attributes.iter().find(|a| a.name == rule.to).unwrap();
                     writeln!(
                         out,
@@ -521,6 +627,125 @@ impl JsonCodecEmitter for RustJsonEmitter {
         }
         Ok(BTreeMap::from([("json_codecs.rs".into(), out)]))
     }
+}
+/// The model records `apply_defaults` provenance exactly when a member declares a default.
+fn tracks_defaults(model: &ModelDocument) -> bool {
+    model
+        .attributes
+        .iter()
+        .any(|a| matches!(a.default, DefaultValue::Present(_)))
+}
+/// Serializing models for the wire also emits their applied-default lists.
+fn provenance_guard(bundle: &Bundle) -> &'static str {
+    if bundle.models.values().any(tracks_defaults) {
+        "let _provenance=ProvenanceWire::enter();"
+    } else {
+        ""
+    }
+}
+/// Models whose JSON mapping carries at least one `custom` hook.
+fn hooked_models(bundle: &Bundle) -> BTreeSet<String> {
+    bundle
+        .models
+        .iter()
+        .filter(|(_, m)| {
+            m.mappings
+                .json
+                .as_ref()
+                .is_some_and(|j| j.rules.iter().any(|r| r.custom.is_some()))
+        })
+        .map(|(id, _)| id.clone())
+        .collect()
+}
+/// A hooked model is only reachable as a root: hooks need the typed model instance, which a
+/// nested member does not have while its parent is still being decoded. Refused by name.
+fn refuse_nested_hooks(
+    bundle: &Bundle,
+    hooked: &BTreeSet<String>,
+    names: &BTreeMap<String, String>,
+) -> ContractResult<()> {
+    let _ = names;
+    for (id, model) in &bundle.models {
+        for a in &model.attributes {
+            let mut targets: Vec<&str> = target(a).into_iter().collect();
+            if let Some(d) = &a.discriminator {
+                targets.extend(d.cases.values().map(String::as_str));
+            }
+            if let Some(t) = targets.into_iter().find(|t| hooked.contains(*t)) {
+                return Err(fail(
+                    id,
+                    &a.name,
+                    &format!("{t} has serialization hooks and cannot be a member of another model's json mapping"),
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+const HOOK_SUPPORT: &str = "// Handwritten serialization hooks: see the `<Model>Hooks` traits.\n";
+/// Statements every generated entry point of one model starts with.
+struct Prelude {
+    ordered: String,
+    strict: String,
+    guard: String,
+}
+/// The hook trait with failing stubs, the no-hook stub type, and the `_with` entry points.
+fn emit_hooked_entry_points(
+    out: &mut String,
+    id: &str,
+    name: &str,
+    rules: &[KeyRule],
+    methods: &[(String, bool, String)],
+    pre: &Prelude,
+) {
+    let (ordered, strict, guard) = (&pre.ordered, &pre.strict, &pre.guard);
+    writeln!(out, "/// Trusted handwritten hooks for {id}. `S` is the explicit application state for values that live only in hooks.\n/// Every method defaults to a stub failing with `custom_serialization`; override only what the document declares.\n#[allow(non_camel_case_types)]\npub trait {name}Hooks<S> {{").unwrap();
+    for (hook, read, key) in methods {
+        if *read {
+            writeln!(out,"/// READ hook (model, wire member value, state): runs only when a read reaches its key, after the declared\n/// data is built and BEFORE validation, so it may fill a declared (even required) member.\nfn {hook}(&self, _model:&mut {name}, _value:&Value, _state:&mut S)->ContractResult<()> {{ Err(failure(ErrorReason::CustomSerialization,{},\"\",{},{})) }}",q(id),q(&format!("/{key}")),q(&format!("the handwritten read hook {hook} is not implemented"))).unwrap();
+        } else {
+            writeln!(out,"/// WRITE hook (model, document object, state): runs on every write of the model; fills the document object.\nfn {hook}(&self, _model:&{name}, _document:&mut Map<String,Value>, _state:&mut S)->ContractResult<()> {{ Err(failure(ErrorReason::CustomSerialization,{},\"\",{},{})) }}",q(id),q(&format!("/{key}")),q(&format!("the handwritten write hook {hook} is not implemented"))).unwrap();
+        }
+    }
+    writeln!(out,"}}\n/// No hooks installed: every attempted hook direction fails with `custom_serialization`.\n#[allow(non_camel_case_types)]\npub struct {name}NoHooks;\nimpl<S> {name}Hooks<S> for {name}NoHooks {{}}").unwrap();
+    writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{ read_{name}_json_with(input,&{name}NoHooks,&mut ()) }}").unwrap();
+    writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{ write_{name}_json_with(model,&{name}NoHooks,&mut ()) }}").unwrap();
+    // READ: hook-owned keys are taken off the wire first; declared data decodes as before; hooks run after.
+    writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json_with<S,H:{name}Hooks<S>>(input:&str,hooks:&H,state:&mut S)->ContractResult<{name}>{{{ordered}let mut wire=object(parse_json(input,{})?,{})?; let mut pending:Vec<(usize,Value)>=Vec::new();",q(id),q(id)).unwrap();
+    for (index, rule) in rules.iter().enumerate().filter(|(_, r)| read_by_hook(r)) {
+        out.push_str("{ let mut selected=None;\n");
+        for key in &rule.key {
+            writeln!(out,"if let Some(v)=wire.remove({}) {{ if selected.is_some() {{ return Err(failure(ErrorReason::InvalidDocument,{},\"\",\"/input\",\"multiple aliases for member\")); }} selected=Some(({},v)); }}",q(key),q(id),q(key)).unwrap();
+        }
+        match rule.custom.as_ref().and_then(|c| c.from.as_ref()) {
+            Some(_) => writeln!(out,"if let Some((_,v))=selected {{ pending.push(({index},v)); }} }}").unwrap(),
+            None => writeln!(out,"if let Some((key,_))=selected {{ return Err(failure(ErrorReason::CustomSerialization,{},\"\",&format!(\"/{{key}}\"),\"no read hook is declared for this key\")); }} }}",q(id)).unwrap(),
+        }
+    }
+    writeln!(out,"let data=decode_{name}(Value::Object(wire))?;{strict} let mut model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?;\nfor (index,v) in pending {{ match index {{",q(id)).unwrap();
+    for (index, rule) in rules.iter().enumerate().filter(|(_, r)| read_by_hook(r)) {
+        if let Some(hook) = rule.custom.as_ref().and_then(|c| c.from.as_ref()) {
+            writeln!(out, "{index} => hooks.{hook}(&mut model,&v,state)?,").unwrap();
+        }
+    }
+    out.push_str("_ => unreachable!(\"pending index comes from this function\") } }\nmodel.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;\nOk(model)}\n");
+    // WRITE: declared data encodes first; every write reaches each hook-owned rule in rule order.
+    writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json_with<S,H:{name}Hooks<S>>(model:&{name},hooks:&H,state:&mut S)->ContractResult<String>{{{ordered}model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;{guard}let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;let Value::Object(mut wire)=encode_{name}(data)? else {{ return Err(failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\", \"expected object\")); }};",q(id),q(id)).unwrap();
+    for rule in rules.iter().filter(|r| write_by_hook(r)) {
+        let key = rule.key.first().cloned().unwrap_or_default();
+        match rule.custom.as_ref().and_then(|c| c.to.as_ref()) {
+            Some(hook) => writeln!(out,"hooks.{hook}(model,&mut wire,state)?;").unwrap(),
+            None => writeln!(out,"return Err(failure(ErrorReason::CustomSerialization,{},\"\",{},\"no write hook is declared for this key\"));",q(id),q(&format!("/{key}"))).unwrap(),
+        }
+    }
+    // Keys follow rule order (hook-written ones included), like the source and the TS target.
+    let order = rules
+        .iter()
+        .filter_map(|r| r.key.first())
+        .map(|k| q(k))
+        .collect::<Vec<_>>()
+        .join(",");
+    writeln!(out,"let mut ordered=Map::new(); for key in [{order}] {{ if let Some(v)=wire.remove(key) {{ ordered.insert(key.into(),v); }} }} ordered.extend(wire);\nserde_json::to_string(&Value::Object(ordered)).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id)).unwrap();
 }
 fn path_expr(path: &[String]) -> String {
     format!(

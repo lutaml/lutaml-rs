@@ -3,6 +3,7 @@
 //! validation, aliases, namespaces and render policies are lowered once.
 use super::contract::{Field, Operation};
 use super::projection::compile_projection;
+use super::writer_emitter::{cxa, cxp, gen};
 use crate::contracts::*;
 use crate::generator::member_identifier;
 use std::collections::BTreeMap;
@@ -115,6 +116,22 @@ impl Pol {
     }
 }
 
+/// Handwritten hooks of one rule, and the default-suppression literal of its member.
+#[derive(Clone, Default)]
+pub(super) struct Hooks {
+    pub read: Option<String>,
+    pub write: Option<String>,
+    /// The rule has `custom` but declares no attribute.
+    pub only: bool,
+    /// An element rule: its READ hook receives the parsed element, not flattened text.
+    pub element: bool,
+    /// Declared position among the mapping's rules (write order of hook output).
+    pub pos: usize,
+    /// JSON literal of the declared default when an applied default may be suppressed
+    /// (`render default` is not true).
+    pub suppress: Option<String>,
+}
+
 pub(super) enum Child {
     Scalar(Kind),
     Model(String),
@@ -131,6 +148,7 @@ pub(super) enum Child {
 }
 
 pub(super) struct AttrPlan {
+    pub hooks: Hooks,
     pub member: String,
     pub ident: String,
     pub names: Vec<String>,
@@ -142,6 +160,7 @@ pub(super) struct AttrPlan {
 }
 
 pub(super) struct ElemPlan {
+    pub hooks: Hooks,
     pub member: String,
     pub ident: String,
     pub names: Vec<String>,
@@ -155,6 +174,7 @@ pub(super) struct ElemPlan {
 }
 
 pub(super) struct ContentPlan {
+    pub hooks: Hooks,
     pub member: String,
     pub ident: String,
     pub collection: bool,
@@ -173,10 +193,21 @@ pub(super) struct Plan {
     pub attrs: Vec<AttrPlan>,
     pub elems: Vec<ElemPlan>,
     pub content: Option<ContentPlan>,
+    /// The bundle has XML hooks: every generated function threads a hook context.
+    pub hooked: bool,
     /// The `any_attribute` target: `(member, ident)`.
     pub any: Option<(String, String)>,
     /// Reasons the writer refuses this mapping by name.
     pub writer_refusals: Vec<String>,
+}
+
+pub(super) fn bundle_has_xml_hooks(bundle: &Bundle) -> bool {
+    bundle.models.values().any(|m| {
+        m.mappings
+            .xml
+            .as_ref()
+            .is_some_and(|x| x.rules.iter().any(|r| r.custom.is_some()))
+    })
 }
 
 fn scalar_kind(bundle: &Bundle, id: &str, attribute: &Attribute) -> ContractResult<Kind> {
@@ -318,15 +349,20 @@ pub(super) fn plan(
         attrs: Vec::new(),
         elems: Vec::new(),
         content: None,
+        hooked: bundle_has_xml_hooks(bundle),
         any: None,
         writer_refusals: Vec::new(),
     };
+    let mut pos = 0usize;
     for op in &projection.operations {
         match op {
             Operation::Sequence(_) | Operation::Choice(_) => out
                 .writer_refusals
                 .push("the sequence compositor is not written by this emitter".into()),
-            Operation::Field(field) => field_plan(bundle, names, id, &own, field, &mut out)?,
+            Operation::Field(field) => {
+                field_plan(bundle, names, id, &own, field, pos, &mut out)?;
+                pos += 1;
+            }
             _ => {}
         }
     }
@@ -339,12 +375,46 @@ fn field_plan(
     id: &str,
     own: &Ns,
     field: &Field,
+    pos: usize,
     out: &mut Plan,
 ) -> ContractResult<()> {
     let collection = matches!(field.attribute.collection, Collection::Bounded { .. });
-    let ident = member_identifier(&field.member);
+    let only = field.member.is_empty() && field.custom.is_some();
+    let ident = if only {
+        String::new()
+    } else {
+        member_identifier(&field.member)
+    };
     let first = field.aliases.first().cloned().unwrap_or_default();
     let (nil, empty) = policy(id, field)?;
+    for hook in field.custom.iter().flat_map(|c| [&c.to, &c.from]).flatten() {
+        if crate::codecs::RUST_KEYWORDS.contains(&hook.as_str()) {
+            return Err(refuse(
+                id,
+                ErrorReason::UnsupportedMapping,
+                &field.member,
+                &format!("hook name {hook} is a Rust keyword"),
+            ));
+        }
+    }
+    let default_true = field
+        .render
+        .as_ref()
+        .is_some_and(|r| matches!(r.default, RenderAction::Boolean(true)));
+    let suppress = match (&field.attribute.default, default_true) {
+        (DefaultValue::Present(v), false) if !collection => Some(
+            serde_json::to_string(&crate::generator::wire_default(&field.attribute, v)).unwrap(),
+        ),
+        _ => None,
+    };
+    let hooks = Hooks {
+        read: field.custom.as_ref().and_then(|c| c.from.clone()),
+        write: field.custom.as_ref().and_then(|c| c.to.clone()),
+        only,
+        element: field.kind == XmlRuleKind::Element,
+        pos,
+        suppress,
+    };
     match field.kind {
         XmlRuleKind::Content => {
             if out.content.is_some() {
@@ -356,6 +426,7 @@ fn field_plan(
                 ));
             }
             out.content = Some(ContentPlan {
+                hooks: hooks.clone(),
                 member: field.member.clone(),
                 ident,
                 collection,
@@ -389,6 +460,7 @@ fn field_plan(
                 ));
             }
             out.attrs.push(AttrPlan {
+                hooks: hooks.clone(),
                 member: field.member.clone(),
                 ident,
                 names: field.aliases.clone(),
@@ -479,6 +551,7 @@ fn field_plan(
                 },
             };
             out.elems.push(ElemPlan {
+                hooks,
                 member: field.member.clone(),
                 ident,
                 names: field.aliases.clone(),
@@ -511,6 +584,8 @@ fn push(ident: &str, value: &str) -> String {
 /// The reader for one model: a `const` rule table and a typed element reader.
 pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     let (id, name) = (q(&p.id), &p.name);
+    let (g, cp, ca) = (gen(p.hooked), cxp(p.hooked), cxa(p.hooked));
+    emit_hook_trait(out, p);
     let attrs: String = p
         .attrs
         .iter()
@@ -528,20 +603,23 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         .iter()
         .map(|e| {
             format!(
-                "rt::ElemRule {{ to: {}, names: {}, ns: {}, collection: {}, nullable: {} }}, ",
+                "rt::ElemRule {{ to: {}, names: {}, ns: {}, collection: {}, nullable: {}, scalar: {}, cdata: {} }}, ",
                 q(&e.member),
                 str_list(&e.names),
                 str_list(&e.accept),
-                e.collection,
-                nullable(&e.child)
+                e.collection || e.hooks.only,
+                nullable(&e.child),
+                matches!(e.child, Child::Scalar(_)),
+                e.cdata
             )
         })
         .collect();
     let content = p.content.as_ref().map_or("None".into(), |c| {
         format!(
-            "Some(rt::ContentRule {{ to: {}, collection: {} }})",
+            "Some(rt::ContentRule {{ to: {}, collection: {}, cdata: {} }})",
             q(&c.member),
-            c.collection
+            c.collection,
+            c.cdata
         )
     });
     writeln!(
@@ -552,11 +630,16 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     .unwrap();
     writeln!(
         out,
-        "fn read_{name}_el(doc: &rt::Doc, ord: usize, loc: &str) -> ContractResult<{name}> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = {name}::default();"
+        "fn read_{name}_el{g}(doc: &rt::Doc, ord: usize, loc: &str{cp}) -> ContractResult<{name}> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = {name}::default();"
     )
     .unwrap();
     for (i, a) in p.attrs.iter().enumerate() {
         let first = q(&a.names[0]);
+        if let Some(call) = read_hook(p, &a.hooks, "raw.as_str()", "&at_loc", &first) {
+            writeln!(out,
+                " if let Some(raw) = &s.attrs[{i}] {{ let at_loc = format!(\"{{loc}}/@{{}}\", {first}); {call} }}").unwrap();
+            continue;
+        }
         let value = present(&format!(
             "rt::decode(doc, ord, {}, raw, &at)?",
             a.kind.path()
@@ -576,15 +659,12 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             let (prelude, value, optional) = match &e.child {
                 Child::Scalar(k) => (
                     at.clone(),
-                    format!(
-                        "rt::decode(doc, hit.ord, {}, &doc.text_of(hit.ord), &at)?",
-                        k.path()
-                    ),
+                    format!("rt::decode(doc, hit.ord, {}, &text, &at)?", k.path()),
                     true,
                 ),
                 Child::Model(n) => (
                     String::new(),
-                    format!("Box::new(read_{n}_el(doc, hit.ord, &hit.loc)?)"),
+                    format!("Box::new(read_{n}_el(doc, hit.ord, &hit.loc{ca})?)"),
                     false,
                 ),
                 Child::Poly {
@@ -598,7 +678,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                     let mut arms = String::new();
                     for (index, (tag, case)) in cases.iter().enumerate() {
                         arms += &format!(
-                            "Some({}) => {union}::Case{index}(Box::new(read_{case}_el(doc, hit.ord, &hit.loc)?)), ",
+                            "Some({}) => {union}::Case{index}(Box::new(read_{case}_el(doc, hit.ord, &hit.loc{ca})?)), ",
                             q(tag)
                         );
                     }
@@ -606,7 +686,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                     // hold through the case that maps to it.
                     if let Some(index) = cases.iter().position(|(_, case)| case == base) {
                         arms += &format!(
-                            "None => {union}::Case{index}(Box::new(read_{base}_el(doc, hit.ord, &hit.loc)?)), "
+                            "None => {union}::Case{index}(Box::new(read_{base}_el(doc, hit.ord, &hit.loc{ca})?)), "
                         );
                     }
                     let dloc = format!(
@@ -626,17 +706,49 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                     )
                 }
             };
+            if let Some(call) = read_hook(
+                p,
+                &e.hooks,
+                "&rt::XmlElement::new(doc, hit.ord)",
+                "&hit.loc",
+                &first,
+            ) {
+                writeln!(out, "   {i} => {{ {call} }}").unwrap();
+                continue;
+            }
             let body = match (e.collection, optional) {
                 (false, true) => format!("m.{} = {};", e.ident, present(&value)),
                 (false, false) => format!("m.{} = Presence::Value({value});", e.ident),
                 (true, true) => format!("if let Some(v) = {value} {{ {} }}", push(&e.ident, "v")),
                 (true, false) => format!("let v = {value}; {}", push(&e.ident, "v")),
             };
+            // A scalar leaf reads through the source's CDATA/ordinary-text rules; nil leaves the member unset.
+            let body = if matches!(e.child, Child::Scalar(_)) {
+                let nil = if e.collection {
+                    "if s.counts[HIT_RULE] > 1 { return Err(rt::nil_item(&at)); }"
+                } else {
+                    ""
+                };
+                format!(
+                    "match doc.leaf_texts(hit.ord, {}, s.counts[{i}] > 1) {{ Some(items) => {{ for text in items {{ {body} }} }} None => {{ {} }} }}",
+                    e.cdata,
+                    nil.replace("HIT_RULE", &i.to_string())
+                )
+            } else {
+                body
+            };
             writeln!(out, "   {i} => {{ {prelude} {body} }}").unwrap();
         }
         out.push_str("   _ => {}\n  }\n }\n");
     }
-    if let Some(c) = &p.content {
+    if let Some(c) = p
+        .content
+        .as_ref()
+        .filter(|c| read_hook(p, &c.hooks, "s.content_text.as_str()", "loc", "\"\"").is_some())
+    {
+        let call = read_hook(p, &c.hooks, "s.content_text.as_str()", "loc", "\"\"").unwrap();
+        writeln!(out, " if !s.content_text.is_empty() {{ {call} }}").unwrap();
+    } else if let Some(c) = &p.content {
         let at = format!(
             "let at = rt::Where {{ id: {id}, attribute: {}, rule: {}, loc }};",
             q(&c.member),
@@ -649,7 +761,12 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                 "rt::decode(doc, ord, {}, &s.content_text, &at)?",
                 c.kind.path()
             ));
-            writeln!(out, " {{ {at} m.{} = {value}; }}", c.ident).unwrap();
+            writeln!(
+                out,
+                " if !s.content_unset {{ {at} m.{} = {value}; }}",
+                c.ident
+            )
+            .unwrap();
         }
     }
     if let Some((_, ident)) = &p.any {
@@ -671,6 +788,67 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     } else {
         vec![own]
     }));
-    writeln!(out,
-        "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}").unwrap();
+    let entry = if p.hooked {
+        format!(
+            "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n read_{name}_xml_with(input, &NoXmlHooks, &mut ())\n}}\npub fn read_{name}_xml_with<S, H: XmlHooks<S>>(input: &[u8], hooks: &H, state: &mut S) -> ContractResult<{name}> {{\n let mut cx = XmlCx {{ hooks, state }};\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc, &mut cx)?;\n m.validate().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}"
+        )
+    } else {
+        format!(
+            "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}"
+        )
+    };
+    writeln!(out, "{entry}").unwrap();
+}
+
+/// The call that hands a scanned value to the rule's handwritten READ hook, or the named failure for a
+/// hook-only rule with no read direction. None: an ordinary rule decoded by the generated code.
+fn read_hook(p: &Plan, h: &Hooks, value: &str, loc: &str, rule: &str) -> Option<String> {
+    let id = q(&p.id);
+    match (&h.read, h.only) {
+        (Some(hook), _) => Some(format!(
+            "<H as {}XmlHooks<S>>::{hook}(cx.hooks, &mut m, {value}, cx.state)?;",
+            p.name
+        )),
+        (None, true) => Some(format!(
+            "return Err(rt::fail(ErrorReason::CustomSerialization, {id}, None, Some({rule}), {loc}, \"no read hook is declared for this rule\"));"
+        )),
+        (None, false) => None,
+    }
+}
+
+/// The failing-stub trait of one model's XML hooks (READ `(model, value, state)`, WRITE
+/// `(model, parent, state)`), declared once per hook name.
+fn emit_hook_trait(out: &mut String, p: &Plan) {
+    let hooks: Vec<&Hooks> = p
+        .attrs
+        .iter()
+        .map(|a| &a.hooks)
+        .chain(p.elems.iter().map(|e| &e.hooks))
+        .chain(p.content.iter().map(|c| &c.hooks))
+        .collect();
+    let mut seen: Vec<&str> = Vec::new();
+    let (id, name) = (q(&p.id), &p.name);
+    let mut methods = String::new();
+    for h in hooks {
+        if let Some(hook) = &h.read {
+            if !seen.contains(&hook.as_str()) {
+                seen.push(hook);
+                let value = if h.element {
+                    "&rt::XmlElement<'_>"
+                } else {
+                    "&str"
+                };
+                writeln!(methods, "/// READ hook (model, parsed value, state): runs only when a read reaches its rule, before validation, with\n/// mutable declared data. An element rule receives the parsed element; attribute and content rules the text.\nfn {hook}(&self, _model: &mut {name}, _value: {value}, _state: &mut S) -> ContractResult<()> {{ Err(rt::fail(ErrorReason::CustomSerialization, {id}, None, Some({}), \"/\", \"the handwritten read hook {hook} is not implemented\")) }}", q(hook)).unwrap();
+            }
+        }
+        if let Some(hook) = &h.write {
+            if !seen.contains(&hook.as_str()) {
+                seen.push(hook);
+                writeln!(methods, "/// WRITE hook (model, parent element, state): writes the rule's whole output into `parent`.\nfn {hook}(&self, _model: &{name}, _parent: &mut rt::XmlParent, _state: &mut S) -> ContractResult<()> {{ Err(rt::fail(ErrorReason::CustomSerialization, {id}, None, Some({}), \"/\", \"the handwritten write hook {hook} is not implemented\")) }}", q(hook)).unwrap();
+            }
+        }
+    }
+    if !seen.is_empty() {
+        writeln!(out, "pub trait {name}XmlHooks<S> {{\n{methods}}}").unwrap();
+    }
 }

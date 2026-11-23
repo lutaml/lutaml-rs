@@ -235,7 +235,16 @@ fn dump_member(bundle: &Bundle, target: Option<&str>, v: &Value) -> Value {
 fn overrides() -> BTreeMap<&'static str, Value> {
     let nulls = json!({"id": null, "lang": null, "name": null, "nick": null, "tags": null, "addr": null, "age": null, "ni": null, "nb": null, "ee": null});
     BTreeMap::from([
-        ("person-prefixed-attribute-lenient", nulls),
+        ("person-prefixed-attribute-lenient", nulls.clone()),
+        // lutaml-model e4439b37 (evidence/cdata-ruby-oracle.json): an ordinary scalar element holding ordinary
+        // text AND CDATA reads as nil; the older oracle row joined them.
+        ("person-entities-and-cdata", nulls),
+        // lutaml-model e4439b37 (measured 2026-11-23): a repeated scalar element is held as the list ["1", "2"],
+        // not first-wins; a typed scalar cannot hold it.
+        (
+            "person-scalar-duplicate-first-wins",
+            json!({"error": "invalid_document", "attribute": "name"}),
+        ),
         ("person-wrong-root", json!({"error": "invalid_document"})),
         (
             "person-wrong-namespace",
@@ -416,7 +425,8 @@ fn writer_round_trips_every_ruby_read_value() {
             "{id}: {text}"
         );
     }
-    assert!(eligible.len() >= 24, "{}", eligible.len());
+    // 23: person-scalar-duplicate-first-wins is an override (refused) since the e4439b37 measurement.
+    assert!(eligible.len() >= 23, "{}", eligible.len());
 }
 
 #[test]
