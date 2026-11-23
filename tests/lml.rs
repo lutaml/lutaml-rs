@@ -310,12 +310,21 @@ fn rejects_unknown_features_and_preserves_declared_enum_alias_order() {
         "/models/Example::Node@custom/mappings/json",
     );
     v = bundle();
-    v["models"]["Example::Node@custom"]["custom_initialize"] = json!(true);
-    refused(
-        &v,
-        ErrorReason::CustomInitialize,
-        "/models/Example::Node@custom/custom_initialize",
-    );
+    for malformed in [
+        json!(false),
+        json!(null),
+        json!("true"),
+        json!(1),
+        json!({}),
+        json!([]),
+    ] {
+        v["models"]["Example::Node@custom"]["custom_initialize"] = malformed.clone();
+        refused(
+            &v,
+            ErrorReason::InvalidDocument,
+            "/models/Example::Node@custom/custom_initialize",
+        );
+    }
     v = bundle();
     v["models"]["Example::Node@custom"]["attributes"][0]["values"] =
         json!(["2.0", "9007199254740993.000"]);
@@ -796,6 +805,27 @@ fn exact_integer_defaults_compare_to_typed_numeric_enum_metadata() {
     assert!(snapshot.canonical_json().contains("\"values\":[1,2]"));
 }
 
+#[test]
+fn custom_initialize_marker_is_kept_optional_and_checksummed() {
+    let plain = bundle();
+    let mut marked = bundle();
+    marked["models"]["Example::Node@custom"]["custom_initialize"] = json!(true);
+    let plain_graph = parsed(&plain);
+    let marked_graph = parsed(&marked);
+    // Absence preserved: an ordinary model has no marker and its checksum is unchanged.
+    assert!(!plain_graph.bundle().unwrap().models["Example::Node@custom"].custom_initialize);
+    assert!(!plain_graph.canonical_json().contains("custom_initialize"));
+    // The marker survives load, the canonical bytes and a reload of those bytes.
+    assert!(marked_graph.bundle().unwrap().models["Example::Node@custom"].custom_initialize);
+    assert!(marked_graph
+        .canonical_json()
+        .contains("\"custom_initialize\":true"));
+    assert_ne!(marked_graph.checksum(), plain_graph.checksum());
+    let reloaded = load(marked_graph.canonical_json().as_bytes(), InputFormat::Json).unwrap();
+    assert_eq!(reloaded.checksum(), marked_graph.checksum());
+    assert_eq!(reloaded.canonical_json(), marked_graph.canonical_json());
+}
+
 /// Case -> Ruby verdict -> Rust verdict. `ruby` was measured with
 /// `tests/fixtures/ruby_parity_measure.rb` against
 /// lutaml-model 7e23cd7 `DocumentValidator`; `rust` is pinned here. Where
@@ -1020,19 +1050,23 @@ fn yaml_plain_scalars_without_digits_are_strings() {
     }
 }
 
-/// M2: `mappings.toml` validates like json/yaml; the typed view then refuses it
-/// by name rather than dropping it.
+/// M2: `mappings.toml` validates like json/yaml and the typed view keeps it as data (no toml codec is
+/// generated, exactly like yaml). A real Ruby export carries toml/yaml/json mappings together.
 #[test]
-fn toml_mapping_validates_and_the_typed_view_refuses_it_by_name() {
+fn toml_mapping_validates_and_the_typed_view_keeps_it() {
     let mut v = bundle();
     v["capabilities"] = json!(["json", "toml"]);
     v["models"]["Example::Node@custom"]["mappings"]["toml"] =
         json!({"rules":[{"key":["amount"],"to":"amount"}]});
     let snapshot = parsed(&v);
-    let error = snapshot.bundle().unwrap_err();
-    assert_eq!(error.reason, ErrorReason::UnsupportedFormat);
-    assert_eq!(error.location, "/models/Example::Node@custom/mappings/toml");
-    assert_eq!(error.format.as_deref(), Some("toml"));
+    let typed = snapshot.bundle().unwrap();
+    let toml = typed.models["Example::Node@custom"]
+        .mappings
+        .toml
+        .as_ref()
+        .unwrap();
+    assert_eq!(toml.rules[0].to, "amount");
+    assert!(snapshot.canonical_json().contains("\"toml\":{\"rules\""));
     v["models"]["Example::Node@custom"]["mappings"]["toml"]["rules"][0]["to"] = json!("missing");
     refused(
         &v,
@@ -1170,4 +1204,171 @@ fn ruby_r2_refusal_cases_match_ruby() {
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+const HOOKS: &str = include_str!("fixtures/serialization_hooks_bundle.json");
+fn hooked(edit: impl FnOnce(&mut Vec<Value>)) -> Result<(), Box<ContractError>> {
+    let mut v: Value = serde_json::from_str(HOOKS).unwrap();
+    edit(
+        v["models"]["Example::Measure@default"]["mappings"]["json"]["rules"]
+            .as_array_mut()
+            .unwrap(),
+    );
+    load(&bytes(&v), InputFormat::Json).map(|_| ())
+}
+#[test]
+fn serialization_hook_metadata_is_strict_and_checksummed() {
+    const AT: &str = "/models/Example::Measure@default/mappings/json/rules";
+    hooked(|_| {}).unwrap();
+    let sum = parsed(&serde_json::from_str(HOOKS).unwrap())
+        .checksum()
+        .to_string();
+    let mut stripped: Value = serde_json::from_str(HOOKS).unwrap();
+    stripped["models"]["Example::Measure@default"]["mappings"]["json"]["rules"][1]["custom"]
+        .as_object_mut()
+        .unwrap()
+        .remove("to");
+    assert_ne!(parsed(&stripped).checksum(), sum);
+    type Edit = fn(&mut Vec<Value>);
+    let cases: Vec<(&str, Edit, ErrorReason, String)> = vec![
+        (
+            "not an object",
+            |r| r[1]["custom"] = json!("x"),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom"),
+        ),
+        (
+            "empty object",
+            |r| r[1]["custom"] = json!({}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom"),
+        ),
+        (
+            "array",
+            |r| r[1]["custom"] = json!([]),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom"),
+        ),
+        (
+            "unknown key",
+            |r| r[1]["custom"] = json!({"to":"a","other":"b"}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom/other"),
+        ),
+        (
+            "bad name",
+            |r| r[1]["custom"] = json!({"to":"1bad"}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom/to"),
+        ),
+        (
+            "dash name",
+            |r| r[1]["custom"] = json!({"from":"a-b"}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom/from"),
+        ),
+        (
+            "non-string",
+            |r| r[1]["custom"] = json!({"to":5}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom/to"),
+        ),
+        (
+            "empty name",
+            |r| r[1]["custom"] = json!({"to":""}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom/to"),
+        ),
+        (
+            "to equals from",
+            |r| r[1]["custom"] = json!({"to":"same","from":"same"}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/1/custom"),
+        ),
+        (
+            "one name two directions",
+            |r| r[2]["custom"] = json!({"to":"category_from_kv"}),
+            ErrorReason::InvalidDocument,
+            format!("{AT}/2/custom/to"),
+        ),
+        (
+            "executable with key",
+            |r| r[1]["with"] = json!({"to":"x"}),
+            ErrorReason::UnsupportedMapping,
+            format!("{AT}/1/with"),
+        ),
+    ];
+    for (name, edit, reason, location) in cases {
+        let error = hooked(edit).unwrap_err();
+        assert_eq!(
+            (error.reason.clone(), error.location.clone()),
+            (reason, location),
+            "{name}: {error:?}"
+        );
+    }
+    // XML: content/element/attribute rules may carry hooks (hook-only allowed); other kinds, ordered/mixed
+    // mappings and cross-signature names are refused.
+    let xml_with = |rules: Value, extra: Value| {
+        let mut v: Value = serde_json::from_str(HOOKS).unwrap();
+        let mut mapping = json!({"root":{"element":"m"},"rules":rules});
+        for (k, e) in extra.as_object().cloned().unwrap_or_default() {
+            mapping[k] = e;
+        }
+        v["models"]["Example::Measure@default"]["mappings"]["xml"] = mapping;
+        v["capabilities"] = json!(["json", "xml"]);
+        load(&bytes(&v), InputFormat::Json).map(|_| ())
+    };
+    let element =
+        |custom: Value| json!({"kind":"element","name":["m"],"to":"amount","custom":custom});
+    xml_with(
+        json!([element(
+            json!({"to":"amount_to_xml","from":"amount_from_xml"})
+        )]),
+        json!({}),
+    )
+    .unwrap();
+    xml_with(
+        json!([{"kind":"element","name":["x"],"custom":{"to":"x_to_xml"}}]),
+        json!({}),
+    )
+    .unwrap();
+    xml_with(
+        json!([{"kind":"attribute","name":["a"],"to":"amount","custom":{"from":"a_from_xml"}}]),
+        json!({}),
+    )
+    .unwrap();
+    xml_with(
+        json!([{"kind":"content","to":"amount","custom":{"to":"c_to_xml","from":"c_from_xml"}}]),
+        json!({}),
+    )
+    .unwrap();
+    let at = "/models/Example::Measure@default/mappings/xml/rules/0/custom";
+    for rule in [
+        json!({"kind":"any_attribute","to":"amount","custom":{"to":"h"}}),
+        json!({"kind":"sequence","members":[],"custom":{"to":"h"}}),
+    ] {
+        let error = xml_with(json!([rule]), json!({})).unwrap_err();
+        assert_eq!(error.reason, ErrorReason::UnsupportedMapping);
+    }
+    let error = xml_with(json!([element(json!({"to":"h"}))]), json!({"ordered":true})).unwrap_err();
+    assert_eq!(
+        (error.reason, error.location),
+        (ErrorReason::ImperativeElementOrder, at.to_string())
+    );
+    let error = xml_with(json!([element(json!({"to":"1bad"}))]), json!({})).unwrap_err();
+    assert_eq!(
+        (error.reason, error.location),
+        (ErrorReason::InvalidDocument, format!("{at}/to"))
+    );
+    let error = xml_with(json!([element(json!({"to":"__lml_absent_x"}))]), json!({})).unwrap_err();
+    assert_eq!(error.reason, ErrorReason::InvalidDocument);
+    // a hook name keeps one signature kind per model: `category_to_kv` is a key-value hook already
+    let error = xml_with(json!([element(json!({"to":"category_to_kv"}))]), json!({})).unwrap_err();
+    assert_eq!(
+        (error.reason, error.location),
+        (
+            ErrorReason::InvalidDocument,
+            "/models/Example::Measure@default/mappings/xml/rules/0/custom/to".to_string()
+        )
+    );
 }

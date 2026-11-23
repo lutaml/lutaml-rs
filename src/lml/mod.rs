@@ -67,21 +67,6 @@ impl Snapshot {
         }
         let wire: serde_json::Value = serde_json::from_str(&self.canonical)
             .map_err(|e| failure(ErrorReason::InvalidDocument, "", e.to_string()))?;
-        // The typed view has no TOML mapping: refuse it by name instead of
-        // silently dropping a declaration the validator accepted (Ruby accepts
-        // `mappings.toml`; the schema identity still covers it).
-        for (id, model) in wire["models"].as_object().unwrap() {
-            if model["mappings"].get("toml").is_some() {
-                let mut error = failure(
-                    ErrorReason::UnsupportedFormat,
-                    &format!("{}/mappings/toml", pointer("/models", id)),
-                    "the typed Rust graph has no toml mapping",
-                );
-                error.model_id = Some(id.clone());
-                error.format = Some("toml".into());
-                return Err(error);
-            }
-        }
         serde_json::from_value(wire).map_err(|e| {
             failure(
                 ErrorReason::UnsupportedMapping,

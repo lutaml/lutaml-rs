@@ -147,6 +147,7 @@ fn rule(n: &Node, names: &BTreeSet<&str>, at: &str, xml: bool) -> ContractResult
             "child_mappings",
             "root_mappings",
             "polymorphic_map",
+            "custom",
         ],
         at,
     )?;
@@ -197,6 +198,10 @@ fn rule(n: &Node, names: &BTreeSet<&str>, at: &str, xml: bool) -> ContractResult
     if let Some(d) = n.get("discriminator") {
         discriminator(d, &pointer(at, "discriminator"))?;
     }
+    if let Some(c) = n.get("custom") {
+        let kind = xml.then(|| n.get("kind").and_then(Node::string).unwrap_or(""));
+        custom(c, &pointer(at, "custom"), kind)?;
+    }
     if let Some(map) = n.get("polymorphic_map") {
         for (key, value) in object(map, &pointer(at, "polymorphic_map"))? {
             string(value, &pointer(&pointer(at, "polymorphic_map"), key))?;
@@ -205,6 +210,97 @@ fn rule(n: &Node, names: &BTreeSet<&str>, at: &str, xml: bool) -> ContractResult
     for key in ["child_mappings", "root_mappings"] {
         if let Some(value) = n.get(key) {
             object(value, &pointer(at, key))?;
+        }
+    }
+    Ok(())
+}
+fn hook_name(name: &str) -> bool {
+    let mut chars = name.chars();
+    chars
+        .next()
+        .is_some_and(|c| c.is_ascii_alphabetic() || c == '_')
+        && chars.all(|c| c.is_ascii_alphanumeric() || c == '_')
+        && !name.starts_with("__lml_absent_")
+}
+/// Names (never bodies) of handwritten serialization hooks on a key-value rule, or on an XML
+/// `content`/`element`/`attribute` rule (never `any_attribute`, `sequence` or `choice`).
+fn custom(n: &Node, at: &str, xml: Option<&str>) -> ContractResult<()> {
+    if let Some(kind) = xml {
+        if !["content", "element", "attribute"].contains(&kind) {
+            return Err(failure(
+                ErrorReason::UnsupportedMapping,
+                at,
+                "custom serialization hooks apply to xml content, element and attribute rules only",
+            ));
+        }
+    }
+    let entries = match n.object() {
+        Some(entries) if !entries.is_empty() => entries,
+        _ => {
+            return Err(invalid(
+                at,
+                "custom must be a non-empty object of hook names",
+            ))
+        }
+    };
+    for (key, _) in entries {
+        if key != "to" && key != "from" {
+            return Err(invalid(
+                &pointer(at, key),
+                format!("unknown custom key {key}"),
+            ));
+        }
+    }
+    for key in ["to", "from"] {
+        if let Some(value) = n.get(key) {
+            if !value.string().is_some_and(hook_name) {
+                return Err(invalid(
+                    &pointer(at, key),
+                    format!("custom {key} must match [A-Za-z_][A-Za-z0-9_]* (not __lml_absent_*)"),
+                ));
+            }
+        }
+    }
+    if let (Some(to), Some(from)) = (n.get("to"), n.get("from")) {
+        if to == from {
+            return Err(invalid(at, "custom to and from must differ"));
+        }
+    }
+    Ok(())
+}
+/// A hook name has one direction AND one signature kind (key-value or xml) per model, across every
+/// rule and format.
+pub(super) fn hook_directions(mappings: &Node, at: &str) -> ContractResult<()> {
+    let mut seen: std::collections::BTreeMap<&str, (&str, bool)> =
+        std::collections::BTreeMap::new();
+    for (format, mapping) in mappings.object().unwrap_or(&[]) {
+        let Some(rules) = mapping.get("rules").and_then(Node::array) else {
+            continue;
+        };
+        let is_xml = format == "xml";
+        for (i, rule) in rules.iter().enumerate() {
+            for direction in ["to", "from"] {
+                let Some(name) = rule
+                    .get("custom")
+                    .and_then(|c| c.get(direction))
+                    .and_then(Node::string)
+                else {
+                    continue;
+                };
+                if seen
+                    .insert(name, (direction, is_xml))
+                    .is_some_and(|before| before != (direction, is_xml))
+                {
+                    let loc = format!(
+                        "{}/rules/{i}/custom/{direction}",
+                        pointer(&pointer(at, "mappings"), format)
+                    );
+                    return Err(invalid(
+                        &loc,
+                        format!("hook {name} is used with another direction or signature kind"),
+                    ));
+                }
+            }
         }
     }
     Ok(())
@@ -247,6 +343,20 @@ pub(super) fn xml(
     }
     if let Some(rules) = n.get("rules") {
         any_attribute_rules(rules.array().unwrap_or(&[]), hashes, at, true)?;
+        let ordered = n.get("ordered") == Some(&Node::Bool(true))
+            || n.get("mixed_content") == Some(&Node::Bool(true))
+            || n.get("root").and_then(|r| r.get("mixed")) == Some(&Node::Bool(true));
+        if ordered {
+            for (i, r) in rules.array().unwrap_or(&[]).iter().enumerate() {
+                if r.get("custom").is_some() {
+                    return Err(failure(
+                        ErrorReason::ImperativeElementOrder,
+                        &format!("{at}/rules/{i}/custom"),
+                        "an ordered or mixed mapping cannot be driven by a callback",
+                    ));
+                }
+            }
+        }
     }
     // Ruby's only compositor shape: an array of sequence/choice groups whose
     // members are rule objects or nested groups (no `choice` key, no bare

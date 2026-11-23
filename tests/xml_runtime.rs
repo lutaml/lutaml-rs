@@ -245,7 +245,16 @@ fn dump_member(bundle: &Bundle, target: Option<&str>, v: &Value) -> Value {
 fn overrides() -> BTreeMap<&'static str, Value> {
     let nulls = json!({"id": null, "lang": null, "name": null, "nick": null, "tags": null, "addr": null, "age": null, "ni": null, "nb": null, "ee": null});
     BTreeMap::from([
-        ("person-prefixed-attribute-lenient", nulls),
+        ("person-prefixed-attribute-lenient", nulls.clone()),
+        // lutaml-model e4439b37 (evidence/cdata-ruby-oracle.json): an ordinary scalar element holding ordinary
+        // text AND CDATA reads as nil; the older oracle row joined them.
+        ("person-entities-and-cdata", nulls),
+        // lutaml-model e4439b37 (measured 2026-11-23): a repeated scalar element is held as the list ["1", "2"],
+        // not first-wins; a typed scalar cannot hold it.
+        (
+            "person-scalar-duplicate-first-wins",
+            json!({"error": "invalid_document", "attribute": "name"}),
+        ),
         ("person-wrong-root", json!({"error": "invalid_document"})),
         (
             "person-wrong-namespace",
@@ -342,7 +351,7 @@ fn recursive_frames_delegate_fields_to_non_inlined_helpers() {
     assert!(text.contains("#[inline(never)]\nfn boxed_default<T: Default>()"));
     assert!(text.contains(&format!("let mut m = boxed_default::<{n}>();")));
     assert!(text.contains(&format!(
-        "#[inline(never)]\nfn __lml_xml_read_{n}_0(m: &mut {n}, doc: &rt::Doc, hit: &rt::ElemHit)"
+        "#[inline(never)]\nfn __lml_xml_read_{n}_0(m: &mut {n}, doc: &rt::Doc, hit: &rt::ElemHit, _counts: &[usize])"
     )));
     assert!(text.contains(&format!(
         "#[inline(never)]\nfn __lml_xml_write_{n}_0(v: &{n}, values: &mut rt::Values)"
@@ -466,7 +475,8 @@ fn writer_round_trips_every_ruby_read_value() {
             "{id}: {text}"
         );
     }
-    assert!(eligible.len() >= 24, "{}", eligible.len());
+    // 23: person-scalar-duplicate-first-wins is an override (refused) since the e4439b37 measurement.
+    assert!(eligible.len() >= 23, "{}", eligible.len());
 }
 
 #[test]
@@ -634,6 +644,30 @@ fn hand_written_rule_namespaces_read_and_write() {
     assert!(text.contains("at:x="), "{text}");
     let back = read("Doc@default", text);
     assert_eq!(dump(&bundle, "Doc@default", ok(&back)), want);
+}
+
+#[test]
+fn a_namespaced_model_reads_a_root_with_no_namespace_but_refuses_a_foreign_one() {
+    let bundle = full_bundle();
+    // Ruby reads an unqualified root as if the model's namespace applied; its `inherit` members follow.
+    let plain = read("Doc@default", "<doc y=\"Y\"><a>A</a><c>C</c></doc>");
+    assert_eq!(
+        dump(&bundle, "Doc@default", ok(&plain)),
+        json!({"a": "A", "b": null, "c": "C", "x": null, "y": "Y"})
+    );
+    let qualified = read(
+        "Doc@default",
+        "<d:doc xmlns:d=\"urn:doc\"><d:a>A</d:a></d:doc>",
+    );
+    assert_eq!(ok(&qualified)["a"], json!("A"));
+    // Any other namespace stays refused, naming both sides.
+    let foreign = read("Doc@default", "<doc xmlns=\"urn:foreign\"><a>A</a></doc>");
+    assert_eq!(err(&foreign)["reason"], json!("invalid_document"));
+    let detail = err(&foreign)["detail"].as_str().unwrap();
+    assert!(
+        detail.contains("expected root element doc in urn:doc") && detail.contains("urn:foreign"),
+        "{detail}"
+    );
 }
 
 #[test]

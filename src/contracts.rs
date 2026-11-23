@@ -70,8 +70,9 @@ pub enum Presence<T> {
 }
 
 /// Defaults use the portable boolean tag, including an explicit null value.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum DefaultValue {
+    #[default]
     Absent,
     Present(NeutralValue),
 }
@@ -177,11 +178,6 @@ impl Default for Collection {
         Self::Scalar(ScalarCollection)
     }
 }
-impl Default for DefaultValue {
-    fn default() -> Self {
-        Self::Absent
-    }
-}
 impl Serialize for ScalarCollection {
     fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         s.serialize_bool(false)
@@ -270,9 +266,10 @@ pub enum ContentToken {
         index: u64,
     },
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "mode", rename_all = "snake_case")]
 pub enum Namespace {
+    #[default]
     Inherit,
     Unqualified,
     Uri {
@@ -405,11 +402,19 @@ pub struct XmlRule {
     pub root_mappings: Option<BTreeMap<String, NeutralValue>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub polymorphic_map: Option<BTreeMap<String, String>>,
+    /// Names (never bodies) of handwritten serialization hooks; key-value rules only.
+    /// A rule with `custom` may omit `to` (a hook-only rule: `to` is then empty).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub custom: Option<CustomSerialization>,
 }
-impl Default for Namespace {
-    fn default() -> Self {
-        Self::Inherit
-    }
+/// `to` is the WRITE hook `(model, document)`, `from` the READ hook `(model, value)`.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CustomSerialization {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub to: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<String>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XmlRoot {
@@ -557,6 +562,9 @@ pub struct Mappings {
     pub json: Option<KeyMapping>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub yaml: Option<KeyMapping>,
+    /// Carried as data like yaml: no toml codec is generated, but a declaration the validator accepted is kept.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub toml: Option<KeyMapping>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ModelDocument {
@@ -568,6 +576,11 @@ pub struct ModelDocument {
     pub mappings: Mappings,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ordered_content: Option<OrderedContent>,
+    /// The source model has a handwritten initializer. Only `true` is a valid
+    /// wire value; absence means an ordinary data constructor. No body travels
+    /// in the document: generators emit a stub the consumer implements.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub custom_initialize: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub choices: Option<ModelChoices>,
 }
@@ -617,6 +630,7 @@ pub enum ErrorReason {
     NonSerializableDefault,
     LambdaDefault,
     CustomInitialize,
+    CustomSerialization,
     ImperativeElementOrder,
     InvalidOrderedContent,
     ReservedMember,

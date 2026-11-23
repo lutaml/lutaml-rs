@@ -51,6 +51,7 @@ fn model(name: &str, attributes: Vec<Attribute>, rules: Vec<KeyRule>) -> ModelDo
         },
         ordered_content: None,
         choices: None,
+        custom_initialize: false,
     }
 }
 fn rule(
@@ -799,6 +800,8 @@ fn every_capitalized_name_in_emitted_code_is_reserved_or_known_to_be_scoped() {
         "Array",
         "Object",
         "NEUTRAL_NUMBERS",
+        // `impl Drop for ProvenanceWire`: a prelude trait, never declared.
+        "Drop",
     ];
     let mut unknown = BTreeSet::new();
     for text in [&models["models.rs"], &json["json_codecs.rs"]] {
@@ -897,5 +900,510 @@ fn emitted_function_names_cannot_alias_across_models() {
         seen.contains("decode_Item")
             && seen.contains("hydrate_Item")
             && seen.contains("hydrate_Item_data")
+    );
+}
+
+const HOOKS_BUNDLE: &str = include_str!("fixtures/serialization_hooks_bundle.json");
+const HOOKS_CONSUMER: &str = r##"
+#[cfg(test)]
+mod tests {
+    use super::contracts::{ContractError, ContractResult, ErrorReason};
+    use super::json_codecs::*;
+    use super::models::{ExactInteger, Example_Measure, Presence};
+    use serde_json::{Map, Value};
+    #[derive(Default)]
+    struct State { category: Option<String>, note: String }
+    struct Real;
+    impl Example_MeasureHooks<State> for Real {
+        fn category_from_kv(&self, _m: &mut Example_Measure, value: &Value, s: &mut State) -> ContractResult<()> {
+            s.category = value.as_str().map(str::to_owned);
+            Ok(())
+        }
+        fn category_to_kv(&self, _m: &Example_Measure, d: &mut Map<String, Value>, s: &mut State) -> ContractResult<()> {
+            if let Some(c) = &s.category { d.insert("category".into(), Value::String(c.clone())); }
+            Ok(())
+        }
+        fn note_to_kv(&self, _m: &Example_Measure, d: &mut Map<String, Value>, s: &mut State) -> ContractResult<()> {
+            d.insert("note".into(), Value::String(s.note.clone()));
+            Ok(())
+        }
+    }
+    /// Counts calls; implements only the WRITE hooks.
+    struct WriteOnly(std::cell::RefCell<Vec<&'static str>>);
+    impl Example_MeasureHooks<()> for WriteOnly {
+        fn category_to_kv(&self, _m: &Example_Measure, _d: &mut Map<String, Value>, _s: &mut ()) -> ContractResult<()> {
+            self.0.borrow_mut().push("category_to_kv"); Ok(())
+        }
+        fn note_to_kv(&self, _m: &Example_Measure, _d: &mut Map<String, Value>, _s: &mut ()) -> ContractResult<()> {
+            self.0.borrow_mut().push("note_to_kv"); Ok(())
+        }
+    }
+    /// Implements only the READ hook.
+    struct ReadOnly(std::cell::RefCell<Vec<&'static str>>);
+    impl Example_MeasureHooks<()> for ReadOnly {
+        fn category_from_kv(&self, _m: &mut Example_Measure, _v: &Value, _s: &mut ()) -> ContractResult<()> {
+            self.0.borrow_mut().push("category_from_kv"); Ok(())
+        }
+    }
+    fn reason(e: &ContractError) -> (ErrorReason, String) { (e.reason.clone(), e.location.clone()) }
+
+    #[test]
+    fn declared_data_never_runs_a_hook_and_the_stub_fails_by_name() {
+        let model = read_Example_Measure_json(r#"{"amount":"5"}"#).unwrap();
+        assert_eq!(model.amount, Presence::Value(ExactInteger::parse("5").unwrap()));
+        // serde reconstruction stays data-only.
+        let data: Example_Measure = serde_json::from_str(r#"{"amount":"5"}"#).unwrap();
+        assert_eq!(data, model);
+        let read = read_Example_Measure_json(r#"{"amount":"5","category":"x"}"#).unwrap_err();
+        assert_eq!(reason(&read), (ErrorReason::CustomSerialization, "/category".into()));
+        let write = write_Example_Measure_json(&model).unwrap_err();
+        assert_eq!(reason(&write), (ErrorReason::CustomSerialization, "/category".into()));
+    }
+    #[test]
+    fn only_the_attempted_direction_runs_and_fails() {
+        let model = read_Example_Measure_json(r#"{"amount":"5"}"#).unwrap();
+        let writes = WriteOnly(Default::default());
+        let out = write_Example_Measure_json_with(&model, &writes, &mut ()).unwrap();
+        assert_eq!(out, r#"{"amount":"5"}"#);
+        assert_eq!(*writes.0.borrow(), ["category_to_kv", "note_to_kv"]);
+        // reading with a write-only implementation never invokes a write hook
+        writes.0.borrow_mut().clear();
+        read_Example_Measure_json_with(r#"{"amount":"5"}"#, &writes, &mut ()).unwrap();
+        assert!(writes.0.borrow().is_empty());
+        // a read-only implementation still fails a write, without running its read hook
+        let reads = ReadOnly(Default::default());
+        let err = write_Example_Measure_json_with(&model, &reads, &mut ()).unwrap_err();
+        assert_eq!(reason(&err), (ErrorReason::CustomSerialization, "/category".into()));
+        assert!(reads.0.borrow().is_empty());
+        // a hook-only key with no declared read direction fails on read even with every hook installed
+        let err = read_Example_Measure_json_with(r#"{"note":"n"}"#, &writes, &mut ()).unwrap_err();
+        assert_eq!(reason(&err), (ErrorReason::CustomSerialization, "/note".into()));
+    }
+    #[test]
+    fn explicit_handwritten_hooks_carry_real_values_through_read_and_write() {
+        let mut state = State { category: None, note: "kept".into() };
+        let model = read_Example_Measure_json_with(r#"{"amount":"7","category":"metric"}"#, &Real, &mut state).unwrap();
+        assert_eq!(state.category.as_deref(), Some("metric"));
+        let out = write_Example_Measure_json_with(&model, &Real, &mut state).unwrap();
+        let value: Value = serde_json::from_str(&out).unwrap();
+        assert_eq!(value, serde_json::json!({"amount":"7","category":"metric","note":"kept"}));
+    }
+}
+"##;
+#[test]
+fn hooked_consumer_compiles_and_executes_hook_behavior() {
+    let b: Bundle = serde_json::from_str(HOOKS_BUNDLE).unwrap();
+    let out = run_consumer("json-hooks-consumer", &b, HOOKS_CONSUMER, &["test"]);
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        out.status.success(),
+        "{stdout}\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(stdout.contains("3 passed"), "{stdout}");
+}
+#[test]
+fn unhooked_bundles_emit_no_hook_code_and_nested_hooked_models_are_refused() {
+    let b: Bundle = serde_json::from_str(HOOKS_BUNDLE).unwrap();
+    let hooked = RustJsonEmitter
+        .generate_json_codecs(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(hooked["json_codecs.rs"].contains("pub trait Example_MeasureHooks<S>"));
+    let mut plain = b.clone();
+    let rules = &mut plain
+        .models
+        .get_mut("Example::Measure@default")
+        .unwrap()
+        .mappings
+        .json
+        .as_mut()
+        .unwrap()
+        .rules;
+    rules.retain(|r| r.custom.is_none());
+    let text = RustJsonEmitter
+        .generate_json_codecs(&plain, &TypeBindings::new())
+        .unwrap()["json_codecs.rs"]
+        .clone();
+    assert!(!text.contains("Hooks") && !text.contains("custom_serialization"));
+    // a model that holds the hooked model as a member cannot carry the hooks
+    let mut nested = b.clone();
+    let mut holder = nested.models["Example::Measure@default"].clone();
+    holder.model = "Holder".into();
+    let mut member = attribute("m", BuiltinType::String);
+    member.value_type = TypeRef::Model {
+        id: "Example::Measure@default".into(),
+    };
+    holder.attributes = vec![member];
+    holder.mappings = Mappings::default();
+    nested.models.insert("Holder@default".into(), holder);
+    let error = RustJsonEmitter
+        .generate_json_codecs(&nested, &TypeBindings::new())
+        .unwrap_err();
+    assert_eq!(error.reason, ErrorReason::UnsupportedMapping);
+}
+
+/// Default provenance matrix. Ruby (probe /private/tmp/lml-1033-default-policy-probe.rb, ordinary Serializable
+/// classes, auto and explicit mapping): `new` -> default applied -> JSON `{}`; `new(flag: false)` -> explicit
+/// -> `{"flag":false}`; `new(flag: true)` -> `{"flag":true}`. Independent of any custom constructor.
+fn provenance_bundle() -> Bundle {
+    let model = |name: &str, marked: bool, render_default: Option<bool>| {
+        let mut flag = attribute("flag", BuiltinType::Boolean);
+        flag.default = DefaultValue::Present(NeutralValue::Boolean(false));
+        let mut count = attribute("count", BuiltinType::Integer);
+        count.default = DefaultValue::Present(NeutralValue::Unsigned(0));
+        let mut m = match render_default {
+            Some(default) => {
+                let policy = |member: &str| {
+                    rule(
+                        member,
+                        &[member],
+                        RenderAction::Omit,
+                        RenderAction::Omit,
+                        default,
+                    )
+                };
+                model(
+                    name,
+                    vec![flag, count],
+                    vec![policy("flag"), policy("count")],
+                )
+            }
+            // No explicit rules: the implicit (auto) mapping.
+            None => ModelDocument {
+                mappings: Mappings::default(),
+                ..model(name, vec![flag, count], vec![])
+            },
+        };
+        m.custom_initialize = marked;
+        (format!("{name}@default"), m)
+    };
+    Bundle {
+        lml_bundle: 1,
+        roots: vec!["Quiet@default".into()],
+        models: BTreeMap::from([
+            model("Quiet", false, Some(false)),
+            model("QuietMarked", true, Some(false)),
+            model("Loud", false, Some(true)),
+            model("LoudMarked", true, Some(true)),
+            model("Auto", false, None),
+            model("AutoMarked", true, None),
+        ]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    }
+}
+const PROVENANCE_CONSUMER: &str = r##"
+#[cfg(test)]
+mod tests {
+    use super::json_codecs::*;
+    use super::models::*;
+    use serde_json::{json, Value};
+
+    macro_rules! matrix {
+        ($name:ident, $read:ident, $write:ident, $ty:ident, $render_default:expr) => {
+            #[test]
+            fn $name() {
+                let render_default: bool = $render_default;
+                let wire = |m: &$ty| serde_json::from_str::<Value>(&$write(m).unwrap()).unwrap();
+                // Provided on decode: explicit false / true / 0 stay rendered, with or without apply_defaults.
+                for input in [r#"{"flag":false}"#, r#"{"flag":true}"#, r#"{"count":"0"}"#, r#"{"flag":false,"count":"0"}"#] {
+                    let mut m = $read(input).unwrap();
+                    assert_eq!(wire(&m), serde_json::from_str::<Value>(input).unwrap(), "decode {input}");
+                    m.apply_defaults().unwrap();
+                    let applied = wire(&m);
+                    let given: Value = serde_json::from_str(input).unwrap();
+                    for (key, value) in given.as_object().unwrap() {
+                        assert_eq!(applied[key], *value, "explicit {key} survives apply_defaults in {input}");
+                    }
+                }
+                // Applied when omitted: suppressed (render default false) or rendered (render default true).
+                let mut m = $read("{}").unwrap();
+                m.apply_defaults().unwrap();
+                assert_eq!(m.flag, Presence::Value(false));
+                if render_default {
+                    assert_eq!(wire(&m), json!({"flag": false, "count": "0"}));
+                } else {
+                    assert_eq!(wire(&m), json!({}));
+                }
+                // apply_defaults is idempotent and keeps provenance.
+                let before = wire(&m);
+                m.apply_defaults().unwrap();
+                assert_eq!(wire(&m), before);
+                // Not applied: absent stays absent.
+                assert_eq!(wire(&$read("{}").unwrap()), json!({}));
+                // Constructed: an assigned default-equal value is explicit; Default + apply is applied.
+                let mut built = $ty::default();
+                built.flag = Presence::Value(false);
+                built.apply_defaults().unwrap();
+                assert_eq!(wire(&built)["flag"], json!(false));
+                // A changed value is always rendered; null keeps its policy (omit).
+                let mut changed = $read("{}").unwrap();
+                changed.apply_defaults().unwrap();
+                changed.flag = Presence::Value(true);
+                assert_eq!(wire(&changed)["flag"], json!(true));
+                let nulled = $read(r#"{"flag":null}"#).unwrap();
+                assert_eq!(nulled.flag, Presence::Null);
+                assert!(wire(&nulled).get("flag").is_none());
+                // Provenance is not part of plain serde output or of equality.
+                assert!(serde_json::to_value(&m).unwrap().get("__lml_applied").is_none());
+                let mut twin = $read("{}").unwrap();
+                twin.flag = Presence::Value(false);
+                twin.count = Presence::Value(serde_json::from_str("\"0\"").unwrap());
+                assert_eq!(m, twin);
+            }
+        };
+    }
+    matrix!(quiet, read_Quiet_json, write_Quiet_json, Quiet, false);
+    matrix!(quiet_marked, read_QuietMarked_json, write_QuietMarked_json, QuietMarked, false);
+    matrix!(loud, read_Loud_json, write_Loud_json, Loud, true);
+    matrix!(loud_marked, read_LoudMarked_json, write_LoudMarked_json, LoudMarked, true);
+    // Implicit mapping behaves like the explicit render-default-false rules.
+    matrix!(auto, read_Auto_json, write_Auto_json, Auto, false);
+    matrix!(auto_marked, read_AutoMarked_json, write_AutoMarked_json, AutoMarked, false);
+}
+"##;
+#[test]
+fn default_provenance_matrix_for_marked_and_unmarked_models() {
+    let out = run_consumer(
+        "json-provenance-consumer",
+        &provenance_bundle(),
+        PROVENANCE_CONSUMER,
+        &["test"],
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        out.status.success(),
+        "{stdout}\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(stdout.contains("6 passed"), "{stdout}");
+}
+
+/// A declared REQUIRED member supplied by a `custom.from` hook. The hook runs after the declared data is
+/// built and before validation, with mutable access, so the member is filled (not rejected, not forced into
+/// opaque state); validation sees the handwritten result.
+#[test]
+fn a_required_declared_member_supplied_by_a_read_hook_is_filled_before_validation() {
+    let mut title = attribute("title", BuiltinType::String);
+    title.required = true;
+    let mut rule = rule(
+        "title",
+        &["t"],
+        RenderAction::Omit,
+        RenderAction::Omit,
+        false,
+    );
+    rule.custom = Some(CustomSerialization {
+        to: None,
+        from: Some("title_from_kv".into()),
+    });
+    let bundle = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Req@default".into()],
+        models: BTreeMap::from([("Req@default".into(), model("Req", vec![title], vec![rule]))]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    };
+    let consumer = r##"
+#[cfg(test)]
+mod tests {
+    use super::contracts::{ContractResult, ErrorReason};
+    use super::json_codecs::*;
+    use super::models::*;
+    use serde_json::Value;
+    struct Fill;
+    impl ReqHooks<()> for Fill {
+        fn title_from_kv(&self, model: &mut Req, value: &Value, _s: &mut ()) -> ContractResult<()> {
+            model.title = Presence::Value(value.as_str().unwrap().to_uppercase());
+            Ok(())
+        }
+    }
+    struct Blank;
+    impl ReqHooks<()> for Blank {
+        fn title_from_kv(&self, _m: &mut Req, _v: &Value, _s: &mut ()) -> ContractResult<()> { Ok(()) }
+    }
+    #[test]
+    fn filled_before_validation() {
+        let model = read_Req_json_with(r#"{"t":"abc"}"#, &Fill, &mut ()).unwrap();
+        assert_eq!(model.title, Presence::Value("ABC".to_string()));
+        assert_eq!(write_Req_json(&model).unwrap(), r#"{"t":"ABC"}"#);
+    }
+    #[test]
+    fn validation_still_runs_on_the_handwritten_result() {
+        let error = read_Req_json_with(r#"{"t":"abc"}"#, &Blank, &mut ()).unwrap_err();
+        assert_eq!(error.reason, ErrorReason::InvalidDocument);
+    }
+    #[test]
+    fn a_missing_handler_stays_custom_serialization() {
+        let error = read_Req_json(r#"{"t":"abc"}"#).unwrap_err();
+        assert_eq!(error.reason, ErrorReason::CustomSerialization);
+    }
+}
+"##;
+    let out = run_consumer("json-required-hook", &bundle, consumer, &["test"]);
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        out.status.success(),
+        "{stdout}\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(stdout.contains("3 passed"), "{stdout}");
+}
+
+/// A parent with NO defaults whose child has defaults: `apply_defaults` recurses (single, collection, union
+/// cases), the root write enables provenance although only a descendant tracks defaults, and the bookkeeping
+/// field can neither be supplied through serde/JSON input nor leak into ordinary output.
+fn nested_provenance_bundle() -> Bundle {
+    let inner = |name: &str, render_default: bool| {
+        let mut flag = attribute("flag", BuiltinType::Boolean);
+        flag.default = DefaultValue::Present(NeutralValue::Boolean(false));
+        let policy = rule(
+            "flag",
+            &["flag"],
+            RenderAction::Omit,
+            RenderAction::Omit,
+            render_default,
+        );
+        (
+            format!("{name}@default"),
+            model(name, vec![flag], vec![policy]),
+        )
+    };
+    let parent = |name: &str, inner: &str| {
+        let mut one = attribute("inner", BuiltinType::String);
+        one.value_type = TypeRef::Model {
+            id: format!("{inner}@default"),
+        };
+        let mut many = attribute("items", BuiltinType::String);
+        many.value_type = TypeRef::Model {
+            id: format!("{inner}@default"),
+        };
+        many.collection = Collection::Bounded {
+            min: 0,
+            max: None,
+            class_binding: None,
+        };
+        let mut absent = attribute("absent_child", BuiltinType::String);
+        absent.value_type = TypeRef::Model {
+            id: format!("{inner}@default"),
+        };
+        let rules = ["inner", "items", "absent_child"]
+            .map(|m| rule(m, &[m], RenderAction::Omit, RenderAction::Omit, false))
+            .to_vec();
+        (
+            format!("{name}@default"),
+            model(name, vec![one, many, absent], rules),
+        )
+    };
+    Bundle {
+        lml_bundle: 1,
+        roots: vec!["Parent@default".into()],
+        models: BTreeMap::from([
+            inner("Inner", false),
+            inner("InnerLoud", true),
+            parent("Parent", "Inner"),
+            parent("ParentLoud", "InnerLoud"),
+        ]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    }
+}
+const NESTED_PROVENANCE: &str = r##"
+#[cfg(test)]
+mod tests {
+    use super::json_codecs::*;
+    use super::models::*;
+    use serde_json::{json, Value};
+    macro_rules! nested {
+        ($name:ident, $read:ident, $write:ident, $ty:ident, $render_default:expr) => {
+            #[test]
+            fn $name() {
+                let rd: bool = $render_default;
+                let wire = |m: &$ty| serde_json::from_str::<Value>(&$write(m).unwrap()).unwrap();
+                let mut m = $read(r#"{"inner":{},"items":[{},{"flag":false}]}"#).unwrap();
+                m.apply_defaults().unwrap();
+                let Presence::Value(inner) = &m.inner else { panic!() };
+                assert!(inner.__lml_applied.contains("flag"));
+                let Presence::Value(items) = &m.items else { panic!() };
+                assert!(items[0].__lml_applied.contains("flag"));
+                assert!(!items[1].__lml_applied.contains("flag"), "explicit equal value stays explicit");
+                assert!(m.absent_child.is_absent(), "absent children are never created");
+                let expected = if rd {
+                    json!({"inner": {"flag": false}, "items": [{"flag": false}, {"flag": false}]})
+                } else {
+                    json!({"inner": {}, "items": [{}, {"flag": false}]})
+                };
+                assert_eq!(wire(&m), expected);
+                let before = $write(&m).unwrap();
+                m.apply_defaults().unwrap();
+                assert_eq!(before, $write(&m).unwrap(), "idempotent");
+                // null stays null and is untouched by defaults
+                let mut nulled = $read(r#"{"inner":null}"#).unwrap();
+                nulled.apply_defaults().unwrap();
+                assert_eq!(nulled.inner, Presence::Null);
+                // private metadata: not output by serde or the codecs, not accepted from input
+                assert!(!serde_json::to_string(&m).unwrap().contains("__lml_applied"));
+                assert!(!$write(&m).unwrap().contains("__lml_applied"));
+                assert!($read(r#"{"__lml_applied":["flag"]}"#).is_err());
+                assert!($read(r#"{"inner":{"__lml_applied":["flag"]}}"#).is_err());
+                assert!(serde_json::from_str::<$ty>(r#"{"__lml_applied":["flag"]}"#).is_err());
+                assert!(serde_json::from_str::<Inner>(r#"{"flag":false,"__lml_applied":["flag"]}"#).is_err());
+            }
+        };
+    }
+    nested!(quiet, read_Parent_json, write_Parent_json, Parent, false);
+    nested!(loud, read_ParentLoud_json, write_ParentLoud_json, ParentLoud, true);
+}
+"##;
+#[test]
+fn defaults_recurse_and_provenance_is_private_in_key_value_codecs() {
+    let out = run_consumer(
+        "json-nested-provenance",
+        &nested_provenance_bundle(),
+        NESTED_PROVENANCE,
+        &["test"],
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        out.status.success(),
+        "{stdout}\n{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(stdout.contains("2 passed"), "{stdout}");
+}
+/// `applied` is declared only when a generated line reads it; otherwise an unused variable fails
+/// `clippy -D warnings` in the generated crate. The provenance key is consumed in every shape.
+#[test]
+fn applied_defaults_are_declared_only_when_read() {
+    let encode = |default_rendered: bool| {
+        let mut flag = attribute("flag", BuiltinType::Boolean);
+        flag.default = DefaultValue::Present(NeutralValue::Boolean(false));
+        let r = rule(
+            "flag",
+            &["flag"],
+            RenderAction::Omit,
+            RenderAction::Blank,
+            default_rendered,
+        );
+        let m = model("Solo", vec![flag], vec![r]);
+        let b = Bundle {
+            roots: vec!["Solo@default".into()],
+            models: BTreeMap::from([("Solo@default".into(), m)]),
+            ..fixture()
+        };
+        RustJsonEmitter
+            .generate_json_codecs(&b, &TypeBindings::new())
+            .map(|o| o["json_codecs.rs"].clone())
+    };
+    let read = encode(false).unwrap();
+    assert!(read.contains("let applied:Vec<String>"), "{read}");
+    let rendered = encode(true).unwrap();
+    assert!(!rendered.contains("let applied"), "{rendered}");
+    assert!(
+        rendered.contains("data.remove(\"__lml_applied\")"),
+        "{rendered}"
     );
 }
