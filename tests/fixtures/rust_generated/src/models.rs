@@ -228,6 +228,36 @@ Ok(()) }
 pub fn validate(&self)->Result<(),ValidationError>{
 Ok(()) }
 }
+#[allow(non_camel_case_types, non_snake_case)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Money {
+#[serde(rename = "currency", default, skip_serializing_if = "Presence::is_absent")]
+pub currency: Presence<String>,
+#[serde(rename = "note", default, skip_serializing_if = "Presence::is_absent")]
+pub note: Presence<String>,
+}
+impl Default for Money { fn default()->Self { Self {
+currency: Presence::Absent,
+note: Presence::Absent,
+} } }
+impl Money {
+pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
+Ok(()) }
+pub fn validate(&self)->Result<(),ValidationError>{
+if matches!(self.currency,Presence::Absent|Presence::Null) { return Err(invalid("Money@default", "currency", "invalid_document")); }
+Ok(()) }
+}
+impl Money {
+/// The source model has a handwritten initializer; serde reconstruction takes declared data only.
+pub const CUSTOM_INITIALIZE: bool = true;
+/// Default stub: fails with the `custom_initialize` error until a handwritten initializer is supplied.
+pub fn initialize_stub<A>(_args: A) -> Result<Money, ValidationError> { Err(invalid("Money@default", "", "custom_initialize")) }
+/// Application construction through the stub: always the named failure.
+pub fn construct<A>(args: A) -> Result<Money, ValidationError> { Self::construct_with(args, Self::initialize_stub) }
+/// Application construction through a consumer-provided initializer; its result still passes defaults and validation.
+pub fn construct_with<A, F: FnOnce(A) -> Result<Money, ValidationError>>(args: A, initializer: F) -> Result<Money, ValidationError> { let mut value = initializer(args)?; value.apply_defaults()?; value.validate()?; Ok(value) }
+}
 #[allow(non_camel_case_types)]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Node_enabled_Enum {
