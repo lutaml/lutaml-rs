@@ -368,6 +368,14 @@ fn check_rule(rule: &KeyRule, id: &str) -> ContractResult<()> {
     }
     Ok(())
 }
+/// Whether `policy` emits a line that reads `applied` for this member.
+fn reads_applied(rule: &KeyRule, a: &Attribute) -> bool {
+    let renders_default = matches!(
+        rule.render.as_ref().map(|p| &p.default),
+        Some(RenderAction::Boolean(true))
+    );
+    !renders_default && matches!(a.default, DefaultValue::Present(_))
+}
 /// A value equal to its declared default is suppressed (`render default: false`) only when `apply_defaults`
 /// supplied it: the model records that in `__lml_applied`, which `encode_*` reads as `applied`. A value the
 /// caller provided (decoded, assigned or constructed) is always rendered, like Ruby's `using_default?`.
@@ -378,7 +386,7 @@ fn policy(out: &mut String, rule: &KeyRule, a: &Attribute) {
         default: false.into(),
     };
     let p = rule.render.as_ref().unwrap_or(&default);
-    if !matches!(p.default, RenderAction::Boolean(true)) {
+    if reads_applied(rule, a) {
         if let DefaultValue::Present(v) = &a.default {
             writeln!(out,"if applied.iter().any(|m|m=={}) && v==serde_json::from_str::<Value>({}).expect(\"generated literal\") {{ continue; }}",q(&a.name),q(&serde_json::to_string(&crate::generator::wire_default(a, v)).unwrap())).unwrap();
         }
@@ -576,7 +584,19 @@ impl JsonCodecEmitter for RustJsonEmitter {
             }
             out.push_str("Ok(Value::Object(data))}\n");
             writeln!(out,"#[allow(non_snake_case)]\nfn encode_{name}(input:Value)->ContractResult<Value>{{let mut data=object(input,{})?;let mut wire=Map::new();",q(id)).unwrap();
-            if tracks_defaults(model) {
+            let root_keyed = keyed.as_ref().is_some_and(|k| k.root);
+            let reads = !root_keyed
+                && rules.iter().filter(|r| !write_by_hook(r)).any(|r| {
+                    model
+                        .attributes
+                        .iter()
+                        .find(|a| a.name == r.to)
+                        .is_some_and(|a| reads_applied(r, a))
+                });
+            if tracks_defaults(model) && !reads {
+                // The provenance list is consumed here (it is never wire output) but nothing reads it.
+                out.push_str("data.remove(\"__lml_applied\");\n");
+            } else if tracks_defaults(model) {
                 out.push_str("let applied:Vec<String>=match data.remove(\"__lml_applied\"){Some(Value::Array(a))=>a.into_iter().filter_map(|v|v.as_str().map(str::to_owned)).collect(),_=>Vec::new()};\n");
             }
             if keyed.as_ref().is_some_and(|k| k.root) {

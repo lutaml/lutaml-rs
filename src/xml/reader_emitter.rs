@@ -603,12 +603,14 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         .iter()
         .map(|e| {
             format!(
-                "rt::ElemRule {{ to: {}, names: {}, ns: {}, collection: {}, nullable: {} }}, ",
+                "rt::ElemRule {{ to: {}, names: {}, ns: {}, collection: {}, nullable: {}, scalar: {}, cdata: {} }}, ",
                 q(&e.member),
                 str_list(&e.names),
                 str_list(&e.accept),
                 e.collection || e.hooks.only,
-                nullable(&e.child)
+                nullable(&e.child),
+                matches!(e.child, Child::Scalar(_)),
+                e.cdata
             )
         })
         .collect();
@@ -722,9 +724,15 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             };
             // A scalar leaf reads through the source's CDATA/ordinary-text rules; nil leaves the member unset.
             let body = if matches!(e.child, Child::Scalar(_)) {
+                let nil = if e.collection {
+                    "if s.counts[HIT_RULE] > 1 { return Err(rt::nil_item(&at)); }"
+                } else {
+                    ""
+                };
                 format!(
-                    "if let Some(text) = doc.scalar_text(hit.ord, {}) {{ {body} }}",
-                    e.cdata
+                    "match doc.leaf_texts(hit.ord, {}, s.counts[{i}] > 1) {{ Some(items) => {{ for text in items {{ {body} }} }} None => {{ {} }} }}",
+                    e.cdata,
+                    nil.replace("HIT_RULE", &i.to_string())
                 )
             } else {
                 body

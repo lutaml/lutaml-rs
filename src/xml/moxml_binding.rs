@@ -156,33 +156,48 @@ impl Doc {
         Ok(())
     }
 
-    /// A scalar element's text as the source reads it: an ordinary rule keeps the text of an element that
-    /// holds only ordinary text or only CDATA (mixing the two reads as nil); a `cdata: true` rule keeps the
-    /// CDATA sections only, and nothing but empty CDATA or ordinary text reads as nil. None is nil.
-    pub fn scalar_text(&self, ord: usize, cdata_rule: bool) -> Option<String> {
+    /// The values a scalar element holds, as the source reads them. `None` is nil.
+    ///
+    /// An ordinary rule keeps the text of an element that holds one run of ordinary text or only CDATA; mixing
+    /// the two, or ordinary text split by a comment or processing instruction, reads as nil. A `cdata: true`
+    /// rule keeps CDATA groups only (adjacent sections are one group; anything else ends it). One element
+    /// holding several groups yields the first one alone, but `shared` (the rule met several elements) yields
+    /// every group. Empty groups are dropped; an empty list is no value.
+    pub fn leaf_texts(&self, ord: usize, cdata_rule: bool, shared: bool) -> Option<Vec<String>> {
+        let kids = &self.rows[ord].content;
+        if cdata_rule {
+            let mut groups = cdata_groups(kids);
+            if !shared {
+                groups.truncate(1);
+            }
+            groups.retain(|g| !g.is_empty());
+            return Some(groups);
+        }
         let (mut plain, mut cdata) = (String::new(), String::new());
         let (mut has_plain, mut has_cdata) = (false, false);
-        for kid in &self.rows[ord].content {
+        let (mut runs, mut in_run) = (0usize, false);
+        for kid in kids {
             match kid {
                 ContentRow::Text(t) => {
                     has_plain = true;
                     plain.push_str(t);
+                    runs += usize::from(!in_run);
+                    in_run = true;
                 }
                 ContentRow::CData(t) => {
                     has_cdata = true;
                     cdata.push_str(t);
                 }
+                ContentRow::Comment(_) | ContentRow::ProcessingInstruction { .. } => in_run = false,
                 _ => {}
             }
         }
-        if cdata_rule {
-            (!cdata.is_empty()).then_some(cdata)
-        } else if has_plain && has_cdata {
+        if (has_plain && has_cdata) || runs > 1 || cdata_groups(kids).len() > 1 {
             None
         } else if has_cdata {
-            Some(cdata)
+            Some(vec![cdata])
         } else {
-            Some(plain)
+            Some(vec![plain])
         }
     }
 
@@ -242,6 +257,10 @@ pub struct ElemRule {
     pub collection: bool,
     /// An empty element reads as nil (every scalar type but strings).
     pub nullable: bool,
+    /// The child is a scalar leaf (not a model).
+    pub scalar: bool,
+    /// The rule is `cdata: true`.
+    pub cdata: bool,
 }
 
 pub struct ContentRule {
@@ -277,6 +296,8 @@ pub struct Scan {
     pub attrs: Vec<Option<String>>,
     /// Accepted element children in document order.
     pub elems: Vec<ElemHit>,
+    /// Accepted children per `ModelSpec::elems` rule.
+    pub counts: Vec<usize>,
     pub content_list: Vec<String>,
     pub content_text: String,
     pub content_unset: bool,
@@ -284,6 +305,26 @@ pub struct Scan {
     /// Unclaimed attributes as `(local name, value)` in document order; empty
     /// unless the model has an `any_attribute` rule.
     pub any: Vec<(String, String)>,
+}
+
+/// CDATA groups of an element in document order: adjacent sections are one group (one source node); any other
+/// kind of child ends it.
+fn cdata_groups(kids: &[ContentRow]) -> Vec<String> {
+    let mut groups: Vec<String> = Vec::new();
+    let mut open = false;
+    for kid in kids {
+        match kid {
+            ContentRow::CData(t) => {
+                match groups.last_mut().filter(|_| open) {
+                    Some(g) => g.push_str(t),
+                    None => groups.push(t.clone()),
+                }
+                open = true;
+            }
+            _ => open = false,
+        }
+    }
+    groups
 }
 
 /// Ruby `map_all_attributes`: every attribute no explicit attribute rule claims
@@ -384,9 +425,12 @@ pub fn scan(doc: &Doc, ord: usize, spec: &ModelSpec, loc: &str) -> ContractResul
     }
     let mut seen: HashMap<&str, usize> = HashMap::new();
     let mut counts = vec![0usize; spec.elems.len()];
+    // Further accepted children of a scalar rule: the source holds all of them as a list.
+    let mut repeats: Vec<Vec<(usize, String)>> = vec![Vec::new(); spec.elems.len()];
     let mut out = Scan {
         attrs,
         elems: Vec::new(),
+        counts: Vec::new(),
         content_list: Vec::new(),
         content_text: scalar_content.unwrap_or_else(|| doc.text_of(ord)),
         content_unset,
@@ -414,6 +458,15 @@ pub fn scan(doc: &Doc, ord: usize, spec: &ModelSpec, loc: &str) -> ContractResul
                 let r = &spec.elems[rule];
                 let taken = counts[rule];
                 if !r.collection && taken > 0 {
+                    // Only the same element name repeats into a list; an alias after the first name is ignored.
+                    let same_name = out
+                        .elems
+                        .iter()
+                        .find(|h| h.rule == rule)
+                        .is_some_and(|h| doc.rows[h.ord].name.local == crow.name.local);
+                    if r.scalar && same_name {
+                        repeats[rule].push((*child, child_loc));
+                    }
                     continue;
                 }
                 if r.collection && r.nullable && doc.text_of(*child).trim().is_empty() {
@@ -480,8 +533,49 @@ pub fn scan(doc: &Doc, ord: usize, spec: &ModelSpec, loc: &str) -> ContractResul
             }
         }
     }
+    for (rule, more) in repeats.iter().enumerate().filter(|(_, m)| !m.is_empty()) {
+        let r = &spec.elems[rule];
+        let first = out.elems.iter().find(|h| h.rule == rule).map(|h| h.ord);
+        // An ordinary rule lists every element (nil included); a `cdata: true` rule lists CDATA groups only.
+        let listed = !r.cdata
+            || first
+                .into_iter()
+                .chain(more.iter().map(|m| m.0))
+                .any(|o| doc.leaf_texts(o, true, true).is_some_and(|g| !g.is_empty()));
+        if listed {
+            return Err(fail(
+                ErrorReason::InvalidDocument,
+                spec.id,
+                Some(r.to),
+                r.names.first().copied(),
+                &more[0].1,
+                "a repeated element for a scalar attribute reads as a list in the source",
+            ));
+        }
+    }
+    out.counts = counts;
     out.content_list = if positional {
         texts
+    } else if spec
+        .content
+        .as_ref()
+        .is_some_and(|c| c.collection && c.cdata)
+    {
+        // Source reading of a collection `cdata: true` content: the CDATA groups; none and at most one other
+        // node (processing instructions are not nodes) is one empty item, more is no item.
+        let groups = cdata_groups(&row.content);
+        let nodes = row
+            .content
+            .iter()
+            .filter(|k| !matches!(k, ContentRow::ProcessingInstruction { .. }))
+            .count();
+        if !groups.is_empty() {
+            groups
+        } else if nodes <= 1 {
+            vec![String::new()]
+        } else {
+            Vec::new()
+        }
     } else {
         row.content
             .iter()
@@ -562,6 +656,15 @@ pub fn decode<T: DeserializeOwned>(
 /// A discriminator selector: the attribute on the child element, if present.
 pub fn discriminator(doc: &Doc, ord: usize, names: &[&str], ns: &[&str]) -> Option<String> {
     doc.attribute(ord, names, ns).map(String::from)
+}
+
+/// A collection element that the source reads as nil beside other items: a typed list cannot hold it, and
+/// dropping it would shift every later index.
+pub fn nil_item(at: &Where<'_>) -> Box<ContractError> {
+    at.fail(
+        ErrorReason::InvalidDocument,
+        "an element the source reads as nil among several collection items cannot be held by a typed list",
+    )
 }
 
 pub fn unknown_discriminator(at: &Where<'_>, tag: &str) -> Box<ContractError> {

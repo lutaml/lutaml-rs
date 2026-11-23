@@ -1361,3 +1361,36 @@ fn defaults_recurse_and_provenance_is_private_in_key_value_codecs() {
     );
     assert!(stdout.contains("2 passed"), "{stdout}");
 }
+/// `applied` is declared only when a generated line reads it; otherwise an unused variable fails
+/// `clippy -D warnings` in the generated crate. The provenance key is consumed in every shape.
+#[test]
+fn applied_defaults_are_declared_only_when_read() {
+    let encode = |default_rendered: bool| {
+        let mut flag = attribute("flag", BuiltinType::Boolean);
+        flag.default = DefaultValue::Present(NeutralValue::Boolean(false));
+        let r = rule(
+            "flag",
+            &["flag"],
+            RenderAction::Omit,
+            RenderAction::Blank,
+            default_rendered,
+        );
+        let m = model("Solo", vec![flag], vec![r]);
+        let b = Bundle {
+            roots: vec!["Solo@default".into()],
+            models: BTreeMap::from([("Solo@default".into(), m)]),
+            ..fixture()
+        };
+        RustJsonEmitter
+            .generate_json_codecs(&b, &TypeBindings::new())
+            .map(|o| o["json_codecs.rs"].clone())
+    };
+    let read = encode(false).unwrap();
+    assert!(read.contains("let applied:Vec<String>"), "{read}");
+    let rendered = encode(true).unwrap();
+    assert!(!rendered.contains("let applied"), "{rendered}");
+    assert!(
+        rendered.contains("data.remove(\"__lml_applied\")"),
+        "{rendered}"
+    );
+}

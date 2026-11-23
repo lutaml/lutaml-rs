@@ -5,6 +5,8 @@ export const OVERRIDES = {
   'person-prefixed-attribute-lenient': NULLS,
   // lutaml-model e4439b37: ordinary text + CDATA in one ordinary scalar element reads as nil.
   'person-entities-and-cdata': NULLS,
+  // lutaml-model e4439b37: a repeated scalar element is held as a list, which a typed scalar cannot hold.
+  'person-scalar-duplicate-first-wins': { error: 'invalid_document', attribute: 'name' },
   'person-wrong-root': { error: 'invalid_document' },
   'person-wrong-namespace': { error: 'invalid_document' },
   'person-bad-integer': { error: 'invalid_document', attribute: 'age' },
