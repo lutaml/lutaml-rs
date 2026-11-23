@@ -534,6 +534,30 @@ fn hand_written_rule_namespaces_read_and_write() {
 }
 
 #[test]
+fn a_namespaced_model_reads_a_root_with_no_namespace_but_refuses_a_foreign_one() {
+    let bundle = full_bundle();
+    // Ruby reads an unqualified root as if the model's namespace applied; its `inherit` members follow.
+    let plain = read("Doc@default", "<doc y=\"Y\"><a>A</a><c>C</c></doc>");
+    assert_eq!(
+        dump(&bundle, "Doc@default", ok(&plain)),
+        json!({"a": "A", "b": null, "c": "C", "x": null, "y": "Y"})
+    );
+    let qualified = read(
+        "Doc@default",
+        "<d:doc xmlns:d=\"urn:doc\"><d:a>A</d:a></d:doc>",
+    );
+    assert_eq!(ok(&qualified)["a"], json!("A"));
+    // Any other namespace stays refused, naming both sides.
+    let foreign = read("Doc@default", "<doc xmlns=\"urn:foreign\"><a>A</a></doc>");
+    assert_eq!(err(&foreign)["reason"], json!("invalid_document"));
+    let detail = err(&foreign)["detail"].as_str().unwrap();
+    assert!(
+        detail.contains("expected root element doc in urn:doc") && detail.contains("urn:foreign"),
+        "{detail}"
+    );
+}
+
+#[test]
 fn qname_values_resolve_through_in_scope_prefixes() {
     let r = read(
         "QDoc@default",

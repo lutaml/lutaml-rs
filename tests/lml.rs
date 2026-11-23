@@ -310,12 +310,21 @@ fn rejects_unknown_features_and_preserves_declared_enum_alias_order() {
         "/models/Example::Node@custom/mappings/json",
     );
     v = bundle();
-    v["models"]["Example::Node@custom"]["custom_initialize"] = json!(true);
-    refused(
-        &v,
-        ErrorReason::CustomInitialize,
-        "/models/Example::Node@custom/custom_initialize",
-    );
+    for malformed in [
+        json!(false),
+        json!(null),
+        json!("true"),
+        json!(1),
+        json!({}),
+        json!([]),
+    ] {
+        v["models"]["Example::Node@custom"]["custom_initialize"] = malformed.clone();
+        refused(
+            &v,
+            ErrorReason::InvalidDocument,
+            "/models/Example::Node@custom/custom_initialize",
+        );
+    }
     v = bundle();
     v["models"]["Example::Node@custom"]["attributes"][0]["values"] =
         json!(["2.0", "9007199254740993.000"]);
@@ -794,6 +803,27 @@ fn exact_integer_defaults_compare_to_typed_numeric_enum_metadata() {
         Some(vec![NeutralValue::Signed(1), NeutralValue::Signed(2)])
     );
     assert!(snapshot.canonical_json().contains("\"values\":[1,2]"));
+}
+
+#[test]
+fn custom_initialize_marker_is_kept_optional_and_checksummed() {
+    let plain = bundle();
+    let mut marked = bundle();
+    marked["models"]["Example::Node@custom"]["custom_initialize"] = json!(true);
+    let plain_graph = parsed(&plain);
+    let marked_graph = parsed(&marked);
+    // Absence preserved: an ordinary model has no marker and its checksum is unchanged.
+    assert!(!plain_graph.bundle().unwrap().models["Example::Node@custom"].custom_initialize);
+    assert!(!plain_graph.canonical_json().contains("custom_initialize"));
+    // The marker survives load, the canonical bytes and a reload of those bytes.
+    assert!(marked_graph.bundle().unwrap().models["Example::Node@custom"].custom_initialize);
+    assert!(marked_graph
+        .canonical_json()
+        .contains("\"custom_initialize\":true"));
+    assert_ne!(marked_graph.checksum(), plain_graph.checksum());
+    let reloaded = load(marked_graph.canonical_json().as_bytes(), InputFormat::Json).unwrap();
+    assert_eq!(reloaded.checksum(), marked_graph.checksum());
+    assert_eq!(reloaded.canonical_json(), marked_graph.canonical_json());
 }
 
 /// Case -> Ruby verdict -> Rust verdict. `ruby` was measured with

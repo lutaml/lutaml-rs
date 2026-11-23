@@ -70,8 +70,9 @@ pub enum Presence<T> {
 }
 
 /// Defaults use the portable boolean tag, including an explicit null value.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum DefaultValue {
+    #[default]
     Absent,
     Present(NeutralValue),
 }
@@ -177,11 +178,6 @@ impl Default for Collection {
         Self::Scalar(ScalarCollection)
     }
 }
-impl Default for DefaultValue {
-    fn default() -> Self {
-        Self::Absent
-    }
-}
 impl Serialize for ScalarCollection {
     fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         s.serialize_bool(false)
@@ -253,9 +249,10 @@ pub enum ContentToken {
         source: TextSource,
     },
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "mode", rename_all = "snake_case")]
 pub enum Namespace {
+    #[default]
     Inherit,
     Unqualified,
     Uri {
@@ -388,11 +385,6 @@ pub struct XmlRule {
     pub root_mappings: Option<BTreeMap<String, NeutralValue>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub polymorphic_map: Option<BTreeMap<String, String>>,
-}
-impl Default for Namespace {
-    fn default() -> Self {
-        Self::Inherit
-    }
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XmlRoot {
@@ -551,6 +543,11 @@ pub struct ModelDocument {
     pub mappings: Mappings,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ordered_content: Option<OrderedContent>,
+    /// The source model has a handwritten initializer. Only `true` is a valid
+    /// wire value; absence means an ordinary data constructor. No body travels
+    /// in the document: generators emit a stub the consumer implements.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub custom_initialize: bool,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Bundle {
