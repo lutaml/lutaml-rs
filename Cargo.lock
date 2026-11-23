@@ -152,9 +152,11 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 
 [[package]]
 name = "moxml"
-version = "0.1.0"
-source = "git+https://github.com/lutaml/moxml-rs?rev=c55a7ecf60764d75a7a0ef54f0e483ec40df4b73#c55a7ecf60764d75a7a0ef54f0e483ec40df4b73"
+version = "0.1.6"
+source = "git+https://github.com/lutaml/moxml-rs?rev=3712b6ff5b461fc286514b74680bee5442adcc7e#3712b6ff5b461fc286514b74680bee5442adcc7e"
 dependencies = [
+ "js-sys",
+ "quick-xml",
  "regex",
  "wasm-bindgen",
 ]
@@ -213,6 +215,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.36.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7649a7b4df05aed9ea7ec6f628c67c9953a43869b8bc50929569b2999d443fe"
+dependencies = [
+ "memchr",
 ]
 
 [[package]]
