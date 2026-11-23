@@ -235,7 +235,10 @@ fn dump_member(bundle: &Bundle, target: Option<&str>, v: &Value) -> Value {
 fn overrides() -> BTreeMap<&'static str, Value> {
     let nulls = json!({"id": null, "lang": null, "name": null, "nick": null, "tags": null, "addr": null, "age": null, "ni": null, "nb": null, "ee": null});
     BTreeMap::from([
-        ("person-prefixed-attribute-lenient", nulls),
+        ("person-prefixed-attribute-lenient", nulls.clone()),
+        // lutaml-model e4439b37 (evidence/cdata-ruby-oracle.json): an ordinary scalar element holding ordinary
+        // text AND CDATA reads as nil; the older oracle row joined them.
+        ("person-entities-and-cdata", nulls),
         ("person-wrong-root", json!({"error": "invalid_document"})),
         (
             "person-wrong-namespace",

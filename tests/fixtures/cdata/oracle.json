@@ -1,0 +1,682 @@
+{
+  "source": "e4439b373ea0773f0f4713f2bff016ec5156f84b",
+  "adapter": "nokogiri",
+  "reads": [
+    {
+      "model": "OrdinaryContent",
+      "case": "plain",
+      "xml": "<r>a</r>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "cdata_only",
+      "xml": "<r><![CDATA[a]]></r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "plain_then_cdata",
+      "xml": "<r>a<![CDATA[b]]></r>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "cdata_then_plain",
+      "xml": "<r><![CDATA[a]]>b</r>",
+      "read": {
+        "ok": true,
+        "value": "b"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "plain_cdata_plain",
+      "xml": "<r>a<![CDATA[b]]>c</r>",
+      "read": {
+        "ok": true,
+        "value": "ac"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "adjacent_cdata",
+      "xml": "<r><![CDATA[a]]><![CDATA[b]]></r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "split_terminator",
+      "xml": "<r><![CDATA[a]]]]><![CDATA[>b]]></r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "markup_in_cdata",
+      "xml": "<r><![CDATA[<x>&amp;</x>]]></r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "empty_cdata",
+      "xml": "<r><![CDATA[]]></r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "whitespace_cdata",
+      "xml": "<r><![CDATA[  ]]></r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "case": "unmapped_child_between",
+      "xml": "<r>a<u>z</u><![CDATA[b]]></r>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "plain",
+      "xml": "<r>a</r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "cdata_only",
+      "xml": "<r><![CDATA[a]]></r>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "plain_then_cdata",
+      "xml": "<r>a<![CDATA[b]]></r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "b"
+        ]
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "cdata_then_plain",
+      "xml": "<r><![CDATA[a]]>b</r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "a"
+        ]
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "plain_cdata_plain",
+      "xml": "<r>a<![CDATA[b]]>c</r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "b"
+        ]
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "adjacent_cdata",
+      "xml": "<r><![CDATA[a]]><![CDATA[b]]></r>",
+      "read": {
+        "ok": true,
+        "value": "ab"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "split_terminator",
+      "xml": "<r><![CDATA[a]]]]><![CDATA[>b]]></r>",
+      "read": {
+        "ok": true,
+        "value": "a]]>b"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "markup_in_cdata",
+      "xml": "<r><![CDATA[<x>&amp;</x>]]></r>",
+      "read": {
+        "ok": true,
+        "value": "<x>&amp;</x>"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "empty_cdata",
+      "xml": "<r><![CDATA[]]></r>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "whitespace_cdata",
+      "xml": "<r><![CDATA[  ]]></r>",
+      "read": {
+        "ok": true,
+        "value": "  "
+      }
+    },
+    {
+      "model": "CdataContent",
+      "case": "unmapped_child_between",
+      "xml": "<r>a<u>z</u><![CDATA[b]]></r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "b"
+        ]
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "plain",
+      "xml": "<p><v>a</v></p>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "cdata_only",
+      "xml": "<p><v><![CDATA[a]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "plain_then_cdata",
+      "xml": "<p><v>a<![CDATA[b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": null
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "cdata_then_plain",
+      "xml": "<p><v><![CDATA[a]]>b</v></p>",
+      "read": {
+        "ok": true,
+        "value": null
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "plain_cdata_plain",
+      "xml": "<p><v>a<![CDATA[b]]>c</v></p>",
+      "read": {
+        "ok": true,
+        "value": null
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "adjacent_cdata",
+      "xml": "<p><v><![CDATA[a]]><![CDATA[b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "ab"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "split_terminator",
+      "xml": "<p><v><![CDATA[a]]]]><![CDATA[>b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "a]]>b"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "markup_in_cdata",
+      "xml": "<p><v><![CDATA[<x>&amp;</x>]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "<x>&amp;</x>"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "empty_cdata",
+      "xml": "<p><v><![CDATA[]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": ""
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "whitespace_cdata",
+      "xml": "<p><v><![CDATA[  ]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "  "
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "case": "unmapped_child_between",
+      "xml": "<p><v>a<u>z</u><![CDATA[b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": null
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "plain",
+      "xml": "<p><v>a</v></p>",
+      "read": {
+        "ok": true,
+        "value": null
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "cdata_only",
+      "xml": "<p><v><![CDATA[a]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "plain_then_cdata",
+      "xml": "<p><v>a<![CDATA[b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "b"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "cdata_then_plain",
+      "xml": "<p><v><![CDATA[a]]>b</v></p>",
+      "read": {
+        "ok": true,
+        "value": "a"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "plain_cdata_plain",
+      "xml": "<p><v>a<![CDATA[b]]>c</v></p>",
+      "read": {
+        "ok": true,
+        "value": "b"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "adjacent_cdata",
+      "xml": "<p><v><![CDATA[a]]><![CDATA[b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "ab"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "split_terminator",
+      "xml": "<p><v><![CDATA[a]]]]><![CDATA[>b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "a]]>b"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "markup_in_cdata",
+      "xml": "<p><v><![CDATA[<x>&amp;</x>]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "<x>&amp;</x>"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "empty_cdata",
+      "xml": "<p><v><![CDATA[]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": null
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "whitespace_cdata",
+      "xml": "<p><v><![CDATA[  ]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "  "
+      }
+    },
+    {
+      "model": "CdataElement",
+      "case": "unmapped_child_between",
+      "xml": "<p><v>a<u>z</u><![CDATA[b]]></v></p>",
+      "read": {
+        "ok": true,
+        "value": "b"
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "plain",
+      "xml": "<r>a<c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "a"
+        ]
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "cdata_only",
+      "xml": "<r><![CDATA[a]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "plain_then_cdata",
+      "xml": "<r>a<![CDATA[b]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "a"
+        ]
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "cdata_then_plain",
+      "xml": "<r><![CDATA[a]]>b<c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "b"
+        ]
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "plain_cdata_plain",
+      "xml": "<r>a<![CDATA[b]]>c<c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "a",
+          "c"
+        ]
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "adjacent_cdata",
+      "xml": "<r><![CDATA[a]]><![CDATA[b]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "split_terminator",
+      "xml": "<r><![CDATA[a]]]]><![CDATA[>b]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "markup_in_cdata",
+      "xml": "<r><![CDATA[<x>&amp;</x>]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "empty_cdata",
+      "xml": "<r><![CDATA[]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "whitespace_cdata",
+      "xml": "<r><![CDATA[  ]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "model": "ContentWithMappedChild",
+      "case": "unmapped_child_between",
+      "xml": "<r>a<u>z</u><![CDATA[b]]><c>k</c></r>",
+      "read": {
+        "ok": true,
+        "value": [
+          "a"
+        ]
+      }
+    }
+  ],
+  "writes": [
+    {
+      "model": "OrdinaryContent",
+      "value": "a",
+      "write": {
+        "ok": true,
+        "value": "<r>a</r>"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "value": "a<b&c",
+      "write": {
+        "ok": true,
+        "value": "<r>a&lt;b&amp;c</r>"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "value": "x]]>y",
+      "write": {
+        "ok": true,
+        "value": "<r>x]]&gt;y</r>"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "value": "]]>",
+      "write": {
+        "ok": true,
+        "value": "<r>]]&gt;</r>"
+      }
+    },
+    {
+      "model": "OrdinaryContent",
+      "value": "",
+      "write": {
+        "ok": true,
+        "value": "<r/>"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "value": "a",
+      "write": {
+        "ok": true,
+        "value": "<r><![CDATA[a]]></r>"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "value": "a<b&c",
+      "write": {
+        "ok": true,
+        "value": "<r><![CDATA[a<b&c]]></r>"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "value": "x]]>y",
+      "write": {
+        "ok": true,
+        "value": "<r><![CDATA[x]]]]><![CDATA[>y]]></r>"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "value": "]]>",
+      "write": {
+        "ok": true,
+        "value": "<r><![CDATA[]]]]><![CDATA[>]]></r>"
+      }
+    },
+    {
+      "model": "CdataContent",
+      "value": "",
+      "write": {
+        "ok": true,
+        "value": "<r/>"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "value": "a",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v>a</v>\n</p>"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "value": "a<b&c",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v>a&lt;b&amp;c</v>\n</p>"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "value": "x]]>y",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v>x]]&gt;y</v>\n</p>"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "value": "]]>",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v>]]&gt;</v>\n</p>"
+      }
+    },
+    {
+      "model": "OrdinaryElement",
+      "value": "",
+      "write": {
+        "ok": true,
+        "value": "<p/>"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "value": "a",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v><![CDATA[a]]></v>\n</p>"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "value": "a<b&c",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v><![CDATA[a<b&c]]></v>\n</p>"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "value": "x]]>y",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v><![CDATA[x]]]]><![CDATA[>y]]></v>\n</p>"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "value": "]]>",
+      "write": {
+        "ok": true,
+        "value": "<p>\n  <v><![CDATA[]]]]><![CDATA[>]]></v>\n</p>"
+      }
+    },
+    {
+      "model": "CdataElement",
+      "value": "",
+      "write": {
+        "ok": true,
+        "value": "<p/>"
+      }
+    }
+  ]
+}

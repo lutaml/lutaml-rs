@@ -209,6 +209,23 @@ impl ContentToken {
  _ => None,
  } }
 }
+#[derive(Clone, Debug, Default)]
+pub struct AppliedDefaults(Vec<String>);
+impl PartialEq for AppliedDefaults { fn eq(&self, _other: &Self) -> bool { true } }
+impl Eq for AppliedDefaults {}
+impl AppliedDefaults {
+ pub fn contains(&self, member: &str) -> bool { self.0.iter().any(|m| m == member) }
+ pub fn mark(&mut self, member: &str) { if !self.contains(member) { self.0.push(member.into()); } }
+ pub fn clear(&mut self, member: &str) { self.0.retain(|m| m != member); }
+ pub fn members(&self) -> &[String] { &self.0 }
+ fn hidden(&self) -> bool { self.0.is_empty() || !PROVENANCE_WIRE.with(|c| c.get()) }
+}
+impl Serialize for AppliedDefaults { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> { self.0.serialize(s) } }
+thread_local! { static PROVENANCE_WIRE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) }; }
+/// While alive, serializing a model also emits its `__lml_applied` list (used by the generated codecs only).
+pub struct ProvenanceWire(bool);
+impl ProvenanceWire { pub fn enter() -> Self { Self(PROVENANCE_WIRE.with(|c| c.replace(true))) } }
+impl std::ops::Drop for ProvenanceWire { fn drop(&mut self) { PROVENANCE_WIRE.with(|c| c.set(self.0)); } }
 #[allow(non_camel_case_types, non_snake_case)]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -291,6 +308,10 @@ impl Node_item_Union { pub fn validate(&self)->Result<(),ValidationError>{ match
 Self::Case0(v) => { v.validate()?; if let Presence::Value(t)=&v.kind { if t!="leaf" { return Err(invalid("Node@default", "item", "unknown_discriminator")); } } Ok(()) },
 Self::Case1(v) => { v.validate()?; Ok(()) },
 } } }
+impl Node_item_Union { pub fn apply_defaults(&mut self)->Result<(),ValidationError>{ match self {
+Self::Case0(v) => v.apply_defaults(),
+Self::Case1(v) => v.apply_defaults(),
+} } }
 #[allow(non_camel_case_types, non_snake_case)]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -309,6 +330,8 @@ pub amount: Presence<ExactDecimal>,
 pub item: Presence<Node_item_Union>,
 #[serde(default, skip_serializing_if = "Presence::is_absent")]
 pub __lml_content: Presence<Vec<ContentToken>>,
+#[serde(rename = "__lml_applied", skip_deserializing, skip_serializing_if = "AppliedDefaults::hidden")]
+pub __lml_applied: AppliedDefaults,
 }
 impl Default for Node { fn default()->Self { Self {
 title: Presence::Absent,
@@ -318,10 +341,13 @@ child: Presence::Absent,
 amount: Presence::Absent,
 item: Presence::Absent,
 __lml_content: Presence::Absent,
+__lml_applied: AppliedDefaults::default(),
 } } }
 impl Node {
 pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
-if self.enabled.is_absent() { self.enabled=serde_json::from_str::<Presence<Node_enabled_Enum>>("false").map_err(|_|invalid("Node@default", "enabled", "non_serializable_default"))?; }
+if self.enabled.is_absent() { self.enabled=serde_json::from_str::<Presence<Node_enabled_Enum>>("false").map_err(|_|invalid("Node@default", "enabled", "non_serializable_default"))?; self.__lml_applied.mark("enabled"); }
+if let Presence::Value(v)=&mut self.child { v.apply_defaults()?; }
+if let Presence::Value(v)=&mut self.item { v.apply_defaults()?; }
 Ok(()) }
 pub fn validate(&self)->Result<(),ValidationError>{
 if matches!(self.title,Presence::Absent|Presence::Null) { return Err(invalid("Node@default", "title", "invalid_document")); }

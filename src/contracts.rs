@@ -385,6 +385,19 @@ pub struct XmlRule {
     pub root_mappings: Option<BTreeMap<String, NeutralValue>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub polymorphic_map: Option<BTreeMap<String, String>>,
+    /// Names (never bodies) of handwritten serialization hooks; key-value rules only.
+    /// A rule with `custom` may omit `to` (a hook-only rule: `to` is then empty).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub custom: Option<CustomSerialization>,
+}
+/// `to` is the WRITE hook `(model, document)`, `from` the READ hook `(model, value)`.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CustomSerialization {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub to: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<String>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XmlRoot {
@@ -532,6 +545,9 @@ pub struct Mappings {
     pub json: Option<KeyMapping>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub yaml: Option<KeyMapping>,
+    /// Carried as data like yaml: no toml codec is generated, but a declaration the validator accepted is kept.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub toml: Option<KeyMapping>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ModelDocument {
@@ -575,6 +591,7 @@ pub enum ErrorReason {
     NonSerializableDefault,
     LambdaDefault,
     CustomInitialize,
+    CustomSerialization,
     ImperativeElementOrder,
     InvalidOrderedContent,
     ReservedMember,

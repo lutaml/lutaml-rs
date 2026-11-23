@@ -1,0 +1,381 @@
+{
+  "criterion": "Complete real-Unit Ruby oracles (Conversions/Unit/Symbol); never hand-written",
+  "xml_adapter": "Lutaml::Xml::Adapter::NokogiriAdapter",
+  "cases": [
+    {
+      "id": "unit-name-default-language",
+      "model": "Unitsml::Model::Units::Name",
+      "source": "constructed",
+      "ruby_xml": "<UnitName xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:lang=\"en\">metre</UnitName>",
+      "portable_json": {
+        "name": "metre"
+      },
+      "parsed_portable_json": {
+        "name": "metre",
+        "lang": "en"
+      },
+      "reserialized_xml": "<UnitName xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:lang=\"en\">metre</UnitName>",
+      "parse_serialize_parse_identity": true,
+      "note": "lang is the source default (-> { \"en\" }) rendered by render_default"
+    },
+    {
+      "id": "unit-name-explicit-language",
+      "model": "Unitsml::Model::Units::Name",
+      "source": "constructed",
+      "ruby_xml": "<UnitName xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:lang=\"fr\">mètre</UnitName>",
+      "portable_json": {
+        "name": "mètre",
+        "lang": "fr"
+      },
+      "parsed_portable_json": {
+        "name": "mètre",
+        "lang": "fr"
+      },
+      "reserialized_xml": "<UnitName xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:lang=\"fr\">mètre</UnitName>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "system-default-language",
+      "model": "Unitsml::Model::Units::System",
+      "source": "constructed",
+      "ruby_xml": "<UnitSystem xmlns=\"https://schema.unitsml.org/unitsml/1.0\" name=\"SI\" type=\"SI_base\" xml:lang=\"en\"/>",
+      "portable_json": {
+        "name": "SI",
+        "type": "SI_base"
+      },
+      "parsed_portable_json": {
+        "name": "SI",
+        "type": "SI_base",
+        "lang": "en"
+      },
+      "reserialized_xml": "<UnitSystem xmlns=\"https://schema.unitsml.org/unitsml/1.0\" name=\"SI\" type=\"SI_base\" xml:lang=\"en\"/>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "system-explicit-language",
+      "model": "Unitsml::Model::Units::System",
+      "source": "constructed",
+      "ruby_xml": "<UnitSystem xmlns=\"https://schema.unitsml.org/unitsml/1.0\" name=\"SI\" type=\"SI_derived\" xml:lang=\"fr\"/>",
+      "portable_json": {
+        "name": "SI",
+        "type": "SI_derived",
+        "lang": "fr"
+      },
+      "parsed_portable_json": {
+        "name": "SI",
+        "type": "SI_derived",
+        "lang": "fr"
+      },
+      "reserialized_xml": "<UnitSystem xmlns=\"https://schema.unitsml.org/unitsml/1.0\" name=\"SI\" type=\"SI_derived\" xml:lang=\"fr\"/>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "symbol-raw-markup",
+      "model": "Unitsml::Model::Units::Symbol",
+      "source": "constructed",
+      "ruby_xml": "<UnitSymbol xmlns=\"https://schema.unitsml.org/unitsml/1.0\" type=\"HTML\">\n  <i xmlns=\"\">m</i>\n</UnitSymbol>",
+      "portable_json": {
+        "type": "HTML",
+        "content": "<i>m</i>"
+      },
+      "parsed_portable_json": {
+        "type": "HTML"
+      },
+      "reserialized_xml": "<UnitSymbol xmlns=\"https://schema.unitsml.org/unitsml/1.0\" type=\"HTML\"/>",
+      "parse_serialize_parse_identity": true,
+      "note": "raw markup is inserted, not escaped; the source from-callback is a deliberate read no-op, so the parsed content is missing"
+    },
+    {
+      "id": "symbol-raw-markup-ampersand",
+      "model": "Unitsml::Model::Units::Symbol",
+      "source": "constructed",
+      "ruby_xml": "<UnitSymbol xmlns=\"https://schema.unitsml.org/unitsml/1.0\" type=\"HTML\">\n  <i xmlns=\"\">m &amp; n</i>\n</UnitSymbol>",
+      "portable_json": {
+        "type": "HTML",
+        "content": "<i>m &amp; n</i>"
+      },
+      "parsed_portable_json": {
+        "type": "HTML"
+      },
+      "reserialized_xml": "<UnitSymbol xmlns=\"https://schema.unitsml.org/unitsml/1.0\" type=\"HTML\"/>",
+      "parse_serialize_parse_identity": true,
+      "note": "the fragment's own &amp; is kept as written"
+    },
+    {
+      "id": "symbol-parsed-read-no-op",
+      "model": "Unitsml::Model::Units::Symbol",
+      "source": "constructed input; real from_xml",
+      "input_xml": "<UnitSymbol xmlns=\"https://schema.unitsml.org/unitsml/1.0\" type=\"HTML\">m</UnitSymbol>",
+      "parsed_portable_json": {
+        "type": "HTML"
+      },
+      "content_stored": false,
+      "reserialized_xml": "<UnitSymbol xmlns=\"https://schema.unitsml.org/unitsml/1.0\" type=\"HTML\"/>",
+      "parse_serialize_parse_identity": true,
+      "note": "the source content_from_xml(**) is an explicit no-op: raw input is not stored, expected content is missing"
+    },
+    {
+      "id": "conversion-frozen-0",
+      "model": "Unitsml::Model::Units::Float64ConversionFrom",
+      "source": "authoritative: testsuite 9db47641 frozen definition",
+      "ruby_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"K_from_degC\" initialUnit=\"#NISTu23\" finalAddend=\"273.15\" exact=\"true\"/>",
+      "portable_json": {
+        "id": "K_from_degC",
+        "initial_unit": "#NISTu23",
+        "final_addend": "273.15",
+        "exact": true
+      },
+      "parsed_portable_json": {
+        "id": "K_from_degC",
+        "initial_unit": "#NISTu23",
+        "final_addend": "273.15",
+        "exact": true
+      },
+      "reserialized_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"K_from_degC\" initialUnit=\"#NISTu23\" finalAddend=\"273.15\" exact=\"true\"/>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "conversion-frozen-1",
+      "model": "Unitsml::Model::Units::Float64ConversionFrom",
+      "source": "authoritative: testsuite 9db47641 frozen definition",
+      "ruby_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"degF_from_K\" initialUnit=\"#NISTu5\" initialAddend=\"-273.15\" multiplicand=\"9\" divisor=\"5\" finalAddend=\"32\" exact=\"true\"/>",
+      "portable_json": {
+        "id": "degF_from_K",
+        "initial_unit": "#NISTu5",
+        "initial_addend": "-273.15",
+        "multiplicand": "9",
+        "divisor": "5",
+        "final_addend": "32",
+        "exact": true
+      },
+      "parsed_portable_json": {
+        "id": "degF_from_K",
+        "initial_unit": "#NISTu5",
+        "initial_addend": "-273.15",
+        "multiplicand": "9",
+        "divisor": "5",
+        "final_addend": "32",
+        "exact": true
+      },
+      "reserialized_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"degF_from_K\" initialUnit=\"#NISTu5\" initialAddend=\"-273.15\" multiplicand=\"9\" divisor=\"5\" finalAddend=\"32\" exact=\"true\"/>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "conversion-frozen-2",
+      "model": "Unitsml::Model::Units::Float64ConversionFrom",
+      "source": "authoritative: testsuite 9db47641 frozen definition",
+      "ruby_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"bad_degC\" initialUnit=\"#NISTu5\" finalAddend=\"-273.16\" exact=\"true\"/>",
+      "portable_json": {
+        "id": "bad_degC",
+        "initial_unit": "#NISTu5",
+        "final_addend": "-273.16",
+        "exact": true
+      },
+      "parsed_portable_json": {
+        "id": "bad_degC",
+        "initial_unit": "#NISTu5",
+        "final_addend": "-273.16",
+        "exact": true
+      },
+      "reserialized_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"bad_degC\" initialUnit=\"#NISTu5\" finalAddend=\"-273.16\" exact=\"true\"/>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "conversion-exact-string-false-note",
+      "model": "Unitsml::Model::Units::Float64ConversionFrom",
+      "source": "constructed; labelled synthetic lexical values",
+      "ruby_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"NISTc_exact\" initialUnit=\"#NISTu5\" initialAddend=\"-273.150000000000000000000000000000000000000000000000000000000001\" multiplicand=\"9\" divisor=\"5\" finalAddend=\"273.150000000000000000000000000000000000000000000000000000000001\" exact=\"false\">\n  <ConversionNote>exact-string, false flag, note</ConversionNote>\n</Float64ConversionFrom>",
+      "portable_json": {
+        "id": "NISTc_exact",
+        "initial_unit": "#NISTu5",
+        "initial_addend": "-273.150000000000000000000000000000000000000000000000000000000001",
+        "multiplicand": "9",
+        "divisor": "5",
+        "final_addend": "273.150000000000000000000000000000000000000000000000000000000001",
+        "exact": false,
+        "conversion_note": [
+          {
+            "content": "exact-string, false flag, note"
+          }
+        ]
+      },
+      "parsed_portable_json": {
+        "id": "NISTc_exact",
+        "initial_unit": "#NISTu5",
+        "initial_addend": "-273.150000000000000000000000000000000000000000000000000000000001",
+        "multiplicand": "9",
+        "divisor": "5",
+        "final_addend": "273.150000000000000000000000000000000000000000000000000000000001",
+        "exact": false,
+        "conversion_note": [
+          {
+            "content": "exact-string, false flag, note"
+          }
+        ]
+      },
+      "reserialized_xml": "<Float64ConversionFrom xmlns=\"https://schema.unitsml.org/unitsml/1.0\" xml:id=\"NISTc_exact\" initialUnit=\"#NISTu5\" initialAddend=\"-273.150000000000000000000000000000000000000000000000000000000001\" multiplicand=\"9\" divisor=\"5\" finalAddend=\"273.150000000000000000000000000000000000000000000000000000000001\" exact=\"false\">\n  <ConversionNote>exact-string, false flag, note</ConversionNote>\n</Float64ConversionFrom>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "root-units-mapping",
+      "model": "Unitsml::Model::Units::RootUnits",
+      "source": "constructed",
+      "ruby_xml": "<RootUnits xmlns=\"https://schema.unitsml.org/unitsml/1.0\">\n  <EnumeratedRootUnit unit=\"meter\" prefix=\"k\" powerNumerator=\"2\"/>\n  <EnumeratedRootUnit unit=\"second\" powerNumerator=\"-1\"/>\n</RootUnits>",
+      "portable_json": {
+        "enumerated_root_unit": [
+          {
+            "unit": "meter",
+            "prefix": "k",
+            "power_numerator": "2"
+          },
+          {
+            "unit": "second",
+            "power_numerator": "-1"
+          }
+        ]
+      },
+      "parsed_portable_json": {
+        "enumerated_root_unit": [
+          {
+            "unit": "meter",
+            "prefix": "k",
+            "power_numerator": "2"
+          },
+          {
+            "unit": "second",
+            "power_numerator": "-1"
+          }
+        ]
+      },
+      "reserialized_xml": "<RootUnits xmlns=\"https://schema.unitsml.org/unitsml/1.0\">\n  <EnumeratedRootUnit unit=\"meter\" prefix=\"k\" powerNumerator=\"2\"/>\n  <EnumeratedRootUnit unit=\"second\" powerNumerator=\"-1\"/>\n</RootUnits>",
+      "parse_serialize_parse_identity": true
+    },
+    {
+      "id": "unit-full",
+      "model": "Unitsml::Model::Unit",
+      "source": "constructed; repeated systems and symbols, root units, conversions",
+      "ruby_xml": "<Unit xmlns=\"https://schema.unitsml.org/unitsml/1.0\" dimensionURL=\"#NISTd1\" xml:id=\"NISTu1\">\n  <UnitSystem name=\"SI\" type=\"SI_base\" xml:lang=\"en\"/>\n  <UnitSystem name=\"SI-fr\" type=\"SI_base\" xml:lang=\"fr\"/>\n  <UnitName xml:lang=\"en\">metre</UnitName>\n  <UnitSymbol type=\"HTML\">\n    <i xmlns=\"\">m</i>\n  </UnitSymbol>\n  <UnitSymbol type=\"ASCII\">m</UnitSymbol>\n  <RootUnits>\n    <EnumeratedRootUnit unit=\"meter\" prefix=\"k\" powerNumerator=\"2\"/>\n    <EnumeratedRootUnit unit=\"second\" powerNumerator=\"-1\"/>\n  </RootUnits>\n  <Conversions>\n    <Float64ConversionFrom xml:id=\"NISTc_exact\" initialUnit=\"#NISTu5\" initialAddend=\"-273.150000000000000000000000000000000000000000000000000000000001\" multiplicand=\"9\" divisor=\"5\" finalAddend=\"273.150000000000000000000000000000000000000000000000000000000001\" exact=\"false\">\n      <ConversionNote>exact-string, false flag, note</ConversionNote>\n    </Float64ConversionFrom>\n  </Conversions>\n</Unit>",
+      "portable_json": {
+        "id": "NISTu1",
+        "name": {
+          "name": "metre"
+        },
+        "dimension_url": "#NISTd1",
+        "symbol": [
+          {
+            "type": "HTML",
+            "content": "<i>m</i>"
+          },
+          {
+            "type": "ASCII",
+            "content": "m"
+          }
+        ],
+        "system": [
+          {
+            "name": "SI",
+            "type": "SI_base"
+          },
+          {
+            "name": "SI-fr",
+            "type": "SI_base",
+            "lang": "fr"
+          }
+        ],
+        "root_units": {
+          "enumerated_root_unit": [
+            {
+              "unit": "meter",
+              "prefix": "k",
+              "power_numerator": "2"
+            },
+            {
+              "unit": "second",
+              "power_numerator": "-1"
+            }
+          ]
+        },
+        "conversions": {
+          "float64_conversion_from": {
+            "id": "NISTc_exact",
+            "initial_unit": "#NISTu5",
+            "initial_addend": "-273.150000000000000000000000000000000000000000000000000000000001",
+            "multiplicand": "9",
+            "divisor": "5",
+            "final_addend": "273.150000000000000000000000000000000000000000000000000000000001",
+            "exact": false,
+            "conversion_note": [
+              {
+                "content": "exact-string, false flag, note"
+              }
+            ]
+          }
+        }
+      },
+      "parsed_portable_json": {
+        "id": "NISTu1",
+        "name": {
+          "name": "metre",
+          "lang": "en"
+        },
+        "dimension_url": "#NISTd1",
+        "symbol": [
+          {
+            "type": "HTML"
+          },
+          {
+            "type": "ASCII"
+          }
+        ],
+        "system": [
+          {
+            "name": "SI",
+            "type": "SI_base",
+            "lang": "en"
+          },
+          {
+            "name": "SI-fr",
+            "type": "SI_base",
+            "lang": "fr"
+          }
+        ],
+        "root_units": {
+          "enumerated_root_unit": [
+            {
+              "unit": "meter",
+              "prefix": "k",
+              "power_numerator": "2"
+            },
+            {
+              "unit": "second",
+              "power_numerator": "-1"
+            }
+          ]
+        },
+        "conversions": {
+          "float64_conversion_from": {
+            "id": "NISTc_exact",
+            "initial_unit": "#NISTu5",
+            "initial_addend": "-273.150000000000000000000000000000000000000000000000000000000001",
+            "multiplicand": "9",
+            "divisor": "5",
+            "final_addend": "273.150000000000000000000000000000000000000000000000000000000001",
+            "exact": false,
+            "conversion_note": [
+              {
+                "content": "exact-string, false flag, note"
+              }
+            ]
+          }
+        }
+      },
+      "reserialized_xml": "<Unit xmlns=\"https://schema.unitsml.org/unitsml/1.0\" dimensionURL=\"#NISTd1\" xml:id=\"NISTu1\">\n  <UnitSystem name=\"SI\" type=\"SI_base\" xml:lang=\"en\"/>\n  <UnitSystem name=\"SI-fr\" type=\"SI_base\" xml:lang=\"fr\"/>\n  <UnitName xml:lang=\"en\">metre</UnitName>\n  <UnitSymbol type=\"HTML\"/>\n  <UnitSymbol type=\"ASCII\"/>\n  <RootUnits>\n    <EnumeratedRootUnit unit=\"meter\" prefix=\"k\" powerNumerator=\"2\"/>\n    <EnumeratedRootUnit unit=\"second\" powerNumerator=\"-1\"/>\n  </RootUnits>\n  <Conversions>\n    <Float64ConversionFrom xml:id=\"NISTc_exact\" initialUnit=\"#NISTu5\" initialAddend=\"-273.150000000000000000000000000000000000000000000000000000000001\" multiplicand=\"9\" divisor=\"5\" finalAddend=\"273.150000000000000000000000000000000000000000000000000000000001\" exact=\"false\">\n      <ConversionNote>exact-string, false flag, note</ConversionNote>\n    </Float64ConversionFrom>\n  </Conversions>\n</Unit>",
+      "parse_serialize_parse_identity": true,
+      "note": "symbol content is missing after a parse by design (read no-op); every other member round-trips"
+    }
+  ],
+  "symbol_raw_markup_checks": {
+    "markup_not_escaped": true,
+    "ampersand_preserved": true
+  }
+}

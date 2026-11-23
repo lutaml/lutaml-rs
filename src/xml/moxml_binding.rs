@@ -156,6 +156,36 @@ impl Doc {
         Ok(())
     }
 
+    /// A scalar element's text as the source reads it: an ordinary rule keeps the text of an element that
+    /// holds only ordinary text or only CDATA (mixing the two reads as nil); a `cdata: true` rule keeps the
+    /// CDATA sections only, and nothing but empty CDATA or ordinary text reads as nil. None is nil.
+    pub fn scalar_text(&self, ord: usize, cdata_rule: bool) -> Option<String> {
+        let (mut plain, mut cdata) = (String::new(), String::new());
+        let (mut has_plain, mut has_cdata) = (false, false);
+        for kid in &self.rows[ord].content {
+            match kid {
+                ContentRow::Text(t) => {
+                    has_plain = true;
+                    plain.push_str(t);
+                }
+                ContentRow::CData(t) => {
+                    has_cdata = true;
+                    cdata.push_str(t);
+                }
+                _ => {}
+            }
+        }
+        if cdata_rule {
+            (!cdata.is_empty()).then_some(cdata)
+        } else if has_plain && has_cdata {
+            None
+        } else if has_cdata {
+            Some(cdata)
+        } else {
+            Some(plain)
+        }
+    }
+
     /// Direct Text and CDATA content of an element, concatenated.
     pub fn text_of(&self, ord: usize) -> String {
         let mut out = String::new();
@@ -217,6 +247,8 @@ pub struct ElemRule {
 pub struct ContentRule {
     pub to: &'static str,
     pub collection: bool,
+    /// The rule is `cdata: true`: only CDATA sections are its value (ordinary text is not).
+    pub cdata: bool,
 }
 
 pub struct ModelSpec {
@@ -247,6 +279,7 @@ pub struct Scan {
     pub elems: Vec<ElemHit>,
     pub content_list: Vec<String>,
     pub content_text: String,
+    pub content_unset: bool,
     pub tokens: Vec<ContentToken>,
     /// Unclaimed attributes as `(local name, value)` in document order; empty
     /// unless the model has an `any_attribute` rule.
@@ -287,13 +320,76 @@ pub fn scan(doc: &Doc, ord: usize, spec: &ModelSpec, loc: &str) -> ContractResul
         .filter(|k| matches!(k, ContentRow::Text(_)))
         .count();
     let positional = spec.mixed || spec.ordered;
+    // Scalar content, as the source reads it: an ordinary rule keeps ordinary text pieces and drops CDATA; a
+    // `cdata: true` rule keeps CDATA sections only. Shapes the source returns as an Array for a scalar attribute
+    // (a mapped child beside ordinary content, or mixed ordinary text and CDATA under a cdata rule) cannot be
+    // represented by a typed scalar and are refused by name.
+    let mut scalar_content: Option<String> = None;
+    let mut content_unset = false;
+    if let Some(rule) = spec.content.as_ref().filter(|c| !c.collection) {
+        if !positional {
+            let mapped = row.content.iter().any(|kid| match kid {
+                ContentRow::Element(child) => {
+                    let crow = &doc.rows[*child];
+                    spec.elems.iter().any(|r| {
+                        r.names.contains(&crow.name.local.as_str()) && accepts(r.ns, ns_of(crow))
+                    })
+                }
+                _ => false,
+            });
+            let pieces: Vec<&str> = row
+                .content
+                .iter()
+                .filter_map(|kid| match kid {
+                    ContentRow::Text(t) if !rule.cdata => Some(t.as_str()),
+                    ContentRow::CData(t) if rule.cdata => Some(t.as_str()),
+                    _ => None,
+                })
+                .collect();
+            // Adjacent CDATA sections are one source node; processing instructions are not counted.
+            let (mut nodes, mut after_cdata) = (0usize, false);
+            for kid in &row.content {
+                match kid {
+                    ContentRow::ProcessingInstruction { .. } => {}
+                    ContentRow::CData(_) => {
+                        nodes += usize::from(!after_cdata);
+                        after_cdata = true;
+                    }
+                    _ => {
+                        nodes += 1;
+                        after_cdata = false;
+                    }
+                }
+            }
+            let held_as_list = if rule.cdata { nodes > 1 } else { mapped };
+            let layout_only = !rule.cdata
+                && pieces
+                    .iter()
+                    .all(|p| p.chars().all(|c| matches!(c, ' ' | '\t' | '\n' | '\r')));
+            if held_as_list && (pieces.is_empty() || layout_only) {
+                // The source holds an empty or layout-only list and writes nothing for it: no value.
+                content_unset = true;
+            } else if held_as_list {
+                return Err(fail(
+                    ErrorReason::InvalidDocument,
+                    spec.id,
+                    None,
+                    None,
+                    loc,
+                    "scalar content with these sibling nodes reads as an array in the source",
+                ));
+            }
+            scalar_content = Some(pieces.concat());
+        }
+    }
     let mut seen: HashMap<&str, usize> = HashMap::new();
     let mut counts = vec![0usize; spec.elems.len()];
     let mut out = Scan {
         attrs,
         elems: Vec::new(),
         content_list: Vec::new(),
-        content_text: doc.text_of(ord),
+        content_text: scalar_content.unwrap_or_else(|| doc.text_of(ord)),
+        content_unset,
         tokens: Vec::new(),
         any: if spec.any {
             unclaimed(row, spec)
@@ -560,6 +656,13 @@ pub struct Values {
     pub tokens: Option<Vec<ContentToken>>,
     /// `any_attribute` entries: one unprefixed, un-namespaced attribute each.
     pub any: Vec<(String, String)>,
+    /// Declared rule position of each element rule (models with write hooks only; empty = rule order).
+    pub elem_pos: Vec<usize>,
+    /// Declared rule position of the content rule (models with write hooks only).
+    pub content_pos: Option<usize>,
+    /// Output of handwritten WRITE hooks by declared rule position: attributes and namespace declarations go
+    /// into the start tag, content is placed in rule order among the ordinary output.
+    pub hooks: Vec<(usize, ElementSpec)>,
 }
 
 fn named(name: &str, ns: Option<&NsOut>) -> QName {
@@ -658,6 +761,16 @@ pub fn assemble(
         el.attributes
             .push(Attribute::new(QName::local(name.as_str()), value.as_str()));
     }
+    for (_, hook) in &values.hooks {
+        el.attributes.extend(hook.attributes.iter().cloned());
+        el.namespaces.extend(hook.namespaces.iter().cloned());
+    }
+    if spec.ordered && values.tokens.is_some() && !values.hooks.is_empty() {
+        return Err(refuse(
+            ErrorReason::ImperativeElementOrder,
+            "a callback cannot drive an ordered or mixed mapping",
+        ));
+    }
     let content_cdata = spec.content.as_ref().is_some_and(|c| c.cdata);
     if let (true, Some(tokens)) = (spec.ordered, &values.tokens) {
         let mut elems: Vec<Option<Vec<Option<Item>>>> = values
@@ -727,21 +840,44 @@ pub fn assemble(
         }
         return Ok(el);
     }
-    for (rule, list) in spec.elems.iter().zip(values.elems) {
+    // Rule order: element rules, the content rule and handwritten hook output are merged by declared
+    // position (without write hooks the positions are the legacy ones: elements, then content).
+    let mut parts: Vec<(usize, Vec<ContentSpec>)> = Vec::new();
+    for (index, (rule, list)) in spec.elems.iter().zip(values.elems).enumerate() {
+        let mut group = ElementSpec::new(QName::local("lml-group"));
         match list {
-            None => write_nil(&mut el, rule, rule.nil),
+            None => write_nil(&mut group, rule, rule.nil),
             Some(items) if rule.collection && items.is_empty() => {
-                write_nil(&mut el, rule, rule.empty)
+                write_nil(&mut group, rule, rule.empty)
             }
             Some(items) => {
                 for item in items {
-                    write_elem(&mut el, rule, item);
+                    write_elem(&mut group, rule, item);
                 }
             }
         }
+        parts.push((
+            values.elem_pos.get(index).copied().unwrap_or(index),
+            group.content,
+        ));
     }
-    for text in &values.content {
-        el.content.push(text_node(text, content_cdata));
+    // An empty content value writes nothing (source: `<r/>`), also for a cdata rule (no empty section).
+    let texts: Vec<ContentSpec> = values
+        .content
+        .iter()
+        .filter(|text| !text.is_empty())
+        .map(|text| text_node(text, content_cdata))
+        .collect();
+    parts.push((values.content_pos.unwrap_or(usize::MAX / 2), texts));
+    parts.extend(
+        values
+            .hooks
+            .into_iter()
+            .map(|(pos, hook)| (pos, hook.content)),
+    );
+    parts.sort_by_key(|(pos, _)| *pos);
+    for (_, content) in parts {
+        el.content.extend(content);
     }
     Ok(el)
 }
@@ -829,4 +965,177 @@ pub fn probe() -> Result<(), String> {
         return Err(format!("unexpected serialization {built}"));
     }
     Ok(())
+}
+
+// ------------------------------------------------------- handwritten write hooks
+
+/// The element a handwritten WRITE hook appends to (Ruby passes `parent` and `document_builder`; both are
+/// this one typed handle). The hook writes the rule's whole output; the generated writer never also writes
+/// the ordinary value.
+pub struct XmlParent<'a> {
+    el: &'a mut ElementSpec,
+}
+
+impl<'a> XmlParent<'a> {
+    pub fn new(el: &'a mut ElementSpec) -> Self {
+        Self { el }
+    }
+    pub fn element(&mut self) -> &mut ElementSpec {
+        self.el
+    }
+    /// Adds an attribute to the start tag (attributes always belong to the start tag, wherever the rule sits).
+    pub fn add_attribute(&mut self, name: QName, value: &str) {
+        self.el.attributes.push(Attribute::new(name, value));
+    }
+    pub fn add_text(&mut self, text: &str) {
+        self.el.content.push(ContentSpec::Text(text.into()));
+    }
+    pub fn add_element(&mut self, child: ElementSpec) {
+        self.el.content.push(ContentSpec::Element(child));
+    }
+    /// Inserts raw markup (Ruby `add_xml_fragment`): parsed, never escaped, text and `&amp;` kept as
+    /// written, elements keep the namespace the fragment gives them (none for plain markup).
+    pub fn add_xml_fragment(&mut self, markup: &str) -> ContractResult<()> {
+        let bad = |detail: String| {
+            fail(
+                ErrorReason::NotSerializable,
+                "",
+                None,
+                None,
+                "/output",
+                format!("raw markup fragment: {detail}"),
+            )
+        };
+        let wrapped = format!("<lml-fragment>{markup}</lml-fragment>");
+        let doc = Document::parse(wrapped.as_bytes()).map_err(|e| bad(e.to_string()))?;
+        let rows = doc.element_rows();
+        let root = rows.first().ok_or_else(|| bad("empty".into()))?;
+        let content = fragment_content(&rows, &root.content);
+        self.el.content.extend(content);
+        Ok(())
+    }
+}
+
+fn fragment_content(rows: &[ElementRow], content: &[ContentRow]) -> Vec<ContentSpec> {
+    content
+        .iter()
+        .map(|c| match c {
+            ContentRow::Text(t) => ContentSpec::Text(t.clone()),
+            ContentRow::CData(t) => ContentSpec::CData(t.clone()),
+            ContentRow::Comment(t) => ContentSpec::Comment(t.clone()),
+            ContentRow::ProcessingInstruction { target, data } => {
+                ContentSpec::ProcessingInstruction {
+                    target: target.clone(),
+                    data: data.clone(),
+                }
+            }
+            ContentRow::Element(ordinal) => {
+                let row = &rows[*ordinal];
+                ContentSpec::Element(ElementSpec {
+                    name: row.name.clone(),
+                    namespaces: row.namespaces.clone(),
+                    attributes: row.attributes.clone(),
+                    content: fragment_content(rows, &row.content),
+                })
+            }
+        })
+        .collect()
+}
+
+/// True when `value` serializes to the declared default literal (JSON text). Used only together with the
+/// model's `__lml_applied` record: a default the caller provided is never suppressed.
+pub fn is_default<T: Serialize>(value: &T, literal: &str) -> bool {
+    match (
+        serde_json::to_value(value),
+        serde_json::from_str::<Value>(literal),
+    ) {
+        (Ok(a), Ok(b)) => a == b,
+        _ => false,
+    }
+}
+
+// ------------------------------------------------------- handwritten read hooks
+
+/// One attribute of a parsed element as the facade reports it.
+#[derive(Clone, Copy, Debug)]
+pub struct XmlAttr<'d> {
+    pub prefix: Option<&'d str>,
+    pub namespace: Option<&'d str>,
+    pub local: &'d str,
+    pub value: &'d str,
+}
+
+/// Borrowed structural view of one parsed element, handed to the READ hook of an element rule: name,
+/// namespace, attributes, direct text, children (recursively) and the namespace declarations on the element.
+/// It borrows the parsed document, so a handler can inspect it but not keep it past the call.
+#[derive(Clone, Copy)]
+pub struct XmlElement<'d> {
+    doc: &'d Doc,
+    ord: usize,
+}
+
+impl<'d> XmlElement<'d> {
+    pub fn new(doc: &'d Doc, ord: usize) -> Self {
+        Self { doc, ord }
+    }
+    fn row(&self) -> &'d ElementRow {
+        &self.doc.rows[self.ord]
+    }
+    pub fn local_name(&self) -> &'d str {
+        self.row().name.local.as_str()
+    }
+    pub fn prefix(&self) -> Option<&'d str> {
+        self.row().name.prefix.as_deref()
+    }
+    /// The element's namespace URI; None is no namespace.
+    pub fn namespace(&self) -> Option<&'d str> {
+        self.row().name.namespace.as_deref()
+    }
+    pub fn attributes(&self) -> Vec<XmlAttr<'d>> {
+        self.row()
+            .attributes
+            .iter()
+            .map(|a| XmlAttr {
+                prefix: a.name.prefix.as_deref(),
+                namespace: a.name.namespace.as_deref(),
+                local: a.name.local.as_str(),
+                value: a.value.as_str(),
+            })
+            .collect()
+    }
+    /// The attribute with this local name in this namespace (None = no namespace).
+    pub fn attribute(&self, local: &str, namespace: Option<&str>) -> Option<&'d str> {
+        self.attributes()
+            .into_iter()
+            .find(|a| a.local == local && a.namespace == namespace)
+            .map(|a| a.value)
+    }
+    /// Direct text and CDATA content, concatenated.
+    pub fn text(&self) -> String {
+        self.doc.text_of(self.ord)
+    }
+    pub fn children(&self) -> Vec<XmlElement<'d>> {
+        self.row()
+            .content
+            .iter()
+            .filter_map(|c| match c {
+                ContentRow::Element(o) => Some(XmlElement::new(self.doc, *o)),
+                _ => None,
+            })
+            .collect()
+    }
+    /// The first child with this local name in this namespace (None = no namespace).
+    pub fn child(&self, local: &str, namespace: Option<&str>) -> Option<XmlElement<'d>> {
+        self.children()
+            .into_iter()
+            .find(|c| c.local_name() == local && c.namespace() == namespace)
+    }
+    /// `xmlns[:prefix]` declarations made on this element.
+    pub fn namespace_declarations(&self) -> Vec<(Option<&'d str>, &'d str)> {
+        self.row()
+            .namespaces
+            .iter()
+            .map(|d| (d.prefix.as_deref(), d.uri.as_str()))
+            .collect()
+    }
 }

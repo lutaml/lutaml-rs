@@ -3,6 +3,8 @@
 const NULLS = { id: null, lang: null, name: null, nick: null, tags: null, addr: null, age: null, ni: null, nb: null, ee: null };
 export const OVERRIDES = {
   'person-prefixed-attribute-lenient': NULLS,
+  // lutaml-model e4439b37: ordinary text + CDATA in one ordinary scalar element reads as nil.
+  'person-entities-and-cdata': NULLS,
   'person-wrong-root': { error: 'invalid_document' },
   'person-wrong-namespace': { error: 'invalid_document' },
   'person-bad-integer': { error: 'invalid_document', attribute: 'age' },
