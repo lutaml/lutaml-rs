@@ -791,7 +791,11 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
         output.push_str("pub __lml_content: Presence<Vec<ContentToken>>,\n");
     }
     if model.tracks_defaults {
-        output.push_str("#[serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\")]\npub __lml_applied: AppliedDefaults,\n");
+        serde_attribute(
+            "rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\"",
+            output,
+        );
+        output.push_str("pub __lml_applied: AppliedDefaults,\n");
     }
     output.push_str("}\n");
     writeln!(

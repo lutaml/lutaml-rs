@@ -142,6 +142,32 @@ fn xml_models_keep_serde_optional_for_scalar_models() {
 }
 
 #[test]
+fn xml_models_keep_default_provenance_serde_optional() {
+    let mut text = string("text");
+    text.default = DefaultValue::Present(NeutralValue::String("default".into()));
+    let b = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Leaf@default".into()],
+        models: BTreeMap::from([("Leaf@default".into(), model("Leaf", vec![text]))]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    };
+    let generated = RustEmitter
+        .generate_xml_models(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(generated["models.rs"].contains(
+        "#[cfg_attr(feature = \"model-serde\", serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\"))]"
+    ));
+    let ordinary = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(ordinary["models.rs"].contains(
+        "#[serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\")]"
+    ));
+}
+
+#[test]
 fn static_sources_are_deterministic_and_match_compiled_fixture() {
     let b = bundle();
     let sources = RustEmitter
