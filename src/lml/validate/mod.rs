@@ -192,15 +192,14 @@ fn register(s: &str) -> bool {
 }
 fn neutral(n: &Node, at: &str) -> ContractResult<()> {
     match n {
-        Node::Number(num) => {
+        Node::Number(num)
             if num.as_u64().is_none_or(|v| v > MAX_INTEGER)
-                && num.as_i64().is_none_or(|v| v.unsigned_abs() > MAX_INTEGER)
-            {
-                return Err(invalid(
-                    at,
-                    "structural number must be a bounded integer; exact values require strings",
-                ));
-            }
+                && num.as_i64().is_none_or(|v| v.unsigned_abs() > MAX_INTEGER) =>
+        {
+            return Err(invalid(
+                at,
+                "structural number must be a bounded integer; exact values require strings",
+            ));
         }
         Node::Array(v) => {
             for (i, n) in v.iter().enumerate() {
@@ -285,6 +284,7 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
             "attributes",
             "mappings",
             "ordered_content",
+            "choices",
             "custom_initialize",
         ],
         at,
@@ -363,6 +363,9 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
             e
         })?;
     }
+    if let Some(choices) = n.get("choices") {
+        model_choices(choices, &names, &pointer(at, "choices"))?;
+    }
     if let Some(order) = n.get("ordered_content") {
         let loc = pointer(at, "ordered_content");
         keys(order, &["member", "version"], &loc)?;
@@ -401,5 +404,67 @@ fn model(n: &Node, id: Option<&str>, at: &str) -> ContractResult<()> {
         e.model_id = Some(format!("{name}@{reg}"));
         e
     })?;
+    Ok(())
+}
+
+fn model_choices(n: &Node, names: &BTreeSet<&str>, at: &str) -> ContractResult<()> {
+    keys(n, &["version", "validation", "groups"], at)?;
+    if field(n, "version", at)?.integer() != Some(1) {
+        return Err(failure(
+            ErrorReason::UnsupportedVersion,
+            &pointer(at, "version"),
+            "unsupported model choice version",
+        ));
+    }
+    if text(n, "validation", at)? != "explicit" {
+        return Err(invalid(at, "model choice validation must be explicit"));
+    }
+    for (i, group) in array(field(n, "groups", at)?, &pointer(at, "groups"))?
+        .iter()
+        .enumerate()
+    {
+        model_choice_group(group, names, &format!("{at}/groups/{i}"), 0)?;
+    }
+    Ok(())
+}
+fn model_choice_group(
+    n: &Node,
+    names: &BTreeSet<&str>,
+    at: &str,
+    depth: usize,
+) -> ContractResult<()> {
+    if depth >= 128 {
+        return Err(invalid(at, "model choice depth exceeds limit"));
+    }
+    keys(n, &["min", "max", "format", "members"], at)?;
+    let min = field(n, "min", at)?.integer();
+    let max = field(n, "max", at)?;
+    // integer() yields u64, so a present bound is already non-negative.
+    if min.is_none() || !(matches!(max, Node::Null) || max.integer().is_some()) {
+        return Err(invalid(at, "invalid model choice bounds"));
+    }
+    let format = field(n, "format", at)?;
+    if !matches!(format, Node::Null) && format.string() != Some("xml") {
+        return Err(invalid(at, "unsupported model choice format"));
+    }
+    for (i, member) in array(field(n, "members", at)?, &pointer(at, "members"))?
+        .iter()
+        .enumerate()
+    {
+        let loc = format!("{at}/members/{i}");
+        if let Some(child) = member.get("choice") {
+            keys(member, &["choice"], &loc)?;
+            model_choice_group(child, names, &pointer(&loc, "choice"), depth + 1)?;
+        } else {
+            keys(member, &["attribute"], &loc)?;
+            if !names.contains(text(member, "attribute", &loc)?) {
+                return Err(failure(
+                    ErrorReason::DanglingReference,
+                    &loc,
+                    "unknown model choice attribute",
+                ));
+            }
+        }
+    }
     Ok(())
 }

@@ -252,6 +252,11 @@ pub(super) fn value_type(n: &Node, at: &str) -> ContractResult<()> {
             "enumeration" => {
                 array(value, &loc)?;
             }
+            "source_binding_v1" => {
+                if *value != Node::Bool(true) {
+                    return Err(invalid(&loc, "source binding marker must be true"));
+                }
+            }
             _ => return Err(failure(ErrorReason::UnsupportedType, &loc, "unknown facet")),
         }
     }

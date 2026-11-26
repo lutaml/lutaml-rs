@@ -75,7 +75,7 @@ pub(super) fn ns_lit(ns: &Ns) -> String {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub(super) enum Kind {
     Str,
     Bool,
@@ -83,10 +83,11 @@ pub(super) enum Kind {
     Decimal,
     Float,
     QName,
+    Bound(String),
 }
 
 impl Kind {
-    pub(super) fn path(self) -> String {
+    fn path(&self) -> String {
         let n = match self {
             Self::Str => "Str",
             Self::Bool => "Bool",
@@ -94,8 +95,25 @@ impl Kind {
             Self::Decimal => "Decimal",
             Self::Float => "Float",
             Self::QName => "QName",
+            Self::Bound(_) => unreachable!("bound scalars have separate calls"),
         };
         format!("rt::Kind::{n}")
+    }
+
+    fn decode(&self, ord: &str, text: &str) -> String {
+        match self {
+            Self::Bound(module) => format!("rt::decode_bound({text}, &at, {module}::parse)?"),
+            _ => format!("rt::decode(doc, {ord}, {}, {text}, &at)?", self.path()),
+        }
+    }
+
+    pub(super) fn encode(&self, id: &str, member: &str) -> String {
+        match self {
+            Self::Bound(module) => {
+                format!("rt::encode_bound(x, {id}, {member}, {module}::format)?")
+            }
+            _ => format!("rt::encode(x, {}, {id}, {member})?", self.path()),
+        }
     }
 }
 
@@ -103,6 +121,7 @@ impl Kind {
 pub(super) enum Pol {
     Omit,
     AsNil,
+    AsEmpty,
     AsBlank,
 }
 
@@ -111,6 +130,7 @@ impl Pol {
         match self {
             Self::Omit => "rt::Policy::Omit",
             Self::AsNil => "rt::Policy::AsNil",
+            Self::AsEmpty => "rt::Policy::AsEmpty",
             Self::AsBlank => "rt::Policy::AsBlank",
         }
     }
@@ -167,6 +187,8 @@ pub(super) struct ElemPlan {
     pub accept: Vec<String>,
     pub out: Ns,
     pub collection: bool,
+    pub absent_list: bool,
+    pub skip_empty_collection: bool,
     pub child: Child,
     pub cdata: bool,
     pub nil: Pol,
@@ -190,6 +212,8 @@ pub(super) struct Plan {
     pub ordered: bool,
     pub mixed: bool,
     pub tokens: bool,
+    pub simple_sequence: bool,
+    pub initialize_missing_sequence_collections: bool,
     pub attrs: Vec<AttrPlan>,
     pub elems: Vec<ElemPlan>,
     pub content: Option<ContentPlan>,
@@ -210,7 +234,12 @@ pub(super) fn bundle_has_xml_hooks(bundle: &Bundle) -> bool {
     })
 }
 
-fn scalar_kind(bundle: &Bundle, id: &str, attribute: &Attribute) -> ContractResult<Kind> {
+fn scalar_kind(
+    bundle: &Bundle,
+    bindings: &TypeBindings,
+    id: &str,
+    attribute: &Attribute,
+) -> ContractResult<Kind> {
     let base = |name: &BuiltinType| -> ContractResult<Kind> {
         Ok(match name {
             BuiltinType::String
@@ -261,8 +290,18 @@ fn scalar_kind(bundle: &Bundle, id: &str, attribute: &Attribute) -> ContractResu
         })
     };
     match &attribute.value_type {
-        TypeRef::Builtin { name } => base(name),
+        TypeRef::Builtin { name } => {
+            if let Some(codec) = crate::generator::builtin_binding(name, bindings)
+                .and_then(TypeBinding::xml_codec_module)
+            {
+                return Ok(Kind::Bound(codec.into()));
+            }
+            base(name)
+        }
         TypeRef::Value { id: vt } => {
+            if let Some(codec) = bindings.get(vt).and_then(TypeBinding::xml_codec_module) {
+                return Ok(Kind::Bound(codec.into()));
+            }
             let spec = bundle
                 .value_types
                 .get(vt)
@@ -295,6 +334,7 @@ fn policy(id: &str, field: &Field) -> ContractResult<(Pol, Pol)> {
             RenderAction::Boolean(true) => affirmative,
             RenderAction::Nil | RenderAction::AsNil => Pol::AsNil,
             RenderAction::Blank | RenderAction::AsBlank => Pol::AsBlank,
+            RenderAction::Other(name) if name == "as_empty" => Pol::AsEmpty,
             RenderAction::Other(name) => {
                 return Err(refuse(
                     id,
@@ -324,9 +364,48 @@ fn model_ns(bundle: &Bundle, id: &str, target: &str, member: &str) -> ContractRe
         })
 }
 
+fn flat_sequence(mapping: &XmlMapping, ordered: bool, imported_fields: bool) -> bool {
+    let Some([group]) = mapping.sequence.as_deref() else {
+        return false;
+    };
+    if group.kind != XmlRuleKind::Sequence
+        || group.min.is_some()
+        || group.max.is_some()
+        || mapping
+            .rules
+            .iter()
+            .any(|r| matches!(r.kind, XmlRuleKind::Sequence | XmlRuleKind::Choice))
+    {
+        return false;
+    }
+    let Some(members) = &group.members else {
+        return false;
+    };
+    if members.is_empty()
+        || members
+            .iter()
+            .any(|member| member.kind != XmlRuleKind::Element || member.name.is_none())
+    {
+        return false;
+    }
+    let mut elements = mapping
+        .rules
+        .iter()
+        .filter(|rule| rule.kind == XmlRuleKind::Element)
+        .peekable();
+    if !imported_fields {
+        return ordered || elements.peek().is_none() || elements.eq(members);
+    }
+    // Imported field mappings can appear only in the expanded sequence.
+    // Direct mappings must retain their relative order within that sequence.
+    let mut remaining = members.iter();
+    ordered || elements.all(|element| remaining.any(|member| member == element))
+}
+
 pub(super) fn plan(
     bundle: &Bundle,
     names: &BTreeMap<String, String>,
+    bindings: &TypeBindings,
     id: &str,
 ) -> ContractResult<Plan> {
     let model = &bundle.models[id];
@@ -346,6 +425,12 @@ pub(super) fn plan(
         mixed: mapping.mixed_content == Some(true)
             || mapping.root.as_ref().is_some_and(|r| r.mixed == Some(true)),
         tokens: model.ordered_content.is_some(),
+        simple_sequence: flat_sequence(mapping, model.ordered_content.is_some(), true),
+        initialize_missing_sequence_collections: flat_sequence(
+            mapping,
+            model.ordered_content.is_some(),
+            false,
+        ),
         attrs: Vec::new(),
         elems: Vec::new(),
         content: None,
@@ -356,11 +441,12 @@ pub(super) fn plan(
     let mut pos = 0usize;
     for op in &projection.operations {
         match op {
+            Operation::Sequence(_) if out.simple_sequence => {}
             Operation::Sequence(_) | Operation::Choice(_) => out
                 .writer_refusals
                 .push("the sequence compositor is not written by this emitter".into()),
             Operation::Field(field) => {
-                field_plan(bundle, names, id, &own, field, pos, &mut out)?;
+                field_plan(bundle, names, bindings, id, &own, (field, pos), &mut out)?;
                 pos += 1;
             }
             _ => {}
@@ -372,10 +458,10 @@ pub(super) fn plan(
 fn field_plan(
     bundle: &Bundle,
     names: &BTreeMap<String, String>,
+    bindings: &TypeBindings,
     id: &str,
     own: &Ns,
-    field: &Field,
-    pos: usize,
+    (field, pos): (&Field, usize),
     out: &mut Plan,
 ) -> ContractResult<()> {
     let collection = matches!(field.attribute.collection, Collection::Bounded { .. });
@@ -431,7 +517,7 @@ fn field_plan(
                 ident,
                 collection,
                 cdata: field.cdata,
-                kind: scalar_kind(bundle, id, &field.attribute)?,
+                kind: scalar_kind(bundle, bindings, id, &field.attribute)?,
             });
         }
         XmlRuleKind::AnyAttribute => {
@@ -446,7 +532,7 @@ fn field_plan(
                     "a collection cannot be one XML attribute",
                 ));
             }
-            let kind = scalar_kind(bundle, id, &field.attribute)?;
+            let kind = scalar_kind(bundle, bindings, id, &field.attribute)?;
             let (accept, outns) = match &field.namespace {
                 Namespace::Uri { uri, prefix } => (
                     accept_list(&[Some(uri)]),
@@ -535,7 +621,7 @@ fn field_plan(
                     }
                 }
                 None => (
-                    Child::Scalar(scalar_kind(bundle, id, attribute)?),
+                    Child::Scalar(scalar_kind(bundle, bindings, id, attribute)?),
                     own.clone(),
                 ),
             };
@@ -550,6 +636,11 @@ fn field_plan(
                     Some((uri, _)) => (accept_list(&[Some(uri), None]), target_ns.clone()),
                 },
             };
+            // Match native flat-sequence occurrence semantics for repeatable members.
+            let repeated_sequence = out.initialize_missing_sequence_collections
+                && collection
+                && nil == Pol::Omit
+                && empty == Pol::AsEmpty;
             out.elems.push(ElemPlan {
                 hooks,
                 member: field.member.clone(),
@@ -558,10 +649,13 @@ fn field_plan(
                 accept,
                 out: outns,
                 collection,
+                absent_list: repeated_sequence
+                    && matches!(field.attribute.default, DefaultValue::Absent),
                 child,
                 cdata: field.cdata,
                 nil,
                 empty,
+                skip_empty_collection: repeated_sequence,
             });
         }
         _ => {}
@@ -583,6 +677,9 @@ fn push(ident: &str, value: &str) -> String {
 
 /// The reader for one model: a `const` rule table and a typed element reader.
 pub(super) fn emit_reader(out: &mut String, p: &Plan) {
+    // Each element rule reads through its own non-inlined helper, so the
+    // recursive `read_*_el` frame stays small in unoptimised builds.
+    let mut field_helpers = String::new();
     let (id, name) = (q(&p.id), &p.name);
     let (g, cp, ca) = (gen(p.hooked), cxp(p.hooked), cxa(p.hooked));
     emit_hook_trait(out, p);
@@ -630,7 +727,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     .unwrap();
     writeln!(
         out,
-        "fn read_{name}_el{g}(doc: &rt::Doc, ord: usize, loc: &str{cp}) -> ContractResult<{name}> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = {name}::default();"
+        "fn read_{name}_el{g}(doc: &rt::Doc, ord: usize, loc: &str{cp}) -> ContractResult<Box<{name}>> {{\n let s = rt::scan(doc, ord, &RS_{name}, loc)?;\n let mut m = boxed_default::<{name}>();"
     )
     .unwrap();
     for (i, a) in p.attrs.iter().enumerate() {
@@ -640,16 +737,29 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                 " if let Some(raw) = &s.attrs[{i}] {{ let at_loc = format!(\"{{loc}}/@{{}}\", {first}); {call} }}").unwrap();
             continue;
         }
-        let value = present(&format!(
-            "rt::decode(doc, ord, {}, raw, &at)?",
-            a.kind.path()
-        ));
+        let value = present(&a.kind.decode("ord", "raw"));
         writeln!(out,
             " if let Some(raw) = &s.attrs[{i}] {{ let at_loc = format!(\"{{loc}}/@{{}}\", {first}); let at = rt::Where {{ id: {id}, attribute: {}, rule: {first}, loc: &at_loc }}; m.{} = {value}; }}",
             q(&a.member), a.ident).unwrap();
     }
     if !p.elems.is_empty() {
-        out.push_str(" for hit in &s.elems {\n  match hit.rule {\n");
+        let entries = (0..p.elems.len())
+            .map(|index| format!("__lml_xml_read_{name}_{index}"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        if p.hooked {
+            out.push_str(" for hit in &s.elems { match hit.rule {\n");
+            for i in 0..p.elems.len() {
+                writeln!(
+                    out,
+                    "{i} => __lml_xml_read_{name}_{i}(m.as_mut(), doc, hit, &s.counts{ca})?,"
+                )
+                .unwrap();
+            }
+            out.push_str("_ => {} } }\n");
+        } else {
+            writeln!(out, " const READ_FIELDS: &[fn(&mut {name}, &rt::Doc, &rt::ElemHit, &[usize]) -> ContractResult<()>] = &[{entries}];\n for hit in &s.elems {{ if let Some(read) = READ_FIELDS.get(hit.rule) {{ read(m.as_mut(), doc, hit, &s.counts)?; }} }}").unwrap();
+        }
         for (i, e) in p.elems.iter().enumerate() {
             let first = q(&e.names[0]);
             let at = format!(
@@ -657,14 +767,10 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                 q(&e.member)
             );
             let (prelude, value, optional) = match &e.child {
-                Child::Scalar(k) => (
-                    at.clone(),
-                    format!("rt::decode(doc, hit.ord, {}, &text, &at)?", k.path()),
-                    true,
-                ),
+                Child::Scalar(k) => (at.clone(), k.decode("hit.ord", "&text"), true),
                 Child::Model(n) => (
                     String::new(),
-                    format!("Box::new(read_{n}_el(doc, hit.ord, &hit.loc{ca})?)"),
+                    format!("read_{n}_el(doc, hit.ord, &hit.loc{ca})?"),
                     false,
                 ),
                 Child::Poly {
@@ -678,7 +784,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                     let mut arms = String::new();
                     for (index, (tag, case)) in cases.iter().enumerate() {
                         arms += &format!(
-                            "Some({}) => {union}::Case{index}(Box::new(read_{case}_el(doc, hit.ord, &hit.loc{ca})?)), ",
+                            "Some({}) => {union}::Case{index}(read_{case}_el(doc, hit.ord, &hit.loc{ca})?), ",
                             q(tag)
                         );
                     }
@@ -686,7 +792,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                     // hold through the case that maps to it.
                     if let Some(index) = cases.iter().position(|(_, case)| case == base) {
                         arms += &format!(
-                            "None => {union}::Case{index}(Box::new(read_{base}_el(doc, hit.ord, &hit.loc{ca})?)), "
+                            "None => {union}::Case{index}(read_{base}_el(doc, hit.ord, &hit.loc{ca})?), "
                         );
                     }
                     let dloc = format!(
@@ -713,7 +819,7 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
                 "&hit.loc",
                 &first,
             ) {
-                writeln!(out, "   {i} => {{ {call} }}").unwrap();
+                writeln!(field_helpers, "#[allow(unused_variables)]\n#[inline(never)]\nfn __lml_xml_read_{name}_{i}{g}(mut m: &mut {name}, doc: &rt::Doc, hit: &rt::ElemHit, _counts: &[usize]{cp}) -> ContractResult<()> {{ {call} Ok(()) }}").unwrap();
                 continue;
             }
             let body = match (e.collection, optional) {
@@ -725,21 +831,24 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             // A scalar leaf reads through the source's CDATA/ordinary-text rules; nil leaves the member unset.
             let body = if matches!(e.child, Child::Scalar(_)) {
                 let nil = if e.collection {
-                    "if s.counts[HIT_RULE] > 1 { return Err(rt::nil_item(&at)); }"
+                    "if _counts[HIT_RULE] > 1 { return Err(rt::nil_item(&at)); }"
                 } else {
                     ""
                 };
                 format!(
-                    "match doc.leaf_texts(hit.ord, {}, s.counts[{i}] > 1) {{ Some(items) => {{ for text in items {{ {body} }} }} None => {{ {} }} }}",
+                    "match doc.leaf_texts(hit.ord, {}, _counts[{i}] > 1) {{ Some(items) => {{ for text in items {{ {body} }} }} None => {{ {} }} }}",
                     e.cdata,
                     nil.replace("HIT_RULE", &i.to_string())
                 )
             } else {
                 body
             };
-            writeln!(out, "   {i} => {{ {prelude} {body} }}").unwrap();
+            writeln!(field_helpers, "#[allow(unused_variables)]\n#[inline(never)]\nfn __lml_xml_read_{name}_{i}{g}(m: &mut {name}, doc: &rt::Doc, hit: &rt::ElemHit, _counts: &[usize]{cp}) -> ContractResult<()> {{\n {prelude} {body}\n Ok(())\n}}").unwrap();
         }
-        out.push_str("   _ => {}\n  }\n }\n");
+    }
+    for e in p.elems.iter().filter(|e| e.absent_list) {
+        let field = &e.ident;
+        writeln!(out, " if matches!(m.{field}, Presence::Absent) {{ m.{field} = Presence::Value(Vec::new()); }}").unwrap();
     }
     if let Some(c) = p
         .content
@@ -755,12 +864,10 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
             q(&c.member)
         );
         if c.collection {
-            writeln!(out, " if !s.content_list.is_empty() {{ {at} let mut list = Vec::new(); for t in &s.content_list {{ if let Some(v) = rt::decode(doc, ord, {}, t, &at)? {{ list.push(v); }} }} m.{} = Presence::Value(list); }}", c.kind.path(), c.ident).unwrap();
+            let decode = c.kind.decode("ord", "t");
+            writeln!(out, " if !s.content_list.is_empty() {{ {at} let mut list = Vec::new(); for t in &s.content_list {{ if let Some(v) = {decode} {{ list.push(v); }} }} m.{} = Presence::Value(list); }}", c.ident).unwrap();
         } else {
-            let value = present(&format!(
-                "rt::decode(doc, ord, {}, &s.content_text, &at)?",
-                c.kind.path()
-            ));
+            let value = present(&c.kind.decode("ord", "&s.content_text"));
             writeln!(
                 out,
                 " if !s.content_unset {{ {at} m.{} = {value}; }}",
@@ -773,9 +880,14 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
         writeln!(out, " if !s.any.is_empty() {{ m.{ident} = Presence::Value(NeutralHash::from_string_pairs(s.any)); }}").unwrap();
     }
     if p.tokens {
-        writeln!(out, " m.__lml_content = Presence::Value(rt::retype(&s.tokens, &rt::Where {{ id: {id}, attribute: \"__lml_content\", rule: \"\", loc }})?);").unwrap();
+        writeln!(
+            out,
+            " m.__lml_content = Presence::Value(model_tokens(&s.tokens));"
+        )
+        .unwrap();
     }
     out.push_str(" Ok(m)\n}\n");
+    out.push_str(&field_helpers);
     let root = p
         .root
         .as_ref()
@@ -790,11 +902,11 @@ pub(super) fn emit_reader(out: &mut String, p: &Plan) {
     }));
     let entry = if p.hooked {
         format!(
-            "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n read_{name}_xml_with(input, &NoXmlHooks, &mut ())\n}}\npub fn read_{name}_xml_with<S, H: XmlHooks<S>>(input: &[u8], hooks: &H, state: &mut S) -> ContractResult<{name}> {{\n let mut cx = XmlCx {{ hooks, state }};\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc, &mut cx)?;\n m.validate().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}"
+            "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n read_{name}_xml_with(input, &NoXmlHooks, &mut ())\n}}\npub fn read_{name}_xml_with<S, H: XmlHooks<S>>(input: &[u8], hooks: &H, state: &mut S) -> ContractResult<{name}> {{\n let mut cx = XmlCx {{ hooks, state }};\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc, &mut cx)?;\n m.validate_shape().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(*m)\n}}"
         )
     } else {
         format!(
-            "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(m)\n}}"
+            "pub fn read_{name}_xml(input: &[u8]) -> ContractResult<{name}> {{\n let doc = rt::parse({id}, input)?;\n doc.check_root({id}, {root}, {accept})?;\n let loc = format!(\"/{{}}\", doc.root_local());\n let m = read_{name}_el(&doc, 0, &loc)?;\n m.validate_shape().map_err(|e| rt::fail(ErrorReason::InvalidDocument, e.model_id, (!e.attribute.is_empty()).then_some(e.attribute), None, \"/input\", e.reason))?;\n Ok(*m)\n}}"
         )
     };
     writeln!(out, "{entry}").unwrap();

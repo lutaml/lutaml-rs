@@ -43,23 +43,33 @@ impl XmlCodecEmitter for RustXmlEmitter {
         bindings: &TypeBindings,
     ) -> ContractResult<SourceMap> {
         RustEmitter.generate_models(bundle, bindings)?;
-        if bindings.values().any(|b| b.codec.is_some()) {
+        let mut normalized = bundle.clone();
+        crate::generator::named_values::realize_named_enums(&mut normalized, bindings)?;
+        let bundle = &normalized;
+        if bindings
+            .values()
+            .any(|b| b.codec.is_some() && b.xml_codec_module().is_none())
+        {
             return Err(refuse(
                 "",
                 ErrorReason::UnsupportedMapping,
                 "",
-                "custom codec bindings require a declared callable signature",
+                "custom XML codec binding must be xml:<Rust module path>",
             ));
         }
         let names = model_names(bundle)?;
         let mut out = String::from(HEADER);
+        out.push_str(include_str!("token_bridge.rs.txt"));
+        // A non-inlined constructor builds each model on the heap without a
+        // full-size temporary in the recursive reader frame.
+        out.push_str("#[inline(never)]\nfn boxed_default<T: Default>() -> Box<T> { Box::new(T::default()) }\n");
         let mut hooked_models = Vec::new();
         let mut context_emitted = false;
         for (id, model) in &bundle.models {
             if model.mappings.xml.is_none() {
                 continue;
             }
-            let plan = plan(bundle, &names, id)?;
+            let plan = plan(bundle, &names, bindings, id)?;
             if plan.hooked && !context_emitted {
                 out.push_str(HOOK_CONTEXT);
                 context_emitted = true;

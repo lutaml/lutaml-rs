@@ -38,6 +38,7 @@ fn model(name: &str, attributes: Vec<Attribute>) -> ModelDocument {
         attributes,
         mappings: Mappings::default(),
         ordered_content: None,
+        choices: None,
         custom_initialize: false,
     }
 }
@@ -122,6 +123,50 @@ fn parg() -> Vec<PargClassBinding> {
         captures: BTreeMap::from([("body".into(), "text".into())]),
     }]
 }
+#[test]
+fn xml_models_keep_serde_optional_for_scalar_models() {
+    let b = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Leaf@default".into()],
+        models: BTreeMap::from([("Leaf@default".into(), model("Leaf", vec![string("text")]))]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    };
+    let generated = RustEmitter
+        .generate_xml_models(&b, &TypeBindings::new())
+        .unwrap();
+    let source = &generated["models.rs"];
+    assert!(source.contains("cfg_attr(feature = \"model-serde\", derive(Serialize, Deserialize))"));
+    assert!(source.contains("fn validate_phase(&self, _choices:bool)"));
+}
+
+#[test]
+fn xml_models_keep_default_provenance_serde_optional() {
+    let mut text = string("text");
+    text.default = DefaultValue::Present(NeutralValue::String("default".into()));
+    let b = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Leaf@default".into()],
+        models: BTreeMap::from([("Leaf@default".into(), model("Leaf", vec![text]))]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    };
+    let generated = RustEmitter
+        .generate_xml_models(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(generated["models.rs"].contains(
+        "#[cfg_attr(feature = \"model-serde\", serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\"))]"
+    ));
+    let ordinary = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(ordinary["models.rs"].contains(
+        "#[serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\")]"
+    ));
+}
+
 #[test]
 fn static_sources_are_deterministic_and_match_compiled_fixture() {
     let b = bundle();

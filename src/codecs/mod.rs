@@ -418,9 +418,13 @@ impl JsonCodecEmitter for RustJsonEmitter {
         // Sharing the actual model emitter validation prevents a codec artifact that
         // claims successful support for a type the static model cannot represent.
         crate::generator::RustEmitter.generate_models(bundle, bindings)?;
-        let hoisted = crate::generator::effective_discriminators(bundle)?;
+        let mut hoisted = crate::generator::effective_discriminators(bundle)?;
+        crate::generator::named_values::realize_named_enums(&mut hoisted, bindings)?;
         let bundle = &hoisted;
-        if bindings.values().any(|b| b.codec.is_some()) {
+        if bindings
+            .values()
+            .any(|b| b.codec.is_some() && b.xml_codec_module().is_none())
+        {
             return Err(fail(
                 "",
                 "",
@@ -522,14 +526,26 @@ impl JsonCodecEmitter for RustJsonEmitter {
             } else {
                 (String::new(), String::new())
             };
+            // The Ruby key-value fast path defers nonempty choice batches,
+            // while missing/empty required collections retain eager ingestion checks.
+            let mut eager_choices = String::new();
+            for attr in &model.attributes {
+                if crate::generator::model_choices::choice_attribute(model, &attr.name)
+                    && matches!(attr.collection, Collection::Bounded { min: 1.., .. })
+                {
+                    let field = crate::generator::member_identifier(&attr.name);
+                    writeln!(eager_choices,"if !matches!(&model.{field},Presence::Value(v) if !v.is_empty()) {{return Err(failure(ErrorReason::InvalidDocument,{}, {}, \"/input\",\"required choice collection is empty\"));}}",q(id),q(&attr.name)).unwrap();
+                }
+            }
             if methods.is_empty() {
-                writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{{ordered}let data=decode_{name}(parse_json(input,{})?)?;{strict} let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
-                writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{{ordered}model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;{guard}let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;serde_json::to_string(&encode_{name}(data)?).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id),q(id)).unwrap();
+                writeln!(out,"#[allow(non_snake_case)]\npub fn read_{name}_json(input:&str)->ContractResult<{name}>{{{ordered}let data=decode_{name}(parse_json(input,{})?)?;{strict} let model:{name}=serde_json::from_value(data).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/input\",e))?; {eager_choices}model.validate_shape().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;Ok(model)}}",q(id),q(id)).unwrap();
+                writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json(model:&{name})->ContractResult<String>{{{ordered}model.validate_shape().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;{guard}let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;serde_json::to_string(&encode_{name}(data)?).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))}}",q(id),q(id)).unwrap();
             } else {
                 let pre = Prelude {
                     ordered: ordered.clone(),
                     strict: strict.clone(),
                     guard: guard.to_string(),
+                    eager_choices,
                 };
                 emit_hooked_entry_points(&mut out, id, name, &rules, &methods, &pre);
             }
@@ -688,6 +704,7 @@ struct Prelude {
     ordered: String,
     strict: String,
     guard: String,
+    eager_choices: String,
 }
 /// The hook trait with failing stubs, the no-hook stub type, and the `_with` entry points.
 fn emit_hooked_entry_points(
@@ -728,9 +745,12 @@ fn emit_hooked_entry_points(
             writeln!(out, "{index} => hooks.{hook}(&mut model,&v,state)?,").unwrap();
         }
     }
-    out.push_str("_ => unreachable!(\"pending index comes from this function\") } }\nmodel.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;\nOk(model)}\n");
+    let eager_choices = &pre.eager_choices;
+    out.push_str("_ => unreachable!(\"pending index comes from this function\") } }\n");
+    out.push_str(eager_choices);
+    out.push_str("model.validate_shape().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/input\",e.reason))?;\nOk(model)}\n");
     // WRITE: declared data encodes first; every write reaches each hook-owned rule in rule order.
-    writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json_with<S,H:{name}Hooks<S>>(model:&{name},hooks:&H,state:&mut S)->ContractResult<String>{{{ordered}model.validate().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;{guard}let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;let Value::Object(mut wire)=encode_{name}(data)? else {{ return Err(failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\", \"expected object\")); }};",q(id),q(id)).unwrap();
+    writeln!(out,"#[allow(non_snake_case)]\npub fn write_{name}_json_with<S,H:{name}Hooks<S>>(model:&{name},hooks:&H,state:&mut S)->ContractResult<String>{{{ordered}model.validate_shape().map_err(|e|failure(ErrorReason::InvalidDocument,e.model_id,e.attribute,\"/output\",e.reason))?;{guard}let data=serde_json::to_value(model).map_err(|e|failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\",e))?;let Value::Object(mut wire)=encode_{name}(data)? else {{ return Err(failure(ErrorReason::InvalidDocument,{}, \"\", \"/output\", \"expected object\")); }};",q(id),q(id)).unwrap();
     for rule in rules.iter().filter(|r| write_by_hook(r)) {
         let key = rule.key.first().cloned().unwrap_or_default();
         match rule.custom.as_ref().and_then(|c| c.to.as_ref()) {

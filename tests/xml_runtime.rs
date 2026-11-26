@@ -83,6 +83,16 @@ fn full_bundle() -> Bundle {
             vec![str_attr("x")],
         ),
     );
+    let mut marked = doc_model(
+        "Marked",
+        json!({"root": {"element": "m"}, "ordered": true, "rules": [
+            element("c", "c", json!({"mode": "inherit"})),
+            {"kind": "attribute", "name": ["x"], "to": "x", "namespace": {"mode": "inherit"}},
+            {"kind": "attribute", "name": ["y"], "to": "y", "namespace": {"mode": "inherit"}}]}),
+        ["c", "x", "y"].map(str_attr).to_vec(),
+    );
+    marked["ordered_content"] = json!({"member": "__lml_content", "version": 1});
+    models.insert("Marked@default".into(), marked);
     serde_json::from_value(raw).unwrap()
 }
 
@@ -258,6 +268,15 @@ fn overrides() -> BTreeMap<&'static str, Value> {
             "kennel-poly-unknown-kind",
             json!({"error": "unknown_discriminator"}),
         ),
+        // Ruby's LML export rejects a comment in ordered content; the native
+        // reader keeps it as a `comment` token (Ruby's own to_xml keeps it too).
+        (
+            "para-comment-refused",
+            json!({"text": ["a"], "b": ["x"], "i": null, "__lml_content": [
+                {"kind": "text", "attribute": "text", "index": 0},
+                {"kind": "comment", "literal": "c"},
+                {"kind": "element", "attribute": "b", "index": 0}]}),
+        ),
     ])
 }
 
@@ -316,6 +335,34 @@ fn emitter_output_is_deterministic_and_single_file() {
     assert!(!text.contains("unsafe") && !text.contains("eval"));
 }
 
+/// Deep documents recurse through `read_*_el`, `write_*_el` and `validate_phase`.
+/// Each field goes through its own non-inlined helper so those frames stay small
+/// in unoptimised builds (mathml over-under-019 overflowed a 2 MiB test thread
+/// when the field bodies were inlined).
+#[test]
+fn recursive_frames_delegate_fields_to_non_inlined_helpers() {
+    let bundle = full_bundle();
+    let codecs = RustXmlEmitter
+        .generate_xml_codecs(&bundle, &TypeBindings::new())
+        .unwrap();
+    let text = &codecs["xml_codecs.rs"];
+    let names = model_names(&bundle).unwrap();
+    let n = &names["XmlOracle::Kennel@default"];
+    assert!(text.contains("#[inline(never)]\nfn boxed_default<T: Default>()"));
+    assert!(text.contains(&format!("let mut m = boxed_default::<{n}>();")));
+    assert!(text.contains(&format!(
+        "#[inline(never)]\nfn __lml_xml_read_{n}_0(m: &mut {n}, doc: &rt::Doc, hit: &rt::ElemHit, _counts: &[usize])"
+    )));
+    assert!(text.contains(&format!(
+        "#[inline(never)]\nfn __lml_xml_write_{n}_0(v: &{n}, values: &mut rt::Values)"
+    )));
+    assert!(!text.contains("match hit.rule"));
+    let models = RustEmitter
+        .generate_models(&bundle, &TypeBindings::new())
+        .unwrap();
+    assert!(models["models.rs"].contains("#[inline(never)]\nfn __lml_validate_field_"));
+}
+
 /// Ruby (wave1 worktree, `bundle exec ruby`) reads `<pet><name>Tom</name></pet>` as
 /// the base class with `kind` nil, and writes it back with no kind attribute and no
 /// kind member. The generated union must not invent the base tag on the way out.
@@ -352,8 +399,11 @@ fn ruby_oracle_replay_reads_all_32_cases() {
         let id = c["id"].as_str().unwrap();
         let model_id = c["model_id"].as_str().unwrap();
         let o = over.get(id);
-        let expects_error =
-            c.get("expected_error").is_some() || o.is_some_and(|o| o.get("error").is_some());
+        // An override replaces the Ruby expectation, including a Ruby error.
+        let expects_error = match o {
+            Some(o) => o.get("error").is_some(),
+            None => c.get("expected_error").is_some(),
+        };
         if expects_error {
             let e = err(r);
             assert_eq!(e["format"], "xml", "{id}");
@@ -463,6 +513,59 @@ fn writer_emits_namespaces_nil_policies_mixed_ordered_and_cdata() {
     let cdata = "<p>a<![CDATA[raw]]></p>";
     let data = ok(&read(para, cdata)).clone();
     assert_eq!(ok(&write(para, &data)), cdata);
+}
+
+#[test]
+fn ordered_content_keeps_comments_and_processing_instructions() {
+    let para = "XmlOracle::Para@default";
+    let input = "<p>a<!--c--><b>x</b><?pi some data?>d</p>";
+    let data = ok(&read(para, input)).clone();
+    assert_eq!(
+        data["__lml_content"][1],
+        json!({"kind": "comment", "literal": "c"})
+    );
+    assert_eq!(
+        data["__lml_content"][3],
+        json!({"kind": "processing_instruction", "target": "pi", "data": "some data"})
+    );
+    assert_eq!(ok(&write(para, &data)), input);
+}
+
+#[test]
+fn ordered_content_keeps_input_attribute_order() {
+    let marked = "Marked@default";
+    let swapped = r#"<m y="2" x="1"><c>t</c></m>"#;
+    let data = ok(&read(marked, swapped)).clone();
+    assert_eq!(
+        data["__lml_content"],
+        json!([
+            {"kind": "attribute", "attribute": "y", "index": 0},
+            {"kind": "attribute", "attribute": "x", "index": 0},
+            {"kind": "element", "attribute": "c", "index": 0}])
+    );
+    assert_eq!(ok(&write(marked, &data)), swapped);
+    // Declaration order records no attribute token; the wire is unchanged.
+    let declared = r#"<m x="1" y="2"><c>t</c></m>"#;
+    let data = ok(&read(marked, declared)).clone();
+    assert_eq!(
+        data["__lml_content"],
+        json!([{"kind": "element", "attribute": "c", "index": 0}])
+    );
+    assert_eq!(ok(&write(marked, &data)), declared);
+    // A built value with no attribute token writes in declaration order.
+    let built = json!({"c": "t", "x": "1", "y": "2",
+        "__lml_content": [{"kind": "element", "attribute": "c", "index": 0}]});
+    assert_eq!(ok(&write(marked, &built)), declared);
+    // Only the first attribute named: it leads, the rest follow declaration order.
+    let mut lead = built.clone();
+    lead["__lml_content"] = json!([
+        {"kind": "attribute", "attribute": "y", "index": 0},
+        {"kind": "element", "attribute": "c", "index": 0}]);
+    assert_eq!(ok(&write(marked, &lead)), swapped);
+    // An attribute token for an absent attribute is refused, never dropped.
+    let mut absent = lead.clone();
+    absent.as_object_mut().unwrap().remove("y");
+    assert!(write(marked, &absent).get("ok").is_none(), "{absent}");
 }
 
 #[test]
