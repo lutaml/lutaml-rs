@@ -903,6 +903,99 @@ fn emitted_function_names_cannot_alias_across_models() {
     );
 }
 
+#[test]
+fn present_empty_models_roundtrip_without_changing_container_policies() {
+    let mut children = reference("children", "Marker@default");
+    children.collection = Collection::Bounded {
+        min: 0,
+        max: None,
+        class_binding: None,
+    };
+    let mut via_reference = attribute("via_reference", BuiltinType::String);
+    via_reference.reference = Some("Marker@default".into());
+    let mut marker = model(
+        "Marker",
+        vec![attribute("present", BuiltinType::String)],
+        vec![rule(
+            "present",
+            &["present"],
+            RenderAction::Omit,
+            RenderAction::Omit,
+            false,
+        )],
+    );
+    // A custom initializer must not run when a present empty model is decoded.
+    marker.custom_initialize = true;
+    let attributes = vec![
+        reference("child", "Marker@default"),
+        reference("as_nil", "Marker@default"),
+        via_reference,
+        children,
+        attribute("hash", BuiltinType::Hash),
+        attribute("text", BuiltinType::String),
+    ];
+    let rules = attributes
+        .iter()
+        .map(|a| {
+            rule(
+                &a.name,
+                &[&a.name],
+                RenderAction::Omit,
+                if a.name == "as_nil" {
+                    RenderAction::AsNil
+                } else {
+                    RenderAction::Omit
+                },
+                false,
+            )
+        })
+        .collect();
+    let document = model("Document", attributes, rules);
+    let bundle = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Document@default".into()],
+        models: BTreeMap::from([
+            ("Marker@default".into(), marker),
+            ("Document@default".into(), document),
+        ]),
+        value_types: BTreeMap::new(),
+        capabilities: vec!["json".into()],
+        provenance: None,
+    };
+    let out = run_consumer(
+        "json-empty-models",
+        &bundle,
+        r##"
+#[test]
+fn roundtrip() {
+    use json_codecs::{read_Document_json, write_Document_json};
+    assert_eq!(models::Marker::construct(()).unwrap_err().reason, "custom_initialize");
+    models::Marker::construct_with((), |_| Ok(models::Marker::default())).unwrap();
+    use serde_json::{json, Value};
+    for wire in [
+        json!({"child": {}, "as_nil": {}, "via_reference": {}, "children": [{}]}),
+        json!({"child": {"present": ""}, "as_nil": {}, "via_reference": {}, "children": [{}]}),
+    ] {
+        let model = read_Document_json(&wire.to_string()).unwrap();
+        let once: Value = serde_json::from_str(&write_Document_json(&model).unwrap()).unwrap();
+        assert_eq!(once, json!({"child": {}, "as_nil": {}, "via_reference": {}, "children": [{}]}));
+        let twice = write_Document_json(&read_Document_json(&once.to_string()).unwrap()).unwrap();
+        assert_eq!(serde_json::from_str::<Value>(&twice).unwrap(), once);
+    }
+    let model = read_Document_json(r#"{"child":null,"as_nil":null,"children":[],"hash":{},"text":""}"#).unwrap();
+    assert_eq!(write_Document_json(&model).unwrap(), "{}");
+    assert_eq!(write_Document_json(&read_Document_json("{}").unwrap()).unwrap(), "{}");
+}
+"##,
+        &["test"],
+    );
+    assert!(
+        out.status.success(),
+        "{}\n{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr)
+    );
+}
 const HOOKS_BUNDLE: &str = include_str!("fixtures/serialization_hooks_bundle.json");
 const HOOKS_CONSUMER: &str = r##"
 #[cfg(test)]
