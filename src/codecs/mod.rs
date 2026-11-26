@@ -403,9 +403,18 @@ fn policy(out: &mut String, rule: &KeyRule, a: &Attribute) {
         }
         _ => {}
     }
+    // A nested model that was set explicitly keeps `{}` even when it renders empty; one with nothing
+    // set, or only applied defaults, is empty like any other container.
+    let empty = if target(a).is_some() && matches!(a.collection, Collection::Scalar(_)) {
+        "empty_model(&v)"
+    } else {
+        "empty(&v)"
+    };
     match resolved(&p.empty, RenderAction::Blank) {
-        RenderAction::Omit => out.push_str("if empty(&v){continue;}\n"),
-        RenderAction::Nil | RenderAction::AsNil => out.push_str("if empty(&v){v=Value::Null;}\n"),
+        RenderAction::Omit => writeln!(out, "if {empty}{{continue;}}").unwrap(),
+        RenderAction::Nil | RenderAction::AsNil => {
+            writeln!(out, "if {empty}{{v=Value::Null;}}").unwrap()
+        }
         _ => {}
     }
 }
@@ -433,6 +442,7 @@ impl JsonCodecEmitter for RustJsonEmitter {
         }
 
         let names = crate::generator::model_names(bundle)?;
+        let nested = crate::generator::nested_targets(bundle);
         let mut out = include_str!("runtime.rs.txt").to_owned();
         // A bundle with a `hash` attribute reads numbers loosely at parse time (the
         // hash decides which spellings it can hold) and refuses them everywhere else
@@ -556,6 +566,11 @@ impl JsonCodecEmitter for RustJsonEmitter {
                 emit_keyed(&mut out, id, name, k, bundle, &names, has_hash)?;
             }
             writeln!(out,"#[allow(non_snake_case)]\nfn decode_{name}(input:Value)->ContractResult<Value>{{let mut wire=object(input,{})?; let mut data=Map::new();",q(id)).unwrap();
+            if nested.contains(id) {
+                out.push_str(
+                    "if wire.is_empty(){data.insert(\"__lml_empty\".into(),Value::Bool(true));}\n",
+                );
+            }
             if keyed.as_ref().is_some_and(|k| k.root) {
                 let k = keyed.as_ref().unwrap();
                 writeln!(out,"data.insert({}.into(), unkey_{name}(Value::Object(std::mem::take(&mut wire)))?);",q(&k.attribute.name)).unwrap();
@@ -653,7 +668,9 @@ fn tracks_defaults(model: &ModelDocument) -> bool {
 }
 /// Serializing models for the wire also emits their applied-default lists.
 fn provenance_guard(bundle: &Bundle) -> &'static str {
-    if bundle.models.values().any(tracks_defaults) {
+    if bundle.models.values().any(tracks_defaults)
+        || !crate::generator::nested_targets(bundle).is_empty()
+    {
         "let _provenance=ProvenanceWire::enter();"
     } else {
         ""
