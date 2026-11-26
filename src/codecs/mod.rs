@@ -403,19 +403,9 @@ fn policy(out: &mut String, rule: &KeyRule, a: &Attribute) {
         }
         _ => {}
     }
-    // A present model instance is not an empty container, even when all its
-    // members serialize away. Hashes and model collections still have their
-    // ordinary empty-container policy.
-    let empty = if target(a).is_some() && matches!(a.collection, Collection::Scalar(_)) {
-        "!v.is_object() && empty(&v)"
-    } else {
-        "empty(&v)"
-    };
     match resolved(&p.empty, RenderAction::Blank) {
-        RenderAction::Omit => writeln!(out, "if {empty}{{continue;}}").unwrap(),
-        RenderAction::Nil | RenderAction::AsNil => {
-            writeln!(out, "if {empty}{{v=Value::Null;}}").unwrap()
-        }
+        RenderAction::Omit => out.push_str("if empty(&v){continue;}\n"),
+        RenderAction::Nil | RenderAction::AsNil => out.push_str("if empty(&v){v=Value::Null;}\n"),
         _ => {}
     }
 }
