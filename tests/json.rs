@@ -802,6 +802,8 @@ fn every_capitalized_name_in_emitted_code_is_reserved_or_known_to_be_scoped() {
         "NEUTRAL_NUMBERS",
         // `impl Drop for ProvenanceWire`: a prelude trait, never declared.
         "Drop",
+        // The empty-model mark declared next to `AppliedDefaults` in the model runtime.
+        "EmptyMark",
     ];
     let mut unknown = BTreeSet::new();
     for text in [&models["models.rs"], &json["json_codecs.rs"]] {
@@ -903,6 +905,100 @@ fn emitted_function_names_cannot_alias_across_models() {
     );
 }
 
+#[test]
+fn nested_model_keeps_braces_only_when_a_member_was_set() {
+    let marker = model(
+        "Marker",
+        vec![
+            attribute("present", BuiltinType::String),
+            attribute("tag", BuiltinType::String),
+        ],
+        vec![
+            rule(
+                "present",
+                &["present"],
+                RenderAction::Omit,
+                RenderAction::Omit,
+                false,
+            ),
+            rule(
+                "tag",
+                &["tag"],
+                RenderAction::Omit,
+                RenderAction::Omit,
+                false,
+            ),
+        ],
+    );
+    let document = model(
+        "Document",
+        vec![reference("child", "Marker@default")],
+        vec![rule(
+            "child",
+            &["child"],
+            RenderAction::Omit,
+            RenderAction::Omit,
+            false,
+        )],
+    );
+    let bundle = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Document@default".into()],
+        models: BTreeMap::from([
+            ("Marker@default".into(), marker),
+            ("Document@default".into(), document),
+        ]),
+        value_types: BTreeMap::new(),
+        capabilities: vec!["json".into()],
+        provenance: None,
+    };
+    let out = run_consumer(
+        "json-empty-model-marker",
+        &bundle,
+        r##"
+#[test]
+fn explicitly_set_member_keeps_braces() {
+    use json_codecs::write_Document_json;
+    let mut marker = models::Marker::default();
+    marker.present = models::Presence::Value(String::new());
+    let mut doc = models::Document::default();
+    doc.child = models::Presence::Value(Box::new(marker));
+    assert_eq!(write_Document_json(&doc).unwrap(), r#"{"child":{}}"#);
+}
+
+#[test]
+fn nothing_set_or_null_is_omitted() {
+    use json_codecs::write_Document_json;
+    let mut doc = models::Document::default();
+    doc.child = models::Presence::Value(Box::new(models::Marker::default()));
+    assert_eq!(write_Document_json(&doc).unwrap(), "{}");
+    let mut marker = models::Marker::default();
+    marker.present = models::Presence::Null;
+    doc.child = models::Presence::Value(Box::new(marker));
+    assert_eq!(write_Document_json(&doc).unwrap(), "{}");
+}
+
+#[test]
+fn explicit_braces_roundtrip() {
+    use json_codecs::{read_Document_json, write_Document_json};
+    let doc = read_Document_json(r#"{"child":{}}"#).unwrap();
+    assert_eq!(write_Document_json(&doc).unwrap(), r#"{"child":{}}"#);
+    let doc = read_Document_json(r#"{"child":{"present":""}}"#).unwrap();
+    let once = write_Document_json(&doc).unwrap();
+    assert_eq!(once, r#"{"child":{}}"#);
+    assert_eq!(write_Document_json(&read_Document_json(&once).unwrap()).unwrap(), once);
+    assert_eq!(write_Document_json(&read_Document_json("{}").unwrap()).unwrap(), "{}");
+}
+"##,
+        &["test"],
+    );
+    assert!(
+        out.status.success(),
+        "{}\n{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr)
+    );
+}
 const HOOKS_BUNDLE: &str = include_str!("fixtures/serialization_hooks_bundle.json");
 const HOOKS_CONSUMER: &str = r##"
 #[cfg(test)]

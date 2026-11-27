@@ -202,6 +202,23 @@ fn rule_discriminators(
 /// the TypeScript generator's `effectiveDiscriminator`. Only plain model-typed
 /// attributes are hoisted, so a rule-level discriminator elsewhere still
 /// reaches the explicit refusal in `generate_models`.
+/// Models some other model refers to. Each carries an `__lml_empty` mark so that a nested model read from an
+/// explicit `{}` is still known to be present when it is written again.
+pub fn nested_targets(bundle: &Bundle) -> BTreeSet<String> {
+    let mut out = BTreeSet::new();
+    for a in bundle.models.values().flat_map(|m| &m.attributes) {
+        if let Some(r) = &a.reference {
+            out.insert(r.clone());
+        }
+        if let TypeRef::Model { id } = &a.value_type {
+            out.insert(id.clone());
+        }
+        if let Some(d) = &a.discriminator {
+            out.extend(d.cases.values().cloned());
+        }
+    }
+    out
+}
 pub fn effective_discriminators(bundle: &Bundle) -> ContractResult<Bundle> {
     let mut out = bundle.clone();
     for (id, m) in &mut out.models {
@@ -367,6 +384,8 @@ struct ModelPlan {
     custom_initialize: bool,
     /// Some member has a declared default: the model records which defaults `apply_defaults` supplied.
     tracks_defaults: bool,
+    /// Another model refers to this one: it records whether it was read from an explicit `{}`.
+    marks_empty: bool,
     attrs: Vec<AttrPlan>,
 }
 struct AttrPlan {
@@ -454,6 +473,7 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
     named_values::realize_named_enums(&mut hoisted, bindings)?;
     let bundle = &hoisted;
     let names = model_names(bundle)?;
+    let nested = nested_targets(bundle);
     let needs_same_integer = bundle.models.values().flat_map(|m| &m.attributes).any(|a| {
         a.enumeration.is_some()
             && matches!(&a.value_type, TypeRef::Builtin { name } if name.is_integer())
@@ -472,6 +492,14 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
                     id,
                     &a.name,
                     "reserved ordered-content member",
+                ));
+            }
+            if a.name == "__lml_empty" {
+                return Err(error(
+                    ErrorReason::ReservedMember,
+                    id,
+                    &a.name,
+                    "reserved empty-model marker member",
                 ));
             }
             if a.name == "__lml_applied" {
@@ -624,6 +652,7 @@ fn plan_models(bundle: &Bundle, bindings: &TypeBindings) -> ContractResult<Plan>
             choice_checks: compile_model_choices(m, id)?,
             custom_initialize: m.custom_initialize,
             tracks_defaults: attrs.iter().any(|a| a.default_wire.is_some()),
+            marks_empty: nested.contains(id),
             attrs,
         });
     }
@@ -706,11 +735,25 @@ thread_local! { static PROVENANCE_WIRE: std::cell::Cell<bool> = const { std::cel
 pub struct ProvenanceWire(bool);
 impl ProvenanceWire { pub fn enter() -> Self { Self(PROVENANCE_WIRE.with(|c| c.replace(true))) } }
 impl std::ops::Drop for ProvenanceWire { fn drop(&mut self) { PROVENANCE_WIRE.with(|c| c.set(self.0)); } }
+/// Set when a model was read from an explicit empty object, so writing it again keeps `{}`.
+/// Like the applied-default list, it is serialized only while a `ProvenanceWire` is alive.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct EmptyMark(bool);
+impl EmptyMark {
+ pub fn is_set(&self) -> bool { self.0 }
+ fn hidden(&self) -> bool { !self.0 || !PROVENANCE_WIRE.with(|c| c.get()) }
+}
+impl Serialize for EmptyMark { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> { self.0.serialize(s) } }
+impl<'de> Deserialize<'de> for EmptyMark { fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> { Ok(Self(bool::deserialize(d)?)) } }
 "#;
 /// Pure emission: a function of the plan only, with no decisions or errors.
 fn emit_models(plan: &Plan, optional_serde: bool) -> String {
     let mut output = include_str!("runtime.rs.txt").to_owned();
-    if plan.models.iter().any(|m| m.tracks_defaults) {
+    if plan
+        .models
+        .iter()
+        .any(|m| m.tracks_defaults || m.marks_empty)
+    {
         output.push_str(PROVENANCE_RUNTIME);
     }
     if plan.needs_same_integer {
@@ -797,6 +840,13 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
         );
         output.push_str("pub __lml_applied: AppliedDefaults,\n");
     }
+    if model.marks_empty {
+        serde_attribute(
+            "rename = \"__lml_empty\", default, skip_serializing_if = \"EmptyMark::hidden\"",
+            output,
+        );
+        output.push_str("pub __lml_empty: EmptyMark,\n");
+    }
     output.push_str("}\n");
     writeln!(
         output,
@@ -811,6 +861,9 @@ fn emit_model(output: &mut String, model: &ModelPlan, optional_serde: bool) {
     }
     if model.tracks_defaults {
         output.push_str("__lml_applied: AppliedDefaults::default(),\n");
+    }
+    if model.marks_empty {
+        output.push_str("__lml_empty: EmptyMark::default(),\n");
     }
     output.push_str("} } }\n");
     writeln!(
@@ -1362,6 +1415,7 @@ impl PargBindingEmitter for RustEmitter {
             let model_name = &names[&binding.model_id];
             if assignments.len() < model.attributes.len()
                 || model.ordered_content.is_some()
+                || nested_targets(bundle).contains(&binding.model_id)
                 || model
                     .attributes
                     .iter()

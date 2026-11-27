@@ -240,6 +240,16 @@ thread_local! { static PROVENANCE_WIRE: std::cell::Cell<bool> = const { std::cel
 pub struct ProvenanceWire(bool);
 impl ProvenanceWire { pub fn enter() -> Self { Self(PROVENANCE_WIRE.with(|c| c.replace(true))) } }
 impl std::ops::Drop for ProvenanceWire { fn drop(&mut self) { PROVENANCE_WIRE.with(|c| c.set(self.0)); } }
+/// Set when a model was read from an explicit empty object, so writing it again keeps `{}`.
+/// Like the applied-default list, it is serialized only while a `ProvenanceWire` is alive.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct EmptyMark(bool);
+impl EmptyMark {
+ pub fn is_set(&self) -> bool { self.0 }
+ fn hidden(&self) -> bool { !self.0 || !PROVENANCE_WIRE.with(|c| c.get()) }
+}
+impl Serialize for EmptyMark { fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> { self.0.serialize(s) } }
+impl<'de> Deserialize<'de> for EmptyMark { fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> { Ok(Self(bool::deserialize(d)?)) } }
 #[allow(non_camel_case_types, non_snake_case)]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -248,10 +258,13 @@ pub struct Leaf {
 pub text: Presence<String>,
 #[serde(rename = "kind", default, skip_serializing_if = "Presence::is_absent")]
 pub kind: Presence<String>,
+#[serde(rename = "__lml_empty", default, skip_serializing_if = "EmptyMark::hidden")]
+pub __lml_empty: EmptyMark,
 }
 impl Default for Leaf { fn default()->Self { Self {
 text: Presence::Absent,
 kind: Presence::Absent,
+__lml_empty: EmptyMark::default(),
 } } }
 impl Leaf {
 pub fn apply_defaults(&mut self)->Result<(),ValidationError>{
@@ -356,6 +369,8 @@ pub item: Presence<Node_item_Union>,
 pub __lml_content: Presence<Vec<ContentToken>>,
 #[serde(rename = "__lml_applied", skip_deserializing, skip_serializing_if = "AppliedDefaults::hidden")]
 pub __lml_applied: AppliedDefaults,
+#[serde(rename = "__lml_empty", default, skip_serializing_if = "EmptyMark::hidden")]
+pub __lml_empty: EmptyMark,
 }
 impl Default for Node { fn default()->Self { Self {
 title: Presence::Absent,
@@ -366,6 +381,7 @@ amount: Presence::Absent,
 item: Presence::Absent,
 __lml_content: Presence::Absent,
 __lml_applied: AppliedDefaults::default(),
+__lml_empty: EmptyMark::default(),
 } } }
 impl Node {
 pub fn apply_defaults(&mut self)->Result<(),ValidationError>{

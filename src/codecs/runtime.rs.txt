@@ -9,6 +9,15 @@ fn failure(reason: ErrorReason, id: &str, member: &str, location: &str, detail: 
 fn object(value:Value,id:&str)->ContractResult<Map<String,Value>> { value.as_object().cloned().ok_or_else(||failure(ErrorReason::InvalidDocument,id,"","/input","expected object")) }
 #[allow(dead_code)]
 fn empty(v:&Value)->bool { match v { Value::String(v)=>v.is_empty(),Value::Array(v)=>v.is_empty(),Value::Object(v)=>v.is_empty(),_=>false } }
+// A nested model object counts as empty unless a member was set explicitly: not null, and not a default
+// that `apply_defaults` supplied. An object read from an explicit `{}` carries `__lml_empty`.
+#[allow(dead_code)]
+fn empty_model(v:&Value)->bool {
+ let Value::Object(o)=v else { return empty(v) };
+ let skip:Vec<&str>=match o.get("__lml_applied"){Some(Value::Array(a))=>a.iter().filter_map(Value::as_str).collect(),_=>Vec::new()};
+ if o.get("__lml_empty")==Some(&Value::Bool(true)){return false;}
+ !o.iter().any(|(k,x)|k!="__lml_applied"&&k!="__lml_empty"&&!x.is_null()&&!skip.contains(&k.as_str()))
+}
 fn numeric_json_err()->&'static str{"numeric JSON is not a portable exact boundary: the portable-exact-json-v1 profile requires exact values as strings; this looks like ruby-native-v1 numeric JSON (Ruby to_json), which is not accepted"}
 // Only a plain 64-bit integer (ordered-content indexes) may be a JSON number; any
 // fractional, exponent, negative-zero or oversized spelling is not a portable exact boundary.
