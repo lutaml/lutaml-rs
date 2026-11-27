@@ -802,6 +802,8 @@ fn every_capitalized_name_in_emitted_code_is_reserved_or_known_to_be_scoped() {
         "NEUTRAL_NUMBERS",
         // `impl Drop for ProvenanceWire`: a prelude trait, never declared.
         "Drop",
+        // The empty-model mark declared next to `AppliedDefaults` in the model runtime.
+        "EmptyMark",
     ];
     let mut unknown = BTreeSet::new();
     for text in [&models["models.rs"], &json["json_codecs.rs"]] {
