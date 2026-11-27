@@ -1,0 +1,1542 @@
+{
+  "bundle": {
+    "lml_bundle": 1,
+    "roots": [
+      "XmlOracle::Kennel@default",
+      "XmlOracle::Ord@default",
+      "XmlOracle::Para@default",
+      "XmlOracle::Person@default",
+      "XmlOracle::Plain@default"
+    ],
+    "models": {
+      "XmlOracle::Addr@default": {
+        "lml": 2,
+        "model": "XmlOracle::Addr",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "city",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "addr"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "city"
+                ],
+                "to": "city",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "uri",
+              "uri": "urn:addr",
+              "prefix": "ad"
+            }
+          }
+        }
+      },
+      "XmlOracle::Animal@default": {
+        "lml": 2,
+        "model": "XmlOracle::Animal",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "kind",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "animal"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "name"
+                ],
+                "to": "name",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "attribute",
+                "name": [
+                  "kind"
+                ],
+                "to": "kind",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        }
+      },
+      "XmlOracle::Dog@default": {
+        "lml": 2,
+        "model": "XmlOracle::Dog",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "kind",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "animal"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "name"
+                ],
+                "to": "name",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "attribute",
+                "name": [
+                  "kind"
+                ],
+                "to": "kind",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        }
+      },
+      "XmlOracle::Kennel@default": {
+        "lml": 2,
+        "model": "XmlOracle::Kennel",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "pet",
+            "type": {
+              "kind": "model",
+              "id": "XmlOracle::Animal@default"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "owner",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "kennel"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "pet"
+                ],
+                "to": "pet",
+                "discriminator": {
+                  "attribute": "kind",
+                  "cases": {
+                    "dog": "XmlOracle::Dog@default",
+                    "animal": "XmlOracle::Animal@default"
+                  }
+                },
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "owner"
+                ],
+                "to": "owner",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        }
+      },
+      "XmlOracle::Ord@default": {
+        "lml": 2,
+        "model": "XmlOracle::Ord",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "a",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": {
+              "min": 0,
+              "max": null
+            },
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "c",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": {
+              "min": 0,
+              "max": null
+            },
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "ord"
+            },
+            "ordered": true,
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "a"
+                ],
+                "to": "a",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "c"
+                ],
+                "to": "c",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        },
+        "ordered_content": {
+          "member": "__lml_content",
+          "version": 1
+        }
+      },
+      "XmlOracle::Para@default": {
+        "lml": 2,
+        "model": "XmlOracle::Para",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "text",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": {
+              "min": 0,
+              "max": null
+            },
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "b",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": {
+              "min": 0,
+              "max": null
+            },
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "i",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": {
+              "min": 0,
+              "max": null
+            },
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "p",
+              "mixed": true
+            },
+            "ordered": true,
+            "mixed_content": true,
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "b"
+                ],
+                "to": "b",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "i"
+                ],
+                "to": "i",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "content",
+                "to": "text",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        },
+        "ordered_content": {
+          "member": "__lml_content",
+          "version": 1
+        }
+      },
+      "XmlOracle::Person@default": {
+        "lml": 2,
+        "model": "XmlOracle::Person",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "lang",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "nick",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "tags",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": {
+              "min": 0,
+              "max": null
+            },
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "addr",
+            "type": {
+              "kind": "model",
+              "id": "XmlOracle::Addr@default"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "age",
+            "type": {
+              "kind": "builtin",
+              "name": "integer"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "ni",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "nb",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "ee",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "person"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "name"
+                ],
+                "to": "name",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "nick",
+                  "alias"
+                ],
+                "to": "nick",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "tag"
+                ],
+                "to": "tags",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "addr"
+                ],
+                "to": "addr",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "age"
+                ],
+                "to": "age",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "ni"
+                ],
+                "to": "ni",
+                "render": {
+                  "nil": "as_nil",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "nb"
+                ],
+                "to": "nb",
+                "render": {
+                  "nil": "as_blank",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "element",
+                "name": [
+                  "ee"
+                ],
+                "to": "ee",
+                "render": {
+                  "nil": "omit",
+                  "empty": "as_blank",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "attribute",
+                "name": [
+                  "id"
+                ],
+                "to": "id",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "attribute",
+                "name": [
+                  "lang"
+                ],
+                "to": "lang",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "uri",
+              "uri": "urn:ex",
+              "prefix": "ex"
+            }
+          }
+        }
+      },
+      "XmlOracle::Plain@default": {
+        "lml": 2,
+        "model": "XmlOracle::Plain",
+        "register": "default",
+        "attributes": [
+          {
+            "name": "v",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          },
+          {
+            "name": "k",
+            "type": {
+              "kind": "builtin",
+              "name": "string"
+            },
+            "required": false,
+            "collection": false,
+            "default": {
+              "present": false
+            },
+            "initialize_empty": false
+          }
+        ],
+        "mappings": {
+          "xml": {
+            "root": {
+              "element": "plain"
+            },
+            "rules": [
+              {
+                "kind": "element",
+                "name": [
+                  "v"
+                ],
+                "to": "v",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              },
+              {
+                "kind": "attribute",
+                "name": [
+                  "k"
+                ],
+                "to": "k",
+                "render": {
+                  "nil": "omit",
+                  "empty": "omit",
+                  "default": false
+                },
+                "namespace": {
+                  "mode": "inherit"
+                }
+              }
+            ],
+            "namespace": {
+              "mode": "inherit"
+            }
+          }
+        }
+      }
+    },
+    "value_types": {},
+    "capabilities": [
+      "xml"
+    ]
+  },
+  "cases": [
+    {
+      "id": "person-full",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<ex:person xmlns:ex=\"urn:ex\" id=\"1\" lang=\"en\"><ex:name>N</ex:name><ex:alias>al</ex:alias><ex:tag>t1</ex:tag><ex:tag>t2</ex:tag><ad:addr xmlns:ad=\"urn:addr\"><ad:city>C</ad:city></ad:addr><ex:age>42</ex:age></ex:person>",
+      "expected_data": {
+        "id": "1",
+        "lang": "en",
+        "name": "N",
+        "nick": "al",
+        "tags": [
+          "t1",
+          "t2"
+        ],
+        "addr": {
+          "city": "C"
+        },
+        "age": "42",
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<ex:person xmlns:ex=\"urn:ex\" id=\"1\" lang=\"en\">\n  <name>N</name>\n  <nick>al</nick>\n  <tag>t1</tag>\n  <tag>t2</tag>\n  <addr xmlns=\"urn:addr\">\n    <city xmlns=\"\">C</city>\n  </addr>\n  <age>42</age>\n  <ni xsi:nil=\"true\"/>\n  <nb/>\n</ex:person>"
+    },
+    {
+      "id": "person-default-namespace",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\" id=\"2\"><name>D</name></person>",
+      "expected_data": {
+        "id": "2",
+        "lang": null,
+        "name": "D",
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\" id=\"2\">\n  <name xmlns=\"\">D</name>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-unqualified-children",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<ex:person xmlns:ex=\"urn:ex\"><name>U</name><tag>x</tag></ex:person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": "U",
+        "nick": null,
+        "tags": [
+          "x"
+        ],
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<ex:person xmlns:ex=\"urn:ex\">\n  <name>U</name>\n  <tag>x</tag>\n  <ni xsi:nil=\"true\"/>\n  <nb/>\n</ex:person>"
+    },
+    {
+      "id": "person-alias-first",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><nick>a</nick></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": "a",
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <nick xmlns=\"\">a</nick>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-alias-second",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><alias>b</alias></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": "b",
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <nick xmlns=\"\">b</nick>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-alias-both-first-wins",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><nick>a</nick><alias>b</alias></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": "a",
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <nick xmlns=\"\">a</nick>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-scalar-duplicate-first-wins",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><name>1</name><name>2</name></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": "1",
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <name xmlns=\"\">1</name>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-unknown-ignored",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\" zz=\"1\"><zz>1</zz><name>N</name></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": "N",
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <name xmlns=\"\">N</name>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-entities-and-cdata",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><name>a &amp; b &lt; <![CDATA[c<>]]></name></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": "a & b < c<>",
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <name xmlns=\"\">a &amp; b &lt; c&lt;&gt;</name>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-empty-elements-nil-policies",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><ni/><nb/><ee/><age/></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": "",
+        "nb": "",
+        "ee": ""
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <ee xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-empty-no-elements",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"/>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-empty-attribute",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\" id=\"\"/>",
+      "expected_data": {
+        "id": "",
+        "lang": null,
+        "name": null,
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-nested-empty-child",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><addr xmlns=\"urn:addr\"/></person>",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": null,
+        "tags": null,
+        "addr": {
+          "city": null
+        },
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <addr xmlns=\"urn:addr\"/>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-prefixed-attribute-lenient",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<ex:person xmlns:ex=\"urn:ex\" xmlns:a=\"urn:attr\" a:lang=\"en\"/>",
+      "divergence": "ruby-matches-prefixed-attribute-by-local-name",
+      "expected_data": {
+        "id": null,
+        "lang": "en",
+        "name": null,
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<ex:person xmlns:a=\"urn:attr\" xmlns:ex=\"urn:ex\" lang=\"en\">\n  <ni xsi:nil=\"true\"/>\n  <nb/>\n</ex:person>"
+    },
+    {
+      "id": "person-nil-marker-ignored",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><ni xsi:nil=\"true\"/></person>",
+      "divergence": "ruby-ignores-xsi-nil",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": "",
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-wrong-root",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<other xmlns=\"urn:ex\"><name>N</name></other>",
+      "divergence": "ruby-accepts-any-root-name",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": "N",
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <name xmlns=\"\">N</name>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-wrong-namespace",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:zzz\"><name>N</name></person>",
+      "divergence": "ruby-accepts-any-root-namespace",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": "N",
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <name xmlns=\"\">N</name>\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-bad-integer",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"><age>abc</age></person>",
+      "divergence": "ruby-lenient-ts-strict",
+      "expected_data": {
+        "id": null,
+        "lang": null,
+        "name": null,
+        "nick": null,
+        "tags": null,
+        "addr": null,
+        "age": null,
+        "ni": null,
+        "nb": null,
+        "ee": null
+      },
+      "ruby_class": "Person",
+      "ruby_xml": "<person xmlns=\"urn:ex\">\n  <ni xmlns=\"\" xsi:nil=\"true\"/>\n  <nb xmlns=\"\"/>\n</person>"
+    },
+    {
+      "id": "person-malformed",
+      "model_id": "XmlOracle::Person@default",
+      "input": "<person xmlns=\"urn:ex\"",
+      "expected_error": "Lutaml::Model::InvalidFormatError"
+    },
+    {
+      "id": "plain-no-namespace",
+      "model_id": "XmlOracle::Plain@default",
+      "input": "<plain k=\"q\"><v>1</v></plain>",
+      "expected_data": {
+        "v": "1",
+        "k": "q"
+      },
+      "ruby_class": "Plain",
+      "ruby_xml": "<plain k=\"q\">\n  <v>1</v>\n</plain>"
+    },
+    {
+      "id": "para-interleaved",
+      "model_id": "XmlOracle::Para@default",
+      "input": "<p>a<b>x</b>c<i>y</i>d<b>z</b></p>",
+      "expected_data": {
+        "text": [
+          "a",
+          "c",
+          "d"
+        ],
+        "b": [
+          "x",
+          "z"
+        ],
+        "i": [
+          "y"
+        ],
+        "__lml_content": [
+          {
+            "kind": "text",
+            "attribute": "text",
+            "index": 0
+          },
+          {
+            "kind": "element",
+            "attribute": "b",
+            "index": 0
+          },
+          {
+            "kind": "text",
+            "attribute": "text",
+            "index": 1
+          },
+          {
+            "kind": "element",
+            "attribute": "i",
+            "index": 0
+          },
+          {
+            "kind": "text",
+            "attribute": "text",
+            "index": 2
+          },
+          {
+            "kind": "element",
+            "attribute": "b",
+            "index": 1
+          }
+        ]
+      },
+      "ruby_class": "Para",
+      "ruby_xml": "<p>a<b>x</b>c<i>y</i>d<b>z</b></p>"
+    },
+    {
+      "id": "para-whitespace-kept",
+      "model_id": "XmlOracle::Para@default",
+      "input": "<p>\n  <b>x</b>\n  tail\n</p>",
+      "expected_data": {
+        "text": [
+          "\n  ",
+          "\n  tail\n"
+        ],
+        "b": [
+          "x"
+        ],
+        "i": null,
+        "__lml_content": [
+          {
+            "kind": "text",
+            "attribute": "text",
+            "index": 0
+          },
+          {
+            "kind": "element",
+            "attribute": "b",
+            "index": 0
+          },
+          {
+            "kind": "text",
+            "attribute": "text",
+            "index": 1
+          }
+        ]
+      },
+      "ruby_class": "Para",
+      "ruby_xml": "<p>\n  <b>x</b>\n  tail\n</p>"
+    },
+    {
+      "id": "para-text-only",
+      "model_id": "XmlOracle::Para@default",
+      "input": "<p>only</p>",
+      "expected_data": {
+        "text": [
+          "only"
+        ],
+        "b": null,
+        "i": null,
+        "__lml_content": [
+          {
+            "kind": "text",
+            "attribute": "text",
+            "index": 0
+          }
+        ]
+      },
+      "ruby_class": "Para",
+      "ruby_xml": "<p>only</p>"
+    },
+    {
+      "id": "para-empty",
+      "model_id": "XmlOracle::Para@default",
+      "input": "<p/>",
+      "expected_data": {
+        "text": null,
+        "b": null,
+        "i": null,
+        "__lml_content": []
+      },
+      "ruby_class": "Para",
+      "ruby_xml": "<p/>"
+    },
+    {
+      "id": "para-cdata-token",
+      "model_id": "XmlOracle::Para@default",
+      "input": "<p>a<![CDATA[raw]]><b>x</b></p>",
+      "expected_data": {
+        "text": [
+          "a"
+        ],
+        "b": [
+          "x"
+        ],
+        "i": null,
+        "__lml_content": [
+          {
+            "kind": "text",
+            "attribute": "text",
+            "index": 0
+          },
+          {
+            "kind": "cdata",
+            "literal": "raw"
+          },
+          {
+            "kind": "element",
+            "attribute": "b",
+            "index": 0
+          }
+        ]
+      },
+      "ruby_class": "Para",
+      "ruby_xml": "<p>araw<b>x</b></p>"
+    },
+    {
+      "id": "para-comment-refused",
+      "model_id": "XmlOracle::Para@default",
+      "input": "<p>a<!--c--><b>x</b></p>",
+      "divergence": "ruby-reads-ts-refuses-comment-order",
+      "expected_error": "Lutaml::Model::Lml::RejectedError"
+    },
+    {
+      "id": "ord-element-only-indentation-skipped",
+      "model_id": "XmlOracle::Ord@default",
+      "input": "<ord>\n  <a>1</a>\n  <c>2</c>\n  <a>3</a>\n</ord>",
+      "expected_data": {
+        "a": [
+          "1",
+          "3"
+        ],
+        "c": [
+          "2"
+        ],
+        "__lml_content": [
+          {
+            "kind": "element",
+            "attribute": "a",
+            "index": 0
+          },
+          {
+            "kind": "element",
+            "attribute": "c",
+            "index": 0
+          },
+          {
+            "kind": "element",
+            "attribute": "a",
+            "index": 1
+          }
+        ]
+      },
+      "ruby_class": "Ord",
+      "ruby_xml": "<ord>\n  <a>1</a>\n  <c>2</c>\n  <a>3</a>\n</ord>"
+    },
+    {
+      "id": "ord-repeated-interleaved",
+      "model_id": "XmlOracle::Ord@default",
+      "input": "<ord><c>1</c><a>2</a><c>3</c><a>4</a></ord>",
+      "expected_data": {
+        "a": [
+          "2",
+          "4"
+        ],
+        "c": [
+          "1",
+          "3"
+        ],
+        "__lml_content": [
+          {
+            "kind": "element",
+            "attribute": "c",
+            "index": 0
+          },
+          {
+            "kind": "element",
+            "attribute": "a",
+            "index": 0
+          },
+          {
+            "kind": "element",
+            "attribute": "c",
+            "index": 1
+          },
+          {
+            "kind": "element",
+            "attribute": "a",
+            "index": 1
+          }
+        ]
+      },
+      "ruby_class": "Ord",
+      "ruby_xml": "<ord>\n  <c>1</c>\n  <a>2</a>\n  <c>3</c>\n  <a>4</a>\n</ord>"
+    },
+    {
+      "id": "kennel-poly-dog",
+      "model_id": "XmlOracle::Kennel@default",
+      "input": "<kennel><pet kind=\"dog\"><name>Rex</name></pet><owner>Ann</owner></kennel>",
+      "expected_data": {
+        "pet": {
+          "kind": "dog",
+          "name": "Rex"
+        },
+        "owner": "Ann"
+      },
+      "ruby_class": "Kennel",
+      "ruby_xml": "<kennel>\n  <pet kind=\"dog\">\n    <name>Rex</name>\n  </pet>\n  <owner>Ann</owner>\n</kennel>"
+    },
+    {
+      "id": "kennel-poly-animal",
+      "model_id": "XmlOracle::Kennel@default",
+      "input": "<kennel><pet kind=\"animal\"><name>Tom</name></pet></kennel>",
+      "expected_data": {
+        "pet": {
+          "kind": "animal",
+          "name": "Tom"
+        },
+        "owner": null
+      },
+      "ruby_class": "Kennel",
+      "ruby_xml": "<kennel>\n  <pet kind=\"animal\">\n    <name>Tom</name>\n  </pet>\n</kennel>"
+    },
+    {
+      "id": "kennel-poly-missing-kind",
+      "model_id": "XmlOracle::Kennel@default",
+      "input": "<kennel><pet><name>Tom</name></pet></kennel>",
+      "expected_data": {
+        "pet": {
+          "kind": null,
+          "name": "Tom"
+        },
+        "owner": null
+      },
+      "ruby_class": "Kennel",
+      "ruby_xml": "<kennel>\n  <pet>\n    <name>Tom</name>\n  </pet>\n</kennel>"
+    },
+    {
+      "id": "kennel-poly-unknown-kind",
+      "model_id": "XmlOracle::Kennel@default",
+      "input": "<kennel><pet kind=\"cat\"><name>Tom</name></pet></kennel>",
+      "divergence": "ruby-falls-back-ts-refuses",
+      "expected_data": {
+        "pet": {
+          "kind": "cat",
+          "name": "Tom"
+        },
+        "owner": null
+      },
+      "ruby_class": "Kennel",
+      "ruby_xml": "<kennel>\n  <pet kind=\"cat\">\n    <name>Tom</name>\n  </pet>\n</kennel>"
+    }
+  ]
+}

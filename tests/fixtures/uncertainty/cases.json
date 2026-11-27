@@ -1,0 +1,600 @@
+{
+  "provenance": {
+    "plurimath_head": "050a3a9cd677e8a17baf47bef01348a8e6296f34",
+    "lutaml_head": "74a0ab8ae559c83679fc8aeb8ee8daab0413681e",
+    "contract": "spec/plurimath/fixtures/uncertainty/contract.yml",
+    "contract_sha256": "50bdb09013dc22d35750d1846889fc65a736377df927a1e8d576d44e1f19e0c6",
+    "ruby": "3.4.8",
+    "format": "actual source JSON mapping; no math writer/evaluator claim"
+  },
+  "cases": [
+    {
+      "id": "standard.default",
+      "source": "JCGM 100:2008 7.2.2 (form 3, absolute value in parentheses)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "value": "1.230",
+        "magnitude": "0.004",
+        "notation": "absolute",
+        "coverage_factor": null,
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "absolute",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.230",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.004",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "absolute",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.230",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.004",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "expanded.k_only",
+      "source": "JCGM 100:2008 6.2.1, 7.2.3 (4)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": "10.0",
+        "magnitude": "0.3",
+        "notation": null,
+        "coverage_factor": "2",
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "10.0",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.3",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_factor": {
+          "__class": "Plurimath::Math::Number",
+          "value": "2",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "10.0",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.3",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_factor": {
+          "__class": "Plurimath::Math::Number",
+          "value": "2",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "expanded.k_and_p",
+      "source": "JCGM 100:2008 7.2.3 (4)-(5), 7.2.4 (values without unit)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": "100.02147",
+        "magnitude": "0.00079",
+        "notation": null,
+        "coverage_factor": "2",
+        "coverage_probability": "0.95",
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00079",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_factor": {
+          "__class": "Plurimath::Math::Number",
+          "value": "2",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_probability": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.95",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00079",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_factor": {
+          "__class": "Plurimath::Math::Number",
+          "value": "2",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_probability": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.95",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "asymmetric.shortest_interval",
+      "source": "JCGM 101:2008 5.3.2, 5.3.4, 5.5 (example: y = 1.024 V, shortest 95 % coverage interval [0.983, 1.088] V; unit omitted here)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "coverage_interval",
+        "value": "1.024",
+        "magnitude": null,
+        "notation": null,
+        "coverage_factor": null,
+        "coverage_probability": "0.95",
+        "lower": "0.983",
+        "upper": "1.088",
+        "interval_kind": "shortest",
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "coverage_interval",
+        "interval_kind": "shortest",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.024",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_probability": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.95",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "lower": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.983",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "upper": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.088",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "coverage_interval",
+        "interval_kind": "shortest",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.024",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_probability": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.95",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "lower": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.983",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "upper": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.088",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "concise_digits.two_places",
+      "source": "JCGM 100:2008 7.2.2 (form 2); plan example 1.23(4)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "value": "1.23",
+        "magnitude": "0.04",
+        "notation": "concise",
+        "coverage_factor": null,
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "concise",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.23",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.04",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "concise",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.23",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.04",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "concise_digits.three_places",
+      "source": "JCGM 100:2008 7.2.2 (form 2); plan example 1.230(4)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "value": "1.230",
+        "magnitude": "0.004",
+        "notation": "concise",
+        "coverage_factor": null,
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "concise",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.230",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.004",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "concise",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.230",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.004",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "concise_digits.gum_mass",
+      "source": "JCGM 100:2008 7.2.2 (form 2): m_S = 100.02147(35) g (unit omitted here)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "value": "100.02147",
+        "magnitude": "0.00035",
+        "notation": "concise",
+        "coverage_factor": null,
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "concise",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00035",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "concise",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00035",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "absolute_parentheses.plan",
+      "source": "JCGM 100:2008 7.2.2 (form 3); plan example 1.23(0.04)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "value": "1.23",
+        "magnitude": "0.04",
+        "notation": "absolute",
+        "coverage_factor": null,
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "absolute",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.23",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.04",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "absolute",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "1.23",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.04",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "absolute_parentheses.gum_mass",
+      "source": "JCGM 100:2008 7.2.2 (form 3): m_S = 100.02147(0.00035) g (unit omitted here)",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "value": "100.02147",
+        "magnitude": "0.00035",
+        "notation": "absolute",
+        "coverage_factor": null,
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": null
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "absolute",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00035",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "standard",
+        "notation": "absolute",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00035",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        }
+      }
+    },
+    {
+      "id": "units.expanded_gram",
+      "source": "JCGM 100:2008 7.2.4: m_S = (100.02147 ± 0.00079) g, k = 2",
+      "model_fields": {
+        "class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": "100.02147",
+        "magnitude": "0.00079",
+        "notation": null,
+        "coverage_factor": "2",
+        "coverage_probability": null,
+        "lower": null,
+        "upper": null,
+        "interval_kind": null,
+        "unit": {
+          "class": "Plurimath::Math::Function::Unitsml",
+          "text": "g"
+        }
+      },
+      "input_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00079",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_factor": {
+          "__class": "Plurimath::Math::Number",
+          "value": "2",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "unit": {
+          "__class": "Plurimath::Math::Function::Unitsml",
+          "text": "g"
+        }
+      },
+      "ruby_json": {
+        "__class": "Plurimath::Math::Function::Uncertainty",
+        "category": "expanded",
+        "value": {
+          "__class": "Plurimath::Math::Number",
+          "value": "100.02147",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "magnitude": {
+          "__class": "Plurimath::Math::Number",
+          "value": "0.00079",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "coverage_factor": {
+          "__class": "Plurimath::Math::Number",
+          "value": "2",
+          "mini_sub_sized": false,
+          "mini_sup_sized": false
+        },
+        "unit": {
+          "__class": "Plurimath::Math::Function::Unitsml",
+          "text": "g"
+        }
+      }
+    }
+  ],
+  "excluded_outside_finite_graph": []
+}

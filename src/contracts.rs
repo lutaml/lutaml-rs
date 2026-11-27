@@ -70,8 +70,9 @@ pub enum Presence<T> {
 }
 
 /// Defaults use the portable boolean tag, including an explicit null value.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum DefaultValue {
+    #[default]
     Absent,
     Present(NeutralValue),
 }
@@ -125,6 +126,7 @@ pub enum BuiltinType {
     Integer,
     Decimal,
     Rational,
+    Float,
     Date,
     Time,
     DateTime,
@@ -135,6 +137,27 @@ pub enum BuiltinType {
     HexBinary,
     Symbol,
     Hash,
+    EmailAddress,
+    IpV4Address,
+    IpV6Address,
+    Uuid,
+    Reference,
+    UriReference,
+    DateWithTimezone,
+    DateTimeWithTimezone,
+    DayTimeDuration,
+    YearMonthDuration,
+    PositiveInteger,
+    NonNegativeInteger,
+}
+impl BuiltinType {
+    /// Integer-like builtins (the contract defines no bounds for the signed variants).
+    pub fn is_integer(&self) -> bool {
+        matches!(
+            self,
+            Self::Integer | Self::PositiveInteger | Self::NonNegativeInteger
+        )
+    }
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -150,6 +173,11 @@ pub enum Collection {
 /// Scalar collection metadata is exactly false, never true.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ScalarCollection;
+impl Default for Collection {
+    fn default() -> Self {
+        Self::Scalar(ScalarCollection)
+    }
+}
 impl Serialize for ScalarCollection {
     fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         s.serialize_bool(false)
@@ -174,15 +202,19 @@ pub struct Attribute {
     pub name: String,
     #[serde(rename = "type")]
     pub value_type: TypeRef,
+    #[serde(default)]
     pub required: bool,
+    #[serde(default)]
     pub collection: Collection,
+    #[serde(default)]
     pub default: DefaultValue,
+    #[serde(default)]
     pub initialize_empty: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub discriminator: Option<Discriminator>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reference: Option<ModelId>,
-    #[serde(rename = "enum", skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "values", skip_serializing_if = "Option::is_none")]
     pub enumeration: Option<Vec<NeutralValue>>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -216,10 +248,28 @@ pub enum ContentToken {
         #[serde(flatten)]
         source: TextSource,
     },
+    /// An XML comment, kept where it was read. `literal` is the comment body.
+    Comment {
+        literal: String,
+    },
+    /// An XML processing instruction, kept where it was read.
+    ProcessingInstruction {
+        target: String,
+        data: String,
+    },
+    /// Input attribute order. A reader records one token per present XML
+    /// attribute, in input order, only when that order differs from the
+    /// declaration order. A writer emits the listed attributes first, in token
+    /// order, then the others in declaration order. `index` is always 0.
+    Attribute {
+        attribute: String,
+        index: u64,
+    },
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "mode", rename_all = "snake_case")]
 pub enum Namespace {
+    #[default]
     Inherit,
     Unqualified,
     Uri {
@@ -228,48 +278,153 @@ pub enum Namespace {
         prefix: Option<String>,
     },
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+/// Ruby accepts boolean and string policies. Unknown strings remain data and
+/// must be refused by a target that cannot implement their declared behavior.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub enum RenderAction {
+    #[default]
+    Absent,
     Omit,
     Nil,
     Blank,
     AsNil,
     AsBlank,
+    Boolean(bool),
+    Other(String),
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+impl RenderAction {
+    pub fn is_absent(&self) -> bool {
+        matches!(self, Self::Absent)
+    }
+}
+impl From<bool> for RenderAction {
+    fn from(value: bool) -> Self {
+        Self::Boolean(value)
+    }
+}
+impl Serialize for RenderAction {
+    fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        match self {
+            Self::Absent => Err(serde::ser::Error::custom("absent policy must be omitted")),
+            Self::Boolean(v) => s.serialize_bool(*v),
+            Self::Other(v) => s.serialize_str(v),
+            v => s.serialize_str(match v {
+                Self::Omit => "omit",
+                Self::Nil => "nil",
+                Self::Blank => "blank",
+                Self::AsNil => "as_nil",
+                Self::AsBlank => "as_blank",
+                _ => unreachable!(),
+            }),
+        }
+    }
+}
+impl<'de> Deserialize<'de> for RenderAction {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Policy {
+            Boolean(bool),
+            Text(String),
+        }
+        Ok(match Policy::deserialize(d)? {
+            Policy::Boolean(v) => Self::Boolean(v),
+            Policy::Text(v) => match v.as_str() {
+                "omit" => Self::Omit,
+                "nil" => Self::Nil,
+                "blank" => Self::Blank,
+                "as_nil" => Self::AsNil,
+                "as_blank" => Self::AsBlank,
+                _ => Self::Other(v),
+            },
+        })
+    }
+}
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RenderPolicy {
+    #[serde(default, skip_serializing_if = "RenderAction::is_absent")]
     pub nil: RenderAction,
+    #[serde(default, skip_serializing_if = "RenderAction::is_absent")]
     pub empty: RenderAction,
-    pub default: bool,
+    #[serde(default, skip_serializing_if = "RenderAction::is_absent")]
+    pub default: RenderAction,
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum XmlRuleKind {
+    #[default]
+    #[serde(skip)]
+    Unspecified,
     Attribute,
     Element,
     Content,
+    Sequence,
+    Choice,
+    /// Ruby `map_all_attributes`: collects every attribute no other rule claims.
+    AnyAttribute,
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+impl XmlRuleKind {
+    fn is_unspecified(&self) -> bool {
+        matches!(self, Self::Unspecified)
+    }
+}
+/// Shared declarative rule shape: XML groups recursively carry full rules,
+/// while JSON/YAML rules carry ordered key aliases. Defaults retain old callers.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XmlRule {
+    #[serde(default, skip_serializing_if = "XmlRuleKind::is_unspecified")]
     pub kind: XmlRuleKind,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub key: Vec<String>,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
     pub to: String,
+    #[serde(default)]
     pub namespace: Namespace,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prefix: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cdata: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub render: Option<RenderPolicy>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub discriminator: Option<Discriminator>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub members: Option<Vec<XmlRule>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min: Option<NeutralValue>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max: Option<NeutralValue>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub child_mappings: Option<BTreeMap<String, NeutralValue>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub root_mappings: Option<BTreeMap<String, NeutralValue>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub polymorphic_map: Option<BTreeMap<String, String>>,
+    /// Names (never bodies) of handwritten serialization hooks; key-value rules only.
+    /// A rule with `custom` may omit `to` (a hook-only rule: `to` is then empty).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub custom: Option<CustomSerialization>,
+}
+/// `to` is the WRITE hook `(model, document)`, `from` the READ hook `(model, value)`.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CustomSerialization {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub to: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<String>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XmlRoot {
     pub element: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mixed: Option<bool>,
+    #[serde(flatten)]
+    pub metadata: BTreeMap<String, NeutralValue>,
 }
+/// Legacy read compatibility. Canonical XML sequences contain full XmlRules.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Compositor {
@@ -290,30 +445,114 @@ pub enum CompositorMember {
     Attribute(String),
     Group(Box<Compositor>),
 }
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+impl From<Compositor> for XmlRule {
+    fn from(group: Compositor) -> Self {
+        let (kind, members, min, max) = match group {
+            Compositor::Sequence { members, min, max } => {
+                (XmlRuleKind::Sequence, members, min, max)
+            }
+            Compositor::Choice { members, min, max } => (XmlRuleKind::Choice, members, min, max),
+        };
+        Self {
+            kind,
+            members: Some(
+                members
+                    .into_iter()
+                    .map(|member| match member {
+                        CompositorMember::Attribute(to) => Self {
+                            kind: XmlRuleKind::Element,
+                            to,
+                            ..Default::default()
+                        },
+                        CompositorMember::Group(group) => (*group).into(),
+                    })
+                    .collect(),
+            ),
+            min: Some(NeutralValue::Unsigned(min)),
+            max: Some(
+                max.map(NeutralValue::Unsigned)
+                    .unwrap_or(NeutralValue::Null),
+            ),
+            ..Default::default()
+        }
+    }
+}
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub struct XmlMapping {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub root: Option<XmlRoot>,
     pub namespace: Namespace,
     pub rules: Vec<XmlRule>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub sequence: Option<Compositor>,
+    pub sequence: Option<Vec<XmlRule>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub choice: Option<Compositor>,
-}
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct KeyRule {
-    pub key: Vec<String>,
-    pub to: String,
+    pub ordered: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub render: Option<RenderPolicy>,
-}
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct KeyMapping {
-    pub rules: Vec<KeyRule>,
+    pub mixed_content: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub root_mappings: Option<BTreeMap<String, NeutralValue>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub child_mappings: Option<BTreeMap<String, NeutralValue>>,
+}
+impl<'de> Deserialize<'de> for XmlMapping {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Sequence {
+            Canonical(Vec<XmlRule>),
+            Legacy(Compositor),
+        }
+        #[derive(Deserialize, Default)]
+        struct Wire {
+            root: Option<XmlRoot>,
+            #[serde(default)]
+            namespace: Namespace,
+            #[serde(default)]
+            rules: Vec<XmlRule>,
+            sequence: Option<Sequence>,
+            choice: Option<Compositor>,
+            ordered: Option<bool>,
+            mixed_content: Option<bool>,
+            root_mappings: Option<BTreeMap<String, NeutralValue>>,
+            child_mappings: Option<BTreeMap<String, NeutralValue>>,
+        }
+        let w = Wire::deserialize(d)?;
+        let mut sequence = w.sequence.map(|s| match s {
+            Sequence::Canonical(v) => v,
+            Sequence::Legacy(v) => vec![v.into()],
+        });
+        if let Some(choice) = w.choice {
+            sequence.get_or_insert_with(Vec::new).push(choice.into());
+        }
+        Ok(Self {
+            root: w.root,
+            namespace: w.namespace,
+            rules: w.rules,
+            sequence,
+            ordered: w.ordered,
+            mixed_content: w.mixed_content,
+            root_mappings: w.root_mappings,
+            child_mappings: w.child_mappings,
+        })
+    }
+}
+pub type KeyRule = XmlRule;
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct KeyMapping {
+    #[serde(default)]
+    pub rules: Vec<KeyRule>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub root_mappings: Option<BTreeMap<String, NeutralValue>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub child_mappings: Option<BTreeMap<String, NeutralValue>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ordered: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mixed_content: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub root: Option<NeutralValue>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub namespace: Option<Namespace>,
 }
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Mappings {
@@ -323,6 +562,9 @@ pub struct Mappings {
     pub json: Option<KeyMapping>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub yaml: Option<KeyMapping>,
+    /// Carried as data like yaml: no toml codec is generated, but a declaration the validator accepted is kept.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub toml: Option<KeyMapping>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ModelDocument {
@@ -330,9 +572,37 @@ pub struct ModelDocument {
     pub model: String,
     pub register: String,
     pub attributes: Vec<Attribute>,
+    #[serde(default)]
     pub mappings: Mappings,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ordered_content: Option<OrderedContent>,
+    /// The source model has a handwritten initializer. Only `true` is a valid
+    /// wire value; absence means an ordinary data constructor. No body travels
+    /// in the document: generators emit a stub the consumer implements.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub custom_initialize: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choices: Option<ModelChoices>,
+}
+/// Versioned class-level choice validation, deliberately deferred until validate().
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ModelChoices {
+    pub version: u32,
+    pub validation: String,
+    pub groups: Vec<ModelChoiceGroup>,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ModelChoiceGroup {
+    pub min: u64,
+    pub max: Option<u64>,
+    pub format: Option<String>,
+    pub members: Vec<ModelChoiceMember>,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ModelChoiceMember {
+    Attribute { attribute: String },
+    Choice { choice: Box<ModelChoiceGroup> },
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Bundle {
@@ -360,6 +630,7 @@ pub enum ErrorReason {
     NonSerializableDefault,
     LambdaDefault,
     CustomInitialize,
+    CustomSerialization,
     ImperativeElementOrder,
     InvalidOrderedContent,
     ReservedMember,
@@ -431,7 +702,26 @@ pub struct Manifest {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TypeBinding {
     pub rust_type: String,
+    /// Optional trusted `xml:<Rust module path>` for XML lexical conversion.
+    /// The module exports parse(&str) -> Result<Option<T>, E> and
+    /// format(&T) -> Result<String, E>; E implements ToString.
     pub codec: Option<String>,
+}
+impl TypeBinding {
+    pub fn xml_codec_module(&self) -> Option<&str> {
+        let path = self.codec.as_deref()?.strip_prefix("xml:")?;
+        path.strip_prefix("::")
+            .unwrap_or(path)
+            .split("::")
+            .all(|segment| {
+                let mut chars = segment.bytes();
+                chars
+                    .next()
+                    .is_some_and(|c| c.is_ascii_alphabetic() || c == b'_')
+                    && chars.all(|c| c.is_ascii_alphanumeric() || c == b'_')
+            })
+            .then_some(path)
+    }
 }
 pub type TypeBindings = BTreeMap<ValueTypeId, TypeBinding>;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

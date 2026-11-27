@@ -1,7 +1,7 @@
 //! Target-local XML adapter boundary. No upstream DOM or parser API is assumed.
 use crate::contracts::{
-    Attribute, Compositor, ContentToken, ContractResult, Discriminator, Namespace, RenderPolicy,
-    TypeRef, XmlRuleKind,
+    Attribute, Compositor, ContentToken, ContractResult, CustomSerialization, Discriminator,
+    Namespace, RenderPolicy, TypeRef, XmlRuleKind,
 };
 
 /// Static field information consumed by generated, target-specific codecs.
@@ -20,6 +20,9 @@ pub struct Field {
     /// None retains the Ruby default; adapters must resolve it explicitly.
     pub render: Option<RenderPolicy>,
     pub discriminator: Option<Discriminator>,
+    /// Names of handwritten hooks. A rule with `custom` may have no declared attribute (hook-only:
+    /// `member` is empty and `attribute` a placeholder).
+    pub custom: Option<CustomSerialization>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

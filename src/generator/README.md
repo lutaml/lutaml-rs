@@ -11,12 +11,25 @@ retains typed false/empty values. `Default` constructs absent fields.
 checks required members, inclusive collection bounds, nested models and ordered
 content references. These steps are explicit so deserialization does not erase
 absence. References and discriminator payloads are boxed to size recursive types.
+A `hash` attribute is an order-preserving `NeutralHash`: any JSON value that every
+language holds exactly (null, bool, string, array, object, and a number only if a
+double holds it: an integer-spelled number within +-(2^53-1) and not -0, otherwise
+a spelling equal to ECMAScript `Number::toString`), nested to at most 200 levels,
+with no duplicate keys. The XML `any_attribute` target is the same type: it reads as
+string values and writes scalars as text, refusing null and nested values. The JSON
+codec needs serde_json `preserve_order` (lutaml-rs enables it) to keep key order.
 Integer/decimal/rational boundaries use validated lexical string newtypes without
 floating-point conversion. A rational's wire boundary is a terminating decimal;
 exact arithmetic/rendering is the separate values module's responsibility.
 
 Named value types require caller-trusted `TypeBindings`; their serde implementation
-must enforce the declared base/facets. Builtins needing lexical codecs, custom
+must enforce the declared base/facets. A binding can additionally name
+`codec: "xml:crate::my_module"` to preserve the source lexical boundary.
+The module exports `parse(&str) -> Result<Option<T>, E>` (receiving the raw
+text, with `None` representing nil) and `format(&T) -> Result<String, E>`;
+errors must implement `ToString`. JSON continues using the type's serde
+representation. Unsupported lexical builtins accept the same binding under a
+key such as `builtin:date_time`. Only caller-supplied module paths can select these functions. Builtins needing lexical codecs, custom
 collection classes and nonliteral structured defaults currently refuse with named
 contract errors. No unchecked JSON field substitutes for an unsupported type.
 

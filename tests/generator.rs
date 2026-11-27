@@ -1,5 +1,8 @@
 mod contracts {
-    pub use lutaml_model::contracts::*;
+    pub use lutaml_rs::contracts::*;
+}
+mod values {
+    pub use lutaml_rs::values::*;
 }
 #[path = "../src/generator/mod.rs"]
 mod generator;
@@ -35,7 +38,17 @@ fn model(name: &str, attributes: Vec<Attribute>) -> ModelDocument {
         attributes,
         mappings: Mappings::default(),
         ordered_content: None,
+        choices: None,
+        custom_initialize: false,
     }
+}
+/// A `custom_initialize` model: declared data plus a handwritten-initializer stub.
+fn money() -> ModelDocument {
+    let mut currency = string("currency");
+    currency.required = true;
+    let mut money = model("Money", vec![currency, string("note")]);
+    money.custom_initialize = true;
+    money
 }
 fn bundle() -> Bundle {
     let mut title = string("title");
@@ -92,7 +105,11 @@ fn bundle() -> Bundle {
         roots: vec!["Node@default".into()],
         models: BTreeMap::from([
             ("Node@default".into(), node),
-            ("Leaf@default".into(), model("Leaf", vec![string("text")])),
+            ("Money@default".into(), money()),
+            (
+                "Leaf@default".into(),
+                model("Leaf", vec![string("text"), string("kind")]),
+            ),
         ]),
         value_types: BTreeMap::new(),
         capabilities: vec![],
@@ -107,6 +124,50 @@ fn parg() -> Vec<PargClassBinding> {
     }]
 }
 #[test]
+fn xml_models_keep_serde_optional_for_scalar_models() {
+    let b = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Leaf@default".into()],
+        models: BTreeMap::from([("Leaf@default".into(), model("Leaf", vec![string("text")]))]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    };
+    let generated = RustEmitter
+        .generate_xml_models(&b, &TypeBindings::new())
+        .unwrap();
+    let source = &generated["models.rs"];
+    assert!(source.contains("cfg_attr(feature = \"model-serde\", derive(Serialize, Deserialize))"));
+    assert!(source.contains("fn validate_phase(&self, _choices:bool)"));
+}
+
+#[test]
+fn xml_models_keep_default_provenance_serde_optional() {
+    let mut text = string("text");
+    text.default = DefaultValue::Present(NeutralValue::String("default".into()));
+    let b = Bundle {
+        lml_bundle: 1,
+        roots: vec!["Leaf@default".into()],
+        models: BTreeMap::from([("Leaf@default".into(), model("Leaf", vec![text]))]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    };
+    let generated = RustEmitter
+        .generate_xml_models(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(generated["models.rs"].contains(
+        "#[cfg_attr(feature = \"model-serde\", serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\"))]"
+    ));
+    let ordinary = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(ordinary["models.rs"].contains(
+        "#[serde(rename = \"__lml_applied\", skip_deserializing, skip_serializing_if = \"AppliedDefaults::hidden\")]"
+    ));
+}
+
+#[test]
 fn static_sources_are_deterministic_and_match_compiled_fixture() {
     let b = bundle();
     let sources = RustEmitter
@@ -119,6 +180,12 @@ fn static_sources_are_deterministic_and_match_compiled_fixture() {
             .unwrap()
     );
     let binders = RustEmitter.generate_parg_bindings(&b, &parg()).unwrap();
+    if std::env::var_os("LUTAML_UPDATE_FIXTURES").is_some() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/rust_generated/src");
+        std::fs::write(dir.join("models.rs"), &sources["models.rs"]).unwrap();
+        std::fs::write(dir.join("parg_bindings.rs"), &binders["parg_bindings.rs"]).unwrap();
+    }
 
     assert_eq!(
         sources["models.rs"],
@@ -186,8 +253,29 @@ fn invalid_defaults_bounds_and_unsupported_types_refuse() {
         ErrorReason::InvalidDocument
     );
     let mut b = bundle();
+    {
+        let a = &mut b.models.get_mut("Leaf@default").unwrap().attributes[0];
+        a.value_type = TypeRef::Builtin {
+            name: BuiltinType::Float,
+        };
+        a.default = DefaultValue::Present(NeutralValue::String("1.0e-05".into()));
+    }
+    assert_eq!(
+        RustEmitter
+            .generate_models(&b, &TypeBindings::new())
+            .unwrap_err()
+            .reason,
+        ErrorReason::NonSerializableDefault
+    );
+    b.models.get_mut("Leaf@default").unwrap().attributes[0].default =
+        DefaultValue::Present(NeutralValue::String("1.0e-5".into()));
+    let models = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap();
+    assert!(models["models.rs"].contains("PortableFloat>"));
+    let mut b = bundle();
     b.models.get_mut("Leaf@default").unwrap().attributes[0].value_type = TypeRef::Builtin {
-        name: BuiltinType::Hash,
+        name: BuiltinType::Date,
     };
     assert_eq!(
         RustEmitter
@@ -352,4 +440,317 @@ fn public_naming_api_matches_static_models_and_rejects_collisions() {
         generator::model_names(&b).unwrap_err().reason,
         ErrorReason::ReservedMember
     );
+}
+
+#[test]
+fn rule_only_discriminators_fail_explicitly_instead_of_losing_static_types() {
+    let mut b = bundle();
+    let rule = KeyRule {
+        key: vec!["text".into()],
+        to: "text".into(),
+        discriminator: Some(Discriminator {
+            attribute: "kind".into(),
+            cases: BTreeMap::from([("node".into(), "Node@default".into())]),
+        }),
+        ..Default::default()
+    };
+    b.models.get_mut("Leaf@default").unwrap().mappings.json = Some(KeyMapping {
+        rules: vec![rule],
+        ..Default::default()
+    });
+    assert_eq!(
+        RustEmitter
+            .generate_models(&b, &TypeBindings::new())
+            .unwrap_err()
+            .reason,
+        ErrorReason::UnsupportedMapping
+    );
+}
+
+fn polymorphic(rule_level: bool, attribute_level: bool, tag: Option<Attribute>) -> Bundle {
+    let disc = Discriminator {
+        attribute: "kind".into(),
+        cases: BTreeMap::from([
+            ("animal".into(), "Animal@default".into()),
+            ("dog".into(), "Dog@default".into()),
+        ]),
+    };
+    let mut animals = attribute(
+        "animals",
+        TypeRef::Model {
+            id: "Animal@default".into(),
+        },
+    );
+    animals.collection = Collection::Bounded {
+        min: 0,
+        max: None,
+        class_binding: None,
+    };
+    animals.discriminator = attribute_level.then(|| disc.clone());
+    let mut kennel = model("Kennel", vec![animals]);
+    if rule_level {
+        kennel.mappings.json = Some(KeyMapping {
+            rules: vec![KeyRule {
+                key: vec!["animals".into()],
+                to: "animals".into(),
+                discriminator: Some(disc),
+                ..Default::default()
+            }],
+            ..Default::default()
+        });
+    }
+    let tag = tag.unwrap_or_else(|| string("kind"));
+    Bundle {
+        lml_bundle: 1,
+        roots: vec!["Kennel@default".into()],
+        models: BTreeMap::from([
+            ("Kennel@default".into(), kennel),
+            (
+                "Animal@default".into(),
+                model("Animal", vec![tag.clone(), string("name")]),
+            ),
+            (
+                "Dog@default".into(),
+                model("Dog", vec![tag, string("name")]),
+            ),
+        ]),
+        value_types: BTreeMap::new(),
+        capabilities: vec![],
+        provenance: None,
+    }
+}
+#[test]
+fn ruby_shaped_polymorphism_rule_level_discriminator_with_declared_tag_generates() {
+    // Ruby exports the discriminator on the mapping rule only, and requires every
+    // case model to declare the tag attribute. Both used to be refused.
+    let sources = RustEmitter
+        .generate_models(&polymorphic(true, false, None), &TypeBindings::new())
+        .unwrap();
+    let models = &sources["models.rs"];
+    assert!(models.contains("pub enum Kennel_animals_Union"), "{models}");
+    assert!(models.contains("Case0(Box<Animal>)") && models.contains("Case1(Box<Dog>)"));
+    // The declared tag is an ordinary member checked against the case, not a
+    // serde tag that would drop it or emit it twice.
+    assert!(models.contains("pub kind: Presence<String>"));
+    assert!(models.contains("if t!=\"dog\""));
+    let union_at = models.find("pub enum Kennel_animals_Union").unwrap();
+    assert!(!models[union_at.saturating_sub(120)..union_at].contains("serde(tag"));
+    // The attribute-level declaration alone, and both together, generate the same union.
+    for (rule, attr) in [(false, true), (true, true)] {
+        let again = RustEmitter
+            .generate_models(&polymorphic(rule, attr, None), &TypeBindings::new())
+            .unwrap();
+        assert_eq!(&again["models.rs"], models);
+    }
+}
+#[test]
+fn polymorphism_sources_must_agree_and_the_tag_must_be_a_plain_string() {
+    let mut b = polymorphic(true, true, None);
+    b.models.get_mut("Kennel@default").unwrap().attributes[0]
+        .discriminator
+        .as_mut()
+        .unwrap()
+        .attribute = "other".into();
+    let error = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap_err();
+    assert_eq!(error.reason, ErrorReason::UnsupportedMapping);
+    assert!(error.detail.unwrap().contains("disagrees"));
+    let integer = attribute(
+        "kind",
+        TypeRef::Builtin {
+            name: BuiltinType::Integer,
+        },
+    );
+    assert_eq!(
+        RustEmitter
+            .generate_models(
+                &polymorphic(true, false, Some(integer)),
+                &TypeBindings::new()
+            )
+            .unwrap_err()
+            .reason,
+        ErrorReason::UnsupportedMapping
+    );
+}
+#[test]
+fn every_reserved_name_is_refused_with_the_name_in_the_detail() {
+    for name in generator::RESERVED_NAMES {
+        let b = Bundle {
+            lml_bundle: 1,
+            roots: vec![format!("{name}@default")],
+            models: BTreeMap::from([(format!("{name}@default"), model(name, vec![]))]),
+            value_types: BTreeMap::new(),
+            capabilities: vec![],
+            provenance: None,
+        };
+        let error = generator::model_names(&b).unwrap_err();
+        assert_eq!(error.reason, ErrorReason::ReservedMember, "{name}");
+        assert!(error.detail.unwrap().contains(name), "{name}");
+    }
+    // The names a reviewer showed generating a crate that does not compile.
+    for name in [
+        "Eq",
+        "ToString",
+        "Value",
+        "Map",
+        "ContractError",
+        "ContractResult",
+        "ErrorReason",
+    ] {
+        assert!(generator::RESERVED_NAMES.contains(&name), "{name}");
+    }
+}
+#[test]
+fn registers_sharing_a_model_name_get_deterministic_register_suffixed_names() {
+    let mut b = bundle();
+    b.models.insert("Leaf@other".into(), {
+        let mut m = model("Leaf", vec![string("text")]);
+        m.register = "other".into();
+        m
+    });
+    let names = generator::model_names(&b).unwrap();
+    assert_eq!(names["Leaf@default"], "Leaf_default_");
+    assert_eq!(names["Leaf@other"], "Leaf_other");
+    assert_eq!(names["Node@default"], "Node");
+    assert_eq!(names, generator::model_names(&b).unwrap());
+    // The suffixed names still collide-check against every other model.
+    b.models
+        .insert("Leaf_other@default".into(), model("Leaf_other", vec![]));
+    assert_eq!(
+        generator::model_names(&b).unwrap_err().reason,
+        ErrorReason::ReservedMember
+    );
+}
+#[test]
+fn ruby_builtin_names_map_to_target_types() {
+    let generate = |name: BuiltinType| {
+        let mut b = bundle();
+        b.models.get_mut("Leaf@default").unwrap().attributes[0].value_type =
+            TypeRef::Builtin { name };
+        RustEmitter.generate_models(&b, &TypeBindings::new())
+    };
+    for name in [
+        BuiltinType::PositiveInteger,
+        BuiltinType::NonNegativeInteger,
+    ] {
+        assert!(generate(name).unwrap()["models.rs"].contains("ExactInteger"));
+    }
+    assert!(generate(BuiltinType::Reference).is_ok());
+    for name in [
+        BuiltinType::EmailAddress,
+        BuiltinType::IpV4Address,
+        BuiltinType::IpV6Address,
+        BuiltinType::Uuid,
+        BuiltinType::UriReference,
+        BuiltinType::DateWithTimezone,
+        BuiltinType::DateTimeWithTimezone,
+        BuiltinType::DayTimeDuration,
+        BuiltinType::YearMonthDuration,
+    ] {
+        assert_eq!(
+            generate(name).unwrap_err().reason,
+            ErrorReason::UnsupportedType
+        );
+    }
+    let wire: TypeRef =
+        serde_json::from_str(r#"{"kind":"builtin","name":"ip_v4_address"}"#).unwrap();
+    assert_eq!(
+        wire,
+        TypeRef::Builtin {
+            name: BuiltinType::IpV4Address
+        }
+    );
+}
+
+#[test]
+fn custom_initialize_emits_a_named_failing_stub_and_leaves_other_models_unchanged() {
+    let marked = RustEmitter
+        .generate_models(&bundle(), &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    for needed in [
+        "pub const CUSTOM_INITIALIZE: bool = true;",
+        "pub fn initialize_stub<A>(_args: A) -> Result<Money, ValidationError>",
+        "invalid(\"Money@default\", \"\", \"custom_initialize\")",
+        "pub fn construct<A>(args: A)",
+        "pub fn construct_with<A, F: FnOnce(A) -> Result<Money, ValidationError>>",
+    ] {
+        assert!(marked.contains(needed), "missing {needed}");
+    }
+    // Only the marked model gets the integration point.
+    assert_eq!(marked.matches("CUSTOM_INITIALIZE").count(), 1);
+    // Without the marker the output is exactly the marked output minus that one block.
+    let mut plain = bundle();
+    plain
+        .models
+        .get_mut("Money@default")
+        .unwrap()
+        .custom_initialize = false;
+    let plain = RustEmitter
+        .generate_models(&plain, &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    assert!(!plain.contains("CUSTOM_INITIALIZE"));
+    let start = marked
+        .find("impl Money {\n/// The source model has a handwritten")
+        .unwrap();
+    let tail = "Ok(value) }\n}\n";
+    let end = start + marked[start..].find(tail).unwrap() + tail.len();
+    assert_eq!(format!("{}{}", &marked[..start], &marked[end..]), plain);
+}
+
+#[test]
+fn a_named_value_type_default_is_a_literal_of_its_base_type() {
+    let mut b = bundle();
+    b.value_types.insert(
+        "Lang".into(),
+        ValueType {
+            base: BuiltinType::String,
+            facets: BTreeMap::new(),
+        },
+    );
+    let leaf = b.models.get_mut("Leaf@default").unwrap();
+    leaf.attributes[0].value_type = TypeRef::Value { id: "Lang".into() };
+    leaf.attributes[0].default = DefaultValue::Present(NeutralValue::String("en".into()));
+    let bindings = TypeBindings::from([(
+        "Lang".to_string(),
+        TypeBinding {
+            rust_type: "String".into(),
+            codec: None,
+        },
+    )]);
+    let models = RustEmitter.generate_models(&b, &bindings).unwrap();
+    assert!(models["models.rs"].contains(r#"\"en\""#));
+    // A literal of the wrong base type is still refused.
+    b.models.get_mut("Leaf@default").unwrap().attributes[0].default =
+        DefaultValue::Present(NeutralValue::Boolean(true));
+    assert_eq!(
+        RustEmitter
+            .generate_models(&b, &bindings)
+            .unwrap_err()
+            .reason,
+        ErrorReason::NonSerializableDefault
+    );
+}
+
+#[test]
+fn a_source_attribute_named_like_the_provenance_member_is_refused_by_name() {
+    let mut b = bundle();
+    b.models.get_mut("Leaf@default").unwrap().attributes[0].name = "__lml_applied".into();
+    let error = RustEmitter
+        .generate_models(&b, &TypeBindings::new())
+        .unwrap_err();
+    assert_eq!(error.reason, ErrorReason::ReservedMember);
+    assert_eq!(error.attribute.as_deref(), Some("__lml_applied"));
+}
+
+#[test]
+fn unions_and_nested_models_recurse_in_apply_defaults() {
+    let text = RustEmitter
+        .generate_models(&bundle(), &TypeBindings::new())
+        .unwrap()["models.rs"]
+        .clone();
+    assert!(text.contains("_Union { pub fn apply_defaults(&mut self)"));
+    assert!(text.contains("v.apply_defaults()?"));
 }

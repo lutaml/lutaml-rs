@@ -58,6 +58,18 @@ mod tests {
         assert!(ExactDecimal::parse("1e4").is_err());
         assert!(ExactInteger::parse("123456789012345678901234567890").is_ok());
         assert!(ExactInteger::parse("1.0").is_err());
+        for ok in ["5.", ".5", "+1", "-.5", "+5.", "0.5"] {
+            assert!(ExactDecimal::parse(ok).is_ok(), "{ok}");
+        }
+        for bad in [".", "+", "-", "", "1e4", "1.2.3", "++1", "+-1", " 1"] {
+            assert!(ExactDecimal::parse(bad).is_err(), "{bad:?}");
+        }
+        for ok in ["+1", "-1", "007"] {
+            assert!(ExactInteger::parse(ok).is_ok(), "{ok}");
+        }
+        for bad in ["", "+", "-", "5.", ".5", "1e2", "+-1"] {
+            assert!(ExactInteger::parse(bad).is_err(), "{bad:?}");
+        }
     }
     #[test]
     fn parg_capture_constructor_has_static_result_type() {
@@ -103,5 +115,73 @@ mod tests {
             },
         };
         assert_eq!(literal.reference(), None);
+    }
+
+    #[test]
+    fn content_tokens_reject_contradictory_and_unknown_fields() {
+        for token in [
+            r#"{"kind":"element","attribute":"tags","index":0,"literal":"x"}"#,
+            r#"{"kind":"text","literal":"x","attribute":"title","index":0}"#,
+            r#"{"kind":"text","literal":"x","bogus":1}"#,
+            r#"{"kind":"nope","literal":"x"}"#,
+        ] {
+            assert!(serde_json::from_str::<ContentToken>(token).is_err(), "{token}");
+        }
+        assert!(serde_json::from_str::<ContentToken>(r#"{"kind":"text","literal":"x"}"#).is_ok());
+    }
+    #[test]
+    fn discriminator_tag_is_hoisted_onto_the_case_and_written_once() {
+        let node: Node = serde_json::from_str(r#"{"item":{"kind":"leaf","text":"ok"}}"#).unwrap();
+        match &node.item {
+            Presence::Value(Node_item_Union::Case0(leaf)) => {
+                assert_eq!(leaf.kind, Presence::Value("leaf".into()))
+            }
+            other => panic!("unexpected {other:?}"),
+        }
+        let out = serde_json::to_string(&node).unwrap();
+        assert_eq!(out.matches("\"kind\"").count(), 1, "{out}");
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(&out).unwrap(),
+            serde_json::from_str::<serde_json::Value>(r#"{"item":{"kind":"leaf","text":"ok"}}"#).unwrap()
+        );
+    }
+    #[test]
+    fn custom_initialize_separates_data_reconstruction_from_application_construction() {
+        // Declared-data path (serde): unchanged and data-only.
+        let data: Money = serde_json::from_str(r#"{"currency":"USD"}"#).unwrap();
+        data.validate().unwrap();
+        assert!(Money::CUSTOM_INITIALIZE);
+        // Application construction with no handwritten implementation: the named stub failure.
+        let error = Money::construct(5u32).unwrap_err();
+        assert_eq!(error.reason, "custom_initialize");
+        assert_eq!(error.model_id, "Money@default");
+        assert_eq!(
+            Money::initialize_stub(()).unwrap_err().reason,
+            "custom_initialize"
+        );
+        // An explicit handwritten initializer succeeds.
+        let built = Money::construct_with(250u32, |cents| {
+            let mut money = Money::default();
+            money.currency = Presence::Value(format!("{cents}c"));
+            Ok(money)
+        })
+        .unwrap();
+        assert_eq!(built.currency, Presence::Value("250c".to_string()));
+        // Its result still passes validation.
+        let invalid = Money::construct_with((), |_| Ok(Money::default())).unwrap_err();
+        assert_eq!(invalid.reason, "invalid_document");
+        assert_eq!(invalid.attribute, "currency");
+    }
+    #[test]
+    fn apply_defaults_reaches_present_children_only() {
+        let mut node: Node = serde_json::from_str(r#"{"title":"root","child":{"title":"child"}}"#).unwrap();
+        node.apply_defaults().unwrap();
+        let Presence::Value(child) = &node.child else { panic!("child") };
+        assert!(!child.enabled.is_absent());
+        assert!(child.__lml_applied.contains("enabled"));
+        let mut bare: Node = serde_json::from_str(r#"{"title":"root"}"#).unwrap();
+        bare.apply_defaults().unwrap();
+        assert!(bare.child.is_absent());
+        assert!(serde_json::from_str::<Node>(r#"{"title":"r","__lml_applied":["enabled"]}"#).is_err());
     }
 }

@@ -15,6 +15,16 @@ name = "lutaml-rs"
 path = "src/main.rs"
 required-features = ["generator"]
 
+[[bin]]
+name = "mml-xml-codegen"
+path = "src/bin/mml-xml-codegen.rs"
+required-features = ["generator", "xml"]
+
+[[bin]]
+name = "omml-xml-codegen"
+path = "src/bin/omml-xml-codegen.rs"
+required-features = ["generator", "xml"]
+
 [features]
 default = ["generator"]
 # Host-only loading, canonical identity, and artifact production.
@@ -22,12 +32,12 @@ generator = ["dep:serde_yaml", "dep:sha2", "dep:unsafe-libyaml"]
 # Generated consumers need only the shared data and exact-number contracts.
 runtime = []
 wasm = ["runtime", "dep:wasm-bindgen", "dep:serde-wasm-bindgen"]
-# Reserved integration slot: no upstream XML API is assumed by this crate.
-xml = ["runtime"]
+# Native XML codecs over the pinned moxml-rs document faces.
+xml = ["runtime", "dep:moxml"]
 
 [dependencies]
 serde = { version = "=1.0.219", features = ["derive"] }
-serde_json = { version = "=1.0.140", features = ["arbitrary_precision"] }
+serde_json = { version = "=1.0.140", features = ["arbitrary_precision", "preserve_order"] }
 num-bigint = { version = "=0.4.6", features = ["serde"] }
 num-rational = { version = "=0.4.2", features = ["serde", "num-bigint"] }
 num-traits = "=0.2.19"
@@ -36,3 +46,4 @@ sha2 = { version = "=0.10.8", optional = true }
 wasm-bindgen = { version = "=0.2.100", optional = true }
 serde-wasm-bindgen = { version = "=0.6.5", optional = true }
 unsafe-libyaml = { version = "=0.2.11", optional = true }
+moxml = { git = "https://github.com/lutaml/moxml-rs", rev = "3712b6ff5b461fc286514b74680bee5442adcc7e", optional = true }
